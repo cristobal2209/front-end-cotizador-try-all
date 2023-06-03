@@ -2,30 +2,17 @@ import { BrowserRouter, Routes, Route, createBrowserRouter } from "react-router-
 import Home from "../Home/Home";
 import Navbar from "../Navbar/Navbar";
 import Article from "../Article/Article";
-
-// const Router = createBrowserRouter([
-//   {
-//     path: "/",
-//     element: <Home />,
-//   },
-//   {
-//     path: "login",
-//     element: <Login />,
-//   },
-//   {
-//     path: "articulos/:idArticulo",
-//     element: <Article />,
-//   },
-// ]);
-// export default Router;
+import Login from "../login/login";
 
 export default function Router() {
+  const shouldRenderNavbar = location.pathname !== '/login';
   return (
     <BrowserRouter>
-      <Navbar/>
+      {shouldRenderNavbar && <Navbar/>}
       <Routes>
         <Route path="/" element={<Home/>} />
-        <Route path="/articulos/:articleId" element={<Article/>} />
+        <Route path="/login" element={<Login/>} />
+        <Route path="/articles/:articleId" element={<Article/>} />
       </Routes>
     </BrowserRouter>
   );
