@@ -1,17 +1,13 @@
-import Router from "../router/router";
-import Navbar from "../Navbar/Navbar";
+import Navbar from "../navbar/navbar";
+import { Outlet } from "react-router-dom";
 
 export default function MainLayout() {
   return (
-    <>
-      <template>
-        <div class="min-h-screen w-screen">
-          <Navbar />
-          <div>
-            <Router />
-          </div>
-        </div>
-      </template>
-    </>
+    <main>
+      <Navbar />
+      <div>
+        <Outlet />
+      </div>
+    </main>
   );
 }
