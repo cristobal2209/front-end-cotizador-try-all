@@ -27,36 +27,38 @@ function Login() {
   }
 
   return (
-    <div>
-      {loggedIn ? (
-        <div>
-          <h2>Bienvenido, {username}!</h2>
-          <button onClick={handleLogout}>Cerrar sesión</button>
-        </div>
-      ) : (
-        <div>
-          <label>
-            Nombre de usuario:
-            <input
-              type="text"
-              value={username}
-              onChange={handleUsernameChange}
-            />
-          </label>
-          <br />
-          <label>
-            Contraseña:
-            <input
-              type="password"
-              value={password}
-              onChange={handlePasswordChange}
-            />
-          </label>
-          <br />
-          <button onClick={handleLogin}>Iniciar sesión</button>
-        </div>
-      )}
-    </div>
+    <main>
+      <div>
+        {loggedIn ? (
+          <div>
+            <h2>Bienvenido, {username}!</h2>
+            <button onClick={handleLogout}>Cerrar sesión</button>
+          </div>
+        ) : (
+          <div>
+            <label>
+              Nombre de usuario:
+              <input
+                type="text"
+                value={username}
+                onChange={handleUsernameChange}
+              />
+            </label>
+            <br />
+            <label>
+              Contraseña:
+              <input
+                type="password"
+                value={password}
+                onChange={handlePasswordChange}
+              />
+            </label>
+            <br />
+            <button onClick={handleLogin}>Iniciar sesión</button>
+          </div>
+        )}
+      </div>
+    </main>
   );
 }
 
