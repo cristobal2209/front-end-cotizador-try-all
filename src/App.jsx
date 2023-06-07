@@ -1,7 +1,7 @@
-import Router from "./components/router/router";
+import Router from "./components/Router/Router";
 
 export default function App() {
   return (
-      <Router />
+    <Router />
   );
 }
