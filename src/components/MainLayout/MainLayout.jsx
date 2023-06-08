@@ -5,7 +5,7 @@ export default function MainLayout() {
   return (
     <>
       <Header />
-      <main className="bg-bgDark font-mono flex items-center justify-center min-h-screen text-white p-5">
+      <main className="bg-bgDark mx-auto min-h-screen text-white px-10">
         <Outlet />
       </main>
     </>
