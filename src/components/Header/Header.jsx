@@ -53,7 +53,7 @@ export default function Header() {
             </IconButton>
           </div>
           {/* sidebar */}
-          <div className="z-20 flex-shrink-0 px-2">
+          <div className="flex-shrink-0 px-2">
             <IconButton
               variant="text"
               color="white"
@@ -110,7 +110,7 @@ export default function Header() {
       </Navbar>
       {/*  */}
       <div
-        className={`fixed left-0 top-0 z-10 hidden h-full max-w-lg transform bg-white pt-20 text-primary shadow-2xl duration-300 ease-in-out lg:block ${
+        className={`fixed left-0 top-0 z-40 hidden h-full max-w-lg transform bg-white pt-20 text-primary shadow-2xl duration-300 ease-in-out lg:block ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >

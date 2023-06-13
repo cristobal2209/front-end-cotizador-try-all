@@ -27,7 +27,7 @@ export default function CategoryList() {
     <a
       href={`#${category}`}
       key={index}
-      className="text-white hover:text-secondary hover:bg-quaternaryHover rounded-md p-2"
+      className="rounded-md p-2 text-white hover:bg-primaryHover hover:shadow-md "
     >
       <div className="flex items-center gap-3 rounded-lg">
         {/* icono categoria */}
@@ -41,20 +41,24 @@ export default function CategoryList() {
   return (
     <div className="relative">
       <button
-        className="flex items-center rounded-md bg-transparent px-4 py-2 font-semibold text-white"
+        className="flex items-center rounded-md bg-transparent px-4 py-2 font-semibold text-white hover:bg-primaryHover"
         onClick={handleToggle}
       >
         Categorías
-        <ChevronDownIcon
-          strokeWidth={2.5}
-          className={`block h-3 w-3 transition-transform ${
-            isOpen || isMobileCategoriesOpen ? "rotate-180" : ""
-          }`}
-        />
+        <div className="pl-1">
+          <ChevronDownIcon
+            strokeWidth={2}
+            className={`block h-3 w-3 transition-transform ${
+              isOpen || isMobileCategoriesOpen ? "rotate-180" : ""
+            }`}
+          />
+        </div>
       </button>
       {isOpen && (
-        <div className="fixed left-0 top-20 flex h-1/6 w-full items-center justify-center rounded-md bg-primary shadow-lg transition-opacity duration-300">
-          <div className="grid grid-cols-4 gap-2 w-full px-5">{renderCategories}</div>
+        <div className="fixed left-0 top-20 flex h-1/6 w-full items-center justify-center rounded-md bg-primary shadow-lg duration-300 ease-in-out">
+          <div className="grid w-full grid-cols-4 gap-2 px-5">
+            {renderCategories}
+          </div>
         </div>
       )}
     </div>

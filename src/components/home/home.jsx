@@ -1,7 +1,76 @@
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  Typography,
+} from "@material-tailwind/react";
+
+const enterprises = [
+  {
+    id: 1,
+    name: "Mouser Electronics",
+    imgUrl: "src/assets/mouser-logo.png",
+    link: "https://www.mouser.cl/",
+  },
+  {
+    id: 2,
+    name: "Altronics",
+    imgUrl: "src/assets/Altronics.png",
+    link: "https://www.altronics.cl/",
+  },
+  {
+    id: 3,
+    name: "Newark",
+    imgUrl: "src/assets/newark-logo.png",
+    link: "https://www.newark.com/",
+  },
+  {
+    id: 4,
+    name: "Galco",
+    imgUrl: "src/assets/Galco.png",
+    link: "https://www.galco.com/",
+  },
+  {
+    id: 5,
+    name: "Roc Industrial",
+    imgUrl: "src/assets/rocindustrial.png",
+    link: "https://www.rocindustrial.com/",
+  },
+  {
+    id: 6,
+    name: "PLC Chile",
+    imgUrl: "src/assets/plcchile.png",
+    link: "https://www.plcchile.com/",
+  },
+];
+
 export default function Home() {
+  function GridEnterprises({ enterprises }) {
+    return (
+      <div className="mx-auto grid max-w-6xl place-items-center gap-5 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {enterprises.map((enterprise) => (
+          <a
+            href={enterprise.link}
+            className="h-full w-60 text-center shadow-sm "
+            key={enterprise.id}
+          >
+            <Card className="h-full w-full">
+              <CardHeader floated={false} className="mt-0 h-32 py-1">
+                <img
+                  src={enterprise.imgUrl}
+                  alt=""
+                  className="h-28 w-64 object-contain"
+                />
+              </CardHeader>
+            </Card>
+          </a>
+        ))}
+      </div>
+    );
+  }
   return (
-    <div className=" text-slate-50 w-full h-full">
-      <section className="h-1/2">
+    <div className="flex flex-col justify-between h-full">
+      <section className="w-full pt-20">
         <div className="p-3 text-center">
           <h1 className="text-3xl">
             ¡BIENVENIDO AL NUEVO COTIZADOR DE TRY ALL!
@@ -10,30 +79,18 @@ export default function Home() {
             En el siguiente enlace puedes aprender a ocupar esta herramienta
           </p>
         </div>
-        <div className="pb-10 text-center">
-          <button
-            className="bg-primary rounded-md p-2 px-10"
-            style={{ width: "265px" }}
-          >
-            Comienza a aprender!
+        <div className="py-10 text-center">
+          <button className="rounded-md bg-secondary hover:bg-secondaryHover px-10 py-2 font-bold shadow-md">
+            ¡Comencemos a aprender!
           </button>
         </div>
       </section>
-      <section className="h-1/2">
-        <div className="grid md:grid-cols-3 sm:grid-cols-2 xs:grid-cols-1 gap-5 place-items-center">
-          <div className="bg-quaternary rounded p-6 px-10">Empresa 1</div>
-          <div className="bg-quaternary rounded p-6 px-10">Empresa 2</div>
-          <div className="bg-quaternary rounded p-6 px-10">Empresa 3</div>
-          <div className="bg-quaternary rounded p-6 px-10">Empresa 4</div>
-          <div className="bg-quaternary rounded p-6 px-10">Empresa 5</div>
-          <div className="bg-quaternary rounded p-6 px-10">Empresa 6</div>
-          <div className="bg-quaternary rounded p-6 px-10">Empresa 7</div>
-          <div className="bg-quaternary rounded p-6 px-10">Empresa 8</div>
-          <div className="bg-quaternary rounded p-6 px-10">Empresa 9</div>
-        </div>
-        <div className="pt-6 text-center">
-          <button className="bg-primary rounded-md p-2 px-10">
-            ver catalogo completo
+      <section className="w-full py-20">
+        <h1 className="py-5 text-center text-2xl">Nuestros proveedores</h1>
+        <GridEnterprises enterprises={enterprises} />
+        <div className="pt-10 text-center">
+          <button className="rounded-md bg-secondary hover:bg-secondaryHover px-10 py-2 font-bold shadow-md">
+            Ver catálogo completo
           </button>
         </div>
       </section>
