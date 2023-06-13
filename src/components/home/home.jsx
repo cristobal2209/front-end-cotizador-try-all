@@ -69,7 +69,7 @@ export default function Home() {
     );
   }
   return (
-    <div className="flex flex-col justify-between h-full">
+    <div className="flex h-full flex-col justify-between">
       <section className="w-full pt-20">
         <div className="p-3 text-center">
           <h1 className="text-3xl">
@@ -80,16 +80,16 @@ export default function Home() {
           </p>
         </div>
         <div className="py-10 text-center">
-          <button className="rounded-md bg-secondary hover:bg-secondaryHover px-10 py-2 font-bold shadow-md">
+          <button className="rounded-md bg-secondary px-10 py-2 font-bold shadow-md hover:bg-secondaryHover">
             ¡Comencemos a aprender!
           </button>
         </div>
       </section>
-      <section className="w-full py-20">
-        <h1 className="py-5 text-center text-2xl">Nuestros proveedores</h1>
+      <section className="w-full py-10">
+        <h1 className="mb-20 text-center text-2xl">Nuestros proveedores</h1>
         <GridEnterprises enterprises={enterprises} />
         <div className="pt-10 text-center">
-          <button className="rounded-md bg-secondary hover:bg-secondaryHover px-10 py-2 font-bold shadow-md">
+          <button className="rounded-md bg-secondary px-10 py-2 font-bold shadow-md hover:bg-secondaryHover">
             Ver catálogo completo
           </button>
         </div>
