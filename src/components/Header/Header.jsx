@@ -83,7 +83,7 @@ export default function Header() {
             <Input
               type="search"
               label="Buscar..."
-              className="pr-20 text-white bg-secondary"
+              className="bg-secondary pr-20 text-white"
               color="white"
               value={userSearch}
               onChange={onChangeUserSearch}
@@ -99,9 +99,9 @@ export default function Header() {
             </Button>
           </div>
           {/* opcion de cotizacion actual */}
-          {/* <div className="hidden px-2 lg:block">
+          <div className="hidden px-2 lg:block">
             <QuoteName />
-          </div> */}
+          </div>
         </div>
         {/* si openNav es true, se abre este collapse */}
         <Collapse open={openNav}>

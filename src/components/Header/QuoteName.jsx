@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Button } from "@material-tailwind/react";
+import { Button, Input } from "@material-tailwind/react";
 
 import { CheckIcon, PencilIcon } from "@heroicons/react/24/outline";
 
@@ -20,16 +20,21 @@ export default function QuoteName() {
 
   return (
     <>
-      <div className="flex items-center">
+      <div className="flex min-w-[280px] items-center justify-end">
         {isEditing ? (
-          <input
-            type="text"
-            className="rounded-md bg-secondary px-2 text-white"
+          <Input
+            type="search"
+            label="Nuevo nombre"
+            className=" bg-secondary text-white"
+            color="white"
             value={quoteName}
             onChange={handleNameChange}
           />
         ) : (
-          <span className="ml-4 text-white">{quoteName}</span>
+          <div className="">
+            <span className=" text-white mx-2">Cotizacion actual: </span>
+            <span className=" text-white mx-2">{quoteName}</span>
+          </div>
         )}
         <div className="px-2">
           {isEditing ? (
@@ -46,7 +51,8 @@ export default function QuoteName() {
               className=" rounded bg-quaternary shadow-none hover:bg-quaternaryHover hover:shadow-none"
               onClick={() => setIsEditing(true)}
             >
-              <PencilIcon className="h-full w-3" />
+              Cambiar nombre
+              {/* <PencilIcon className="h-full w-3" /> */}
             </Button>
           )}
         </div>
