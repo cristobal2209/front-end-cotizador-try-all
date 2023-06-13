@@ -8,10 +8,12 @@ export default withMT({
   theme: {
     extend: {
       colors: {
+        whiteHover: "#F3F8FF",
         primary: "#27467D",
         secondary: "#2C69CD",
         tertiary: "#009BB1",
         quaternary: "#7EAFFF",
+        quaternaryHover: "#619DFF",
         textlight: "#E6EFFF",
         textdark: "#2C2C2C",
         bgDark: "#344359",

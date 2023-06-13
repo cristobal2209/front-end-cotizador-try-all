@@ -1,124 +1,121 @@
-import { useState, useEffect } from "react";
+import React, { useState } from "react";
+import CategoryList from "./CategoryList";
+import Sidebar from "./Sidebar";
+import QuoteName from "./QuoteName";
 import {
   Navbar,
-  MobileNav,
-  Typography,
-  Button,
+  Collapse,
   IconButton,
+  Button,
+  Input,
 } from "@material-tailwind/react";
- 
+import {
+  Bars3Icon,
+  XMarkIcon,
+  MagnifyingGlassIcon,
+} from "@heroicons/react/24/outline";
+
 export default function Header() {
-  const [openNav, setOpenNav] = useState(false);
- 
-  useEffect(() => {
-    window.addEventListener("resize", () => window.innerWidth >= 960 && setOpenNav(false));
+  const [openNav, setOpenNav] = React.useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [userSearch, setUserSearch] = React.useState("");
+  const onChangeUserSearch = ({ target }) => setUserSearch(target.value);
+
+  React.useEffect(() => {
+    window.addEventListener(
+      "resize",
+      () => window.innerWidth >= 960 && setOpenNav(false)
+    );
   }, []);
- 
-  const navList = (
-    <ul className="mb-4 mt-2 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
-      <Typography
-        as="li"
-        variant="small"
-        color="blue-gray"
-        className="p-1 font-normal"
-      >
-        <a href="#" className="flex items-center">
-          Pages
-        </a>
-      </Typography>
-      <Typography
-        as="li"
-        variant="small"
-        color="blue-gray"
-        className="p-1 font-normal"
-      >
-        <a href="#" className="flex items-center">
-          Account
-        </a>
-      </Typography>
-      <Typography
-        as="li"
-        variant="small"
-        color="blue-gray"
-        className="p-1 font-normal"
-      >
-        <a href="#" className="flex items-center">
-          Blocks
-        </a>
-      </Typography>
-      <Typography
-        as="li"
-        variant="small"
-        color="blue-gray"
-        className="p-1 font-normal"
-      >
-        <a href="#" className="flex items-center">
-          Docs
-        </a>
-      </Typography>
-    </ul>
-  );
- 
+
   return (
-    <Navbar className="mx-auto max-w-screen-xl py-2 px-4 lg:px-8 lg:py-4">
-      <div className="container mx-auto flex items-center justify-between text-blue-gray-900">
-        <Typography
-          as="a"
-          href="#"
-          className="mr-4 cursor-pointer py-1.5 font-medium"
-        >
-          Material Tailwind
-        </Typography>
-        <div className="hidden lg:block">{navList}</div>
-        <Button variant="gradient" size="sm" className="hidden lg:inline-block">
-          <span>Buy Now</span>
-        </Button>
-        <IconButton
-          variant="text"
-          className="ml-auto h-6 w-6 text-inherit hover:bg-transparent focus:bg-transparent active:bg-transparent lg:hidden"
-          ripple={false}
-          onClick={() => setOpenNav(!openNav)}
-        >
-          {openNav ? (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              className="h-6 w-6"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
+    <>
+      <Navbar
+        className="fixed z-50 mx-auto rounded-none border-primary bg-primary px-4 py-2"
+        fullWidth={true}
+        blurred={false}
+      >
+        <div className="mx-auto flex max-w-full items-center text-white lg:justify-between">
+          {/* boton menu categorias */}
+          <div className="flex-shrink-0 px-2">
+            <IconButton
+              variant="text"
+              color="white"
+              className="lg:hidden"
+              onClick={() => setOpenNav(!openNav)}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          ) : (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
+              {/* si openNav es true, muestra un icono X, sino, muestra un icono tres barras */}
+              {openNav ? (
+                <XMarkIcon className="h-6 w-6" strokeWidth={2} />
+              ) : (
+                <Bars3Icon className="h-6 w-6" strokeWidth={2} />
+              )}
+            </IconButton>
+          </div>
+          {/* sidebar */}
+          <div className="z-20 flex-shrink-0 px-2">
+            <IconButton
+              variant="text"
+              color="white"
+              className="hidden lg:block"
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            </svg>
-          )}
-        </IconButton>
-      </div>
-      <MobileNav open={openNav}>
-        <div className="container mx-auto">
-          {navList}
-          <Button variant="gradient" size="sm" fullWidth className="mb-2">
-            <span>Buy Now</span>
-          </Button>
+              {/* si isSidebarOpen es true, muestra un icono X, sino, muestra un icono tres barras */}
+              {isSidebarOpen ? (
+                <XMarkIcon className="h-6 w-6" strokeWidth={2} />
+              ) : (
+                <Bars3Icon className="h-6 w-6" strokeWidth={2} />
+              )}
+            </IconButton>
+          </div>
+          {/* logo */}
+          <div className="flex-shrink-0 px-2">
+            <a href="http://127.0.0.1:5173/#">
+              <img className="" src="src\assets\logo-try-all.png" />
+            </a>
+          </div>
+          {/* llamado a categorias en escritorio */}
+          <div className="hidden lg:block">
+            <CategoryList />
+          </div>
+          {/* barra de busqueda */}
+          <div className="relative hidden w-1/3 lg:flex lg:flex-row lg:items-center lg:justify-center">
+            <Input
+              type="search"
+              label="Buscar..."
+              className="pr-20 text-white bg-secondary"
+              color="white"
+              value={userSearch}
+              onChange={onChangeUserSearch}
+              containerProps={{
+                className: "min-w-[288px]",
+              }}
+            />
+            <Button
+              size="sm"
+              className="!absolute right-2 rounded bg-quaternary shadow-none hover:bg-quaternaryHover hover:shadow-none"
+            >
+              <MagnifyingGlassIcon className="h-full w-3" />
+            </Button>
+          </div>
+          {/* opcion de cotizacion actual */}
+          {/* <div className="hidden px-2 lg:block">
+            <QuoteName />
+          </div> */}
         </div>
-      </MobileNav>
-    </Navbar>
+        {/* si openNav es true, se abre este collapse */}
+        <Collapse open={openNav}>
+          <CategoryList />
+        </Collapse>
+      </Navbar>
+      {/*  */}
+      <div
+        className={`fixed left-0 top-0 z-10 hidden h-full max-w-lg transform bg-white pt-20 text-primary shadow-2xl duration-300 ease-in-out lg:block ${
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <Sidebar />
+      </div>
+    </>
   );
 }

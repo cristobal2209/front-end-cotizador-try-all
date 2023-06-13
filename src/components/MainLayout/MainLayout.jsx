@@ -4,12 +4,14 @@ import { Outlet } from "react-router-dom";
 export default function MainLayout() {
   return (
     <>
-      <Header />
-      <main className="bg-bgDark font-mono flex items-center justify-center min-h-screen text-white p-5">
-        <Outlet />
-      </main>
+      <header className="fixed top-0 w-full">
+        <Header />
+      </header>
+      <div className="h-screen">
+        <main className="mx-auto h-full bg-bgDark p-5 pt-20 text-white">
+          <Outlet />
+        </main>
+      </div>
     </>
   );
 }
-
-//bg-slate-700 font-mono flex items-center justify-center min-h-screen text-slate-50 p-5
