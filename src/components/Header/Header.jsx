@@ -71,7 +71,7 @@ export default function Header() {
           {/* logo */}
           <div className="flex-shrink-0 px-2">
             <a href="http://127.0.0.1:5173/#">
-              <img className="" src="src\assets\logo-try-all.png" />
+              <img className="" src="src/assets/logo-try-all.png" />
             </a>
           </div>
           {/* llamado a categorias en escritorio */}
