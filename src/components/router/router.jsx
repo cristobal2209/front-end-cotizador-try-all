@@ -15,6 +15,7 @@ export default function Router() {
       <Routes>
         <Route path="/" element={<MainLayout />}>
           <Route path="" element={<Home />} />
+          <Route path="manage" element={<TableArticle />} />
           <Route path="manage/articles" element={<TableArticle />} />
           <Route path="manage/quotes" element={<TableQuote />} />
           <Route path="manage/users" element={<TableUser />} />

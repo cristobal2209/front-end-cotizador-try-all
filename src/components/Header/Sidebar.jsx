@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from 'react-router-dom';
 import { Button } from "@material-tailwind/react";
 import {
   ChartPieIcon,
@@ -12,6 +13,12 @@ import {
 } from "@heroicons/react/24/outline";
 
 export default function Sidebar() {
+  const navigate = useNavigate();
+
+  function handleButtonClick() {
+    navigate('manage/users');
+  }
+
   return (
     <div className="flex flex-col justify-between">
       {/* Sección 1 */}
@@ -19,7 +26,7 @@ export default function Sidebar() {
         <h2 className="mb-4 text-lg">Sección 1</h2>
         <ul className="space-y-2">
           <li>
-            <Button className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary">
+            <Button className=" flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary">
               <CpuChipIcon strokeWidth={2} className="h-6 w-6" /> Cotizaciones
               Artículos
             </Button>
@@ -56,7 +63,10 @@ export default function Sidebar() {
             </Button>
           </li>
           <li>
-            <Button className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary">
+            <Button
+              className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
+              onClick={handleButtonClick}
+            >
               <UsersIcon strokeWidth={2} className="h-6 w-6" /> Usuarios
             </Button>
           </li>

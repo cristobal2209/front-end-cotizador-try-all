@@ -13,7 +13,7 @@ const articleDetails = {
   articleBrand: "Bauker",
   articleName: "Taladro Bauker 500W",
   articleDescription:
-    "Un taladro muy bonito Assssssss sssssssssss sssssss sssss ssssssssss sssssssss sssss sssssssssssssss sssssss sssssssssss sssss sssssss",
+    "Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda optio quasi eaque veniam corporis eius quisquam odit praesentium harum adipisci corrupti quibusdam rem autem delectus distinctio alias dolor, nemo quo!",
   articleProviderCountry: "Chile",
 };
 
