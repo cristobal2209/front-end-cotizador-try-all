@@ -53,7 +53,7 @@ export default function Login() {
                   ¿Olvidó su contraseña?
                 </a>
               </div>
-              <p className="text-sm text-center font-light text-white dark:text-gray-400">
+              <p className="text-center text-sm font-light text-white dark:text-gray-400">
                 ¿No posee cuenta?{" "}
                 <a
                   href="#"
