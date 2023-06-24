@@ -97,7 +97,7 @@ export default function TableUser() {
       sortable: true,
     },
     {
-      name: "Accion",
+      name: "Acción",
       cell: (userData) => (
         <UserActionMenu
           userData={userData}
@@ -137,7 +137,6 @@ export default function TableUser() {
             title="Panel de control de usuarios"
             columns={columns}
             data={userData}
-            selectableRows
             pagination
             highlightOnHover
           />
