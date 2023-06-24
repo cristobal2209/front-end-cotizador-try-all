@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import { Button } from "@material-tailwind/react";
 import {
   ChartPieIcon,
@@ -15,8 +15,12 @@ import {
 export default function Sidebar() {
   const navigate = useNavigate();
 
-  function handleButtonClick() {
-    navigate('manage/users');
+  function handleNavigateArticles() {
+    navigate("manage/articles");
+  }
+
+  function handleNavigateUsers() {
+    navigate("manage/users");
   }
 
   return (
@@ -65,14 +69,18 @@ export default function Sidebar() {
           <li>
             <Button
               className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
-              onClick={handleButtonClick}
+              onClick={handleNavigateUsers}
             >
-              <UsersIcon strokeWidth={2} className="h-6 w-6" /> Usuarios
+              <UsersIcon strokeWidth={2} className="h-6 w-6" />
+              Usuarios
             </Button>
           </li>
           <li>
-            <Button className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary">
-              <ClipboardDocumentCheckIcon strokeWidth={2} className="h-6 w-6" />
+            <Button
+              className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
+              onClick={handleNavigateArticles}
+            >
+              <ClipboardDocumentCheckIcon strokeWidth={2} className="h-6 w-6" />{" "}
               Artículos
             </Button>
           </li>

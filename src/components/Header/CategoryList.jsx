@@ -12,15 +12,15 @@ export default function CategoryList() {
   };
 
   const categories = [
-    "Categoría 1",
-    "Categoría 2",
-    "Categoría 3",
-    "Categoría 4",
-    "Categoría 5",
-    "Categoría 6",
-    "Categoría 7",
-    "Categoría 8",
-    "Categoría 8",
+    "Categoría1",
+    "Categoría2",
+    "Categoría3",
+    "Categoría4",
+    "Categoría5",
+    "Categoría6",
+    "Categoría7",
+    "Categoría8",
+    "Categoría8",
   ];
 
   const renderCategories = categories.map((category, index) => (

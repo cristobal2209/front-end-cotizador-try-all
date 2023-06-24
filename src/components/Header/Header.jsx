@@ -70,7 +70,7 @@ export default function Header() {
           </div>
           {/* logo */}
           <div className="flex-shrink-0 px-2">
-            <a href="http://127.0.0.1:5173/#">
+            <a href="http://127.0.0.1:4000">
               <img className="" src="src/assets/logo-try-all.png" />
             </a>
           </div>
