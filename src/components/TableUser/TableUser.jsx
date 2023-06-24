@@ -64,7 +64,7 @@ export default function TableUser() {
     if (action === "edit") {
       handleEditUser(userObj);
     } else {
-      if (action === "edit") {
+      if (action === "add") {
         handleAddUser(userObj);
       }
     }
