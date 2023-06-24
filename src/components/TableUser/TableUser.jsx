@@ -1,27 +1,89 @@
 import DataTable from "react-data-table-component";
 import React, { useState, Fragment, useEffect } from "react";
 import UserDialog from "./UserDialog";
-import { Button } from "@material-tailwind/react";
-
-const data = [
-  {
-    id: 1,
-    username: "Juanito Perez",
-    privileges: "0",
-  },
-  {
-    id: 2,
-    username: "Admin 1",
-    privileges: "1",
-  },
-];
+import UserActionMenu from "./UserActionMenu";
+import { Button, Spinner } from "@material-tailwind/react";
+import {
+  doc,
+  deleteDoc,
+  setDoc,
+  addDoc,
+  collection,
+  onSnapshot,
+  updateDoc,
+  getDocs,
+} from "firebase/firestore";
+import { db } from "../../firebaseConfig";
 
 export default function TableUser() {
-  const [tableRender, setTableRender] = useState(1);
-  const [newArr, setNewArr] = useState(data);
-  const [openUserDialog, setOpenUserDialog] = useState(false);
-  const [editData, setEditData] = useState({});
-  const [action, setAction] = useState();
+  const [isLoading, setIsLoading] = useState(true); //permite saber si algo esta cargando
+  const [tableRender, setTableRender] = useState(1); //permite renderizar nuevamente la tabla con cada cambio
+  const [openUserDialog, setOpenUserDialog] = useState(false); //permite controlar la apertura del dialog
+  const [editData, setEditData] = useState({}); //permite setear la data a editar
+  const [action, setAction] = useState(); //permite controlar el menu de acciones de la tabla
+  const [userData, setUserData] = useState([]); //permite guardar los datos de todos los datos
+
+  useEffect(() => {
+    getUsersCollection();
+  }, []);
+
+  const getUsersCollection = async () => {
+    setIsLoading(true);
+    const querySnapshot = await getDocs(collection(db, "prueba-usuarios"));
+    const newUserData = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    setUserData(newUserData);
+    setTableRender((prevTableRender) => prevTableRender + 1); //se renderiza nuevamente la tabla
+    setIsLoading(false);
+  };
+
+  const handleAddUser = async (userObject) => {
+    await addDoc(collection(db, "prueba-usuarios"), userObject);
+    getUsersCollection();
+  };
+
+  const handleEditUser = async (newUserData) => {
+    const userObj = doc(db, "prueba-usuarios", newUserData.id);
+    await updateDoc(userObj, {
+      username: newUserData.username,
+      privileges: newUserData.privileges,
+    });
+    getUsersCollection();
+  };
+
+  const handleDeleteUser = async (userData) => {
+    await deleteDoc(doc(db, "prueba-usuarios", userData.id));
+    getUsersCollection();
+  };
+
+  //para add y edit se ocupa esta unica funcion, debido a que comparten el mismo dialog.
+  //se pueden agregar mas funciones si el action menu necesita.
+  const handleSubmitData = (userObj) => {
+    if (action === "edit") {
+      handleEditUser(userObj);
+    } else {
+      if (action === "edit") {
+        handleAddUser(userObj);
+      }
+    }
+  };
+
+  const handleOpenUserDialog = () => setOpenUserDialog(true);
+  const handleCloseUserDialog = () => setOpenUserDialog(false);
+
+  const handleAddUserDialog = () => {
+    setEditData({}); // se setean los datos vacios
+    setAction("add");
+    handleOpenUserDialog(); //se abre el dialog vacio
+  };
+
+  const handleUserEditDialog = (userData) => {
+    setEditData(userData); //se setean los datos a editar
+    setAction("edit");
+    handleOpenUserDialog(); //se abre el dialog con los datos a editar
+  };
 
   const columns = [
     {
@@ -36,126 +98,51 @@ export default function TableUser() {
     },
     {
       name: "Accion",
-      cell: (param) => ActionMenu(param),
+      cell: (userData) => (
+        <UserActionMenu
+          userData={userData}
+          handleUserEditDialog={handleUserEditDialog}
+          handleDeleteUser={handleDeleteUser}
+        />
+      ),
       allowOverflow: true,
       ignoreRowClick: true,
     },
   ];
 
-  const handleOpenUserDialog = () => setOpenUserDialog(true);
-  const handleCloseUserDialog = () => setOpenUserDialog(false);
-
-  const handleAddUserDialog = () => {
-    setEditData({}); // se setean los datos vacios
-    setAction("add");
-    handleOpenUserDialog(); //se abre el dialog vacio
-  };
-
-  const handleUserEditDialog = (param) => {
-    setAction("edit");
-    handleOpenUserDialog(); //se abre el dialog con los datos a editar
-    setEditData(param); //se setean los datos a editar
-  };
-
-  const submitData = (newObj) => {
-    var arr = newArr;
-    if (action === "edit") {
-      const index = newArr.findIndex((object) => {
-        return object.id === newObj.id;
-      });
-
-      if (index !== -1) {
-        arr[index] = newObj;
-      }
-      setNewArr(arr);
-    } else {
-      let getNewIndex = arr.length + 1;
-      newObj.id = getNewIndex;
-      arr.push(newObj);
-      setNewArr(arr);
-    }
-    setTableRender((prevTableRender) => prevTableRender + 1);
-    console.log(newArr);
-    // Lógica para enviar los datos del formulario
-    // Puedes hacer una llamada a una API aquí para enviar los datos del formulario
-  };
-
-  const handleDeleteAction = () => {};
-
-  // inicio action menu
-  const ActionMenu = (param) => {
-    const [isOpenActionMenu, setOpenActionMenu] = useState(false);
-
-    const handleMouseEnter = () => {
-      setOpenActionMenu(true);
-    };
-
-    const handleMouseLeave = () => {
-      setOpenActionMenu(false);
-    };
-
-    return (
-      <Fragment>
-        <button
-          className="z-8 absolute rounded-md border border-gray-300 bg-white px-2 py-1 text-sm text-gray-700 hover:bg-secondary focus:outline-none"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          ...
-        </button>
-        {isOpenActionMenu && (
-          <div className="z-9 absolute rounded-md border border-gray-300 bg-white shadow-lg">
-            <button
-              className="relative px-4 py-2 text-sm text-gray-700 hover:bg-blue-500 hover:text-white "
-              onClick={() => handleUserEditDialog(param)}
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-            >
-              Editar
-            </button>
-            <button
-              className="relative px-4 py-2 text-sm text-gray-700 hover:bg-blue-500 hover:text-white"
-              onClick={() => handleDeleteAction()}
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-            >
-              Eliminar
-            </button>
-          </div>
-        )}
-      </Fragment>
-    );
-  };
-
-  // fin action menu
-
   return (
     <section className="h-screen bg-white px-10">
-      <div className="py-10">
-        <Button
-          className="bg-secondary hover:bg-secondaryHover"
-          onClick={handleAddUserDialog}
-        >
-          Agregar usuario
-        </Button>
+      <div className="mx-auto max-w-7xl">
+        <div className="py-10">
+          <Button
+            className="bg-secondary hover:bg-secondaryHover"
+            onClick={handleAddUserDialog}
+          >
+            Agregar usuario
+          </Button>
+        </div>
+        {openUserDialog && (
+          <UserDialog
+            editData={editData}
+            open={openUserDialog}
+            onClose={handleCloseUserDialog}
+            handleSubmitData={handleSubmitData}
+          />
+        )}
+        {isLoading ? (
+          <Spinner className="mx-auto mt-20 h-12 w-12" />
+        ) : (
+          <DataTable
+            key={tableRender}
+            title="Panel de control de usuarios"
+            columns={columns}
+            data={userData}
+            selectableRows
+            pagination
+            highlightOnHover
+          />
+        )}
       </div>
-      {openUserDialog && (
-        <UserDialog
-          editData={editData}
-          open={openUserDialog}
-          onClose={handleCloseUserDialog}
-          submitData={submitData}
-        />
-      )}
-      <DataTable
-        key={tableRender}
-        title="Panel de control de usuarios"
-        columns={columns}
-        data={newArr}
-        selectableRows
-        pagination
-        highlightOnHover
-      />
     </section>
   );
 }

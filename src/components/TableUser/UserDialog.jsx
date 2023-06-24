@@ -13,11 +13,10 @@ const initialValues = {
   privileges: "",
 };
 
-export default function UserDialog({ editData, open, onClose, submitData }) {
+export default function UserDialog({ editData, open, onClose, handleSubmitData }) {
   const [formData, setFormData] = useState(initialValues);
 
   useEffect(() => {
-    console.log(editData);
     setFormData(editData);
   }, [editData]);
 
@@ -33,42 +32,63 @@ export default function UserDialog({ editData, open, onClose, submitData }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    submitData(formData);
+    handleSubmitData(formData);
     onClose(false);
   };
 
   return (
     <Fragment>
       <Dialog onClose={onClose} open={open}>
-        <DialogHeader>Dialog</DialogHeader>
+        {JSON.stringify(editData) === JSON.stringify({}) ? (
+          <DialogHeader>Crear un usuario</DialogHeader>
+        ) : (
+          <DialogHeader>Editar un usuario</DialogHeader>
+        )}
         <DialogBody divider>
           <form>
-            <label>
-              Nombre de usuario:
-              <input
-                type="text"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-              />
-            </label>
-            <label>
-              Privilegios:
-              <input
-                type="email"
-                name="privileges"
-                value={formData.privileges}
-                onChange={handleChange}
-              />
-            </label>
+            <div className="flex flex-col">
+              <div>
+                <label>
+                  Nombre de usuario:
+                  <input
+                    type="text"
+                    name="username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    className="ml-2 border px-2"
+                  />
+                </label>
+              </div>
+              <div>
+                <label>
+                  Privilegios:
+                  <input
+                    type="text"
+                    name="privileges"
+                    value={formData.privileges}
+                    onChange={handleChange}
+                    className="ml-2 border px-2"
+                  />
+                </label>
+              </div>
+            </div>
           </form>
         </DialogBody>
         <DialogFooter>
-          <Button variant="text" color="red" onClick={handleCancel}>
+          <Button
+            variant="text"
+            color="red"
+            onClick={handleCancel}
+            className="mr-2"
+          >
             <span>Cancelar</span>
           </Button>
           <Button variant="gradient" color="green" onClick={handleSubmit}>
-            <span>Actualizar</span>
+            {JSON.stringify(editData) === JSON.stringify({}) ? (
+              <span>Crear</span>
+            ) : (
+              <span>Actualizar</span>
+            )}
           </Button>
         </DialogFooter>
       </Dialog>
