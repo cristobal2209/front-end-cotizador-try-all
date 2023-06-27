@@ -1,8 +1,7 @@
-// Importa las bibliotecas de Firebase necesarias
-import firebase from "firebase/app";
-import "firebase/firestore";
+import { initializeApp } from "firebase/app";
+import {getAuth} from "firebase/auth"
+import { getFirestore } from "firebase/firestore"
 
-// Configuración de Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyDNGbNVmCh1TenQobzgooKuU2AkQrJqbYI",
     authDomain: "fb-cotizaciones-try-all.firebaseapp.com",
@@ -13,8 +12,9 @@ const firebaseConfig = {
     measurementId: "G-ZREP3CE3NP"
 };
 
-// Inicializa Firebase con la configuración
-firebase.initializeApp(firebaseConfig);
+// Initialize Firebase
+export const app = initializeApp(firebaseConfig);
+export const db = getFirestore(app);
+// Initialize Firebase Authentication and get a reference to the service
+export const auth = getAuth(app);
 
-// Exporta la instancia de Firestore
-export const db = firebase.firestore();
