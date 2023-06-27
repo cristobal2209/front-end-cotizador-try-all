@@ -34,109 +34,105 @@ const articleDetails = [
   },
 ];
 
+function RenderArticleDetail({ articleUnit, handleSubTotal }) {
+  const [contador, setContador] = useState(1);
+  const [contadorAnterior, setContadorAnterior] = useState(0);
+  const [subTotalArticle, setSubTotalArticle] = useState(0);
+  const [subTotalAnterior, setSubTotalAnterior] = useState(0);
+
+  useEffect(() => {
+    // console.log("contador anterior " + contadorAnterior);
+    setSubTotalArticle(contador * articleUnit.price);
+    handleSubTotal(subTotalArticle, subTotalAnterior);
+  }, [contador]);
+
+  useEffect(() => {
+    setSubTotalAnterior(contadorAnterior * Number(articleUnit.price));
+  }, [contadorAnterior]);
+
+  const incrementarContador = () => {
+    setContadorAnterior(contador);
+    setContador(contador + 1);
+  };
+
+  const decrementarContador = () => {
+    // console.log("subtotal " + subTotalArticle);
+    // console.log("subtotal anterior" + subTotalAnterior);
+    if (contador > 1) {
+      setContadorAnterior(contador);
+      setContador(contador - 1);
+    }
+  };
+
+  return (
+    <>
+      <div className="flex flex-row items-center py-1">
+        <div>
+          <img
+            src={articleUnit.imgUrl}
+            alt=""
+            className="max-w-[130px] object-contain px-5"
+          />
+        </div>
+
+        <div className="grid w-2/4 grid-cols-1">
+          <span className="">{articleUnit.name}</span>
+          <span className="">{articleUnit.supplier}</span>
+          <span className="">{articleUnit.brand}</span>
+        </div>
+
+        <div className="flex w-1/4 flex-row px-1 py-10">
+          <Button
+            className=" bg-quaternary px-2 py-2"
+            onClick={decrementarContador}
+          >
+            -
+          </Button>
+          <div className="px-2 py-1">{contador}</div>
+          <Button
+            className=" bg-quaternary px-2 py-2"
+            onClick={incrementarContador}
+          >
+            +
+          </Button>
+        </div>
+        <div>
+          <span className=""> ${subTotalArticle.toLocaleString()}</span>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function ShowOtherPrices({ articleDetails, handleSubTotal }) {
+
+  return (
+    <div className="flex w-full max-w-5xl flex-col">
+      {articleDetails.map((articleUnit) => (
+        <div
+          className="mt-6 w-full rounded-md bg-secondary px-2 py-2"
+          key={articleUnit.id}
+        >
+          <RenderArticleDetail
+            articleUnit={articleUnit}
+            handleSubTotal={handleSubTotal}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function Article() {
   const [totalSubTotal, setTotalSubTotal] = useState(0);
 
-  const handleTotal = (subTotalArticle, subTotalAnterior) => {
+  const handleSubTotal = (subTotalArticle, subTotalAnterior) => {
     // console.log("subtotal " + subTotalArticle);
     // console.log("subtotal anterior " + subTotalAnterior);
     subTotalArticle > subTotalAnterior
       ? setTotalSubTotal(totalSubTotal + (subTotalArticle - subTotalAnterior))
       : setTotalSubTotal(totalSubTotal - (subTotalAnterior - subTotalArticle));
   };
-
-  function RenderArticleDetail({ articleUnit, handleTotal }) {
-    const [contador, setContador] = useState(1);
-    const [contadorAnterior, setContadorAnterior] = useState(0);
-    const [subTotalArticle, setSubTotalArticle] = useState(0);
-    const [subTotalAnterior, setSubTotalAnterior] = useState(0);
-
-    useEffect(() => {
-      console.log("subtotal " + subTotalArticle);
-    }, []);
-
-    useEffect(() => {
-      console.log("contador " + contador);
-      // console.log("contador anterior " + contadorAnterior);
-      setSubTotalArticle(contador * articleUnit.price);
-      handleTotal(subTotalArticle, subTotalAnterior);
-    }, [contador]);
-
-    useEffect(() => {
-      setSubTotalAnterior(contadorAnterior * Number(articleUnit.price));
-    }, [contadorAnterior]);
-
-    const incrementarContador = () => {
-      setContadorAnterior(contador);
-      setContador(contador + 1);
-    };
-
-    const decrementarContador = () => {
-      // console.log("subtotal " + subTotalArticle);
-      // console.log("subtotal anterior" + subTotalAnterior);
-      if (contador > 1) {
-        setContadorAnterior(contador);
-        setContador(contador - 1);
-      }
-    };
-
-    return (
-      <>
-        <div className="flex flex-row items-center py-1">
-          <div>
-            <img
-              src={articleUnit.imgUrl}
-              alt=""
-              className="max-w-[130px] object-contain px-5"
-            />
-          </div>
-
-          <div className="grid w-2/4 grid-cols-1">
-            <span className="">{articleUnit.name}</span>
-            <span className="">{articleUnit.supplier}</span>
-            <span className="">{articleUnit.brand}</span>
-          </div>
-
-          <div className="flex w-1/4 flex-row px-1 py-10">
-            <Button
-              className=" bg-quaternary px-2 py-2"
-              onClick={decrementarContador}
-            >
-              -
-            </Button>
-            <div className="px-2 py-1">{contador}</div>
-            <Button
-              className=" bg-quaternary px-2 py-2"
-              onClick={incrementarContador}
-            >
-              +
-            </Button>
-          </div>
-          <div>
-            <span className=""> ${subTotalArticle.toLocaleString()}</span>
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  function ShowOtherPrices({ articleDetails, handleTotal }) {
-    return (
-      <div className="flex w-full max-w-5xl flex-col">
-        {articleDetails.map((articleUnit) => (
-          <div
-            className="mt-6 w-full rounded-md bg-secondary px-2 py-2"
-            key={articleUnit.id}
-          >
-            <RenderArticleDetail
-              articleUnit={articleUnit}
-              handleTotal={handleTotal}
-            />
-          </div>
-        ))}
-      </div>
-    );
-  }
 
   return (
     <div className="grid h-full w-full grid-cols-4 2xl:px-20">
@@ -167,7 +163,7 @@ export default function Article() {
           <h1 className="pt-5 text-xl font-bold">NombreCotizacion</h1>
           <ShowOtherPrices
             articleDetails={articleDetails}
-            handleTotal={handleTotal}
+            handleSubTotal={handleSubTotal}
           />
         </div>
       </section>
