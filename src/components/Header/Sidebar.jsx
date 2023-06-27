@@ -30,19 +30,27 @@ export default function Sidebar() {
         <h2 className="mb-4 text-lg">Sección 1</h2>
         <ul className="space-y-2">
           <li>
-            <Button className=" flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary">
+            <Button
+              className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
+            >
               <CpuChipIcon strokeWidth={2} className="h-6 w-6" /> Cotizaciones
               Artículos
             </Button>
           </li>
           <li>
-            <Button className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary">
+            <Button
+              className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
+              disabled={true}
+            >
               <BriefcaseIcon strokeWidth={2} className="h-6 w-6" /> Cotizaciones
               Proyectos
             </Button>
           </li>
           <li>
-            <Button className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary">
+            <Button
+              className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
+              disabled={true}
+            >
               <UserCircleIcon strokeWidth={2} className="h-6 w-6" /> Editar
               Perfil
             </Button>
@@ -62,7 +70,10 @@ export default function Sidebar() {
         <h2 className=" mb-4 text-lg">Sección 2</h2>
         <ul className="space-y-2">
           <li>
-            <Button className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary">
+            <Button
+              className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
+              disabled={true}
+            >
               <ChartPieIcon strokeWidth={2} className="h-6 w-6" /> Dashboard
             </Button>
           </li>
@@ -85,7 +96,10 @@ export default function Sidebar() {
             </Button>
           </li>
           <li>
-            <Button className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary">
+            <Button
+              className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
+              disabled={true}
+            >
               <BanknotesIcon strokeWidth={2} className="h-6 w-6" /> Cotizaciones
               generales
             </Button>

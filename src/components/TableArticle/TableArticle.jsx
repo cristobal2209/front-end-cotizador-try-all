@@ -2,6 +2,7 @@ import DataTable from "react-data-table-component";
 import React, { useState, Fragment, useEffect } from "react";
 import ArticleActionMenu from "./ArticleActionMenu";
 import ArticleDialog from "./ArticleDialog";
+import ArticleSuppliers from "./ArticleSuppliers";
 
 import { Button, Spinner } from "@material-tailwind/react";
 import {
@@ -38,38 +39,35 @@ export default function TableArticle() {
     setIsLoading(false);
   };
 
-  const handleAddArticle = async (articleObject) => {
+  const addArticle = async (articleObject) => {
     await addDoc(collection(db, "prueba-articulos"), articleObject);
     getArticlesCollection();
   };
 
-  const handleEditArticle = async (newArticleData) => {
+  const editArticle = async (newArticleData) => {
     const articleObject = doc(db, "prueba-articulos", newArticleData.id);
     await updateDoc(articleObject, {
       articleName: newArticleData.articleName,
-      supplier: newArticleData.supplier,
       brand: newArticleData.brand,
       category: newArticleData.category,
       details: newArticleData.details,
-      link: newArticleData.link,
-      price: newArticleData.price,
     });
     getArticlesCollection();
   };
 
-  const handleDeleteArticle = async (articleData) => {
+  //viene del action menu
+  const deleteArticle = async (articleData) => {
     await deleteDoc(doc(db, "prueba-articulos", articleData.id));
     getArticlesCollection();
   };
 
   //para add y edit se ocupa esta unica funcion, debido a que comparten el mismo dialog.
-  //se pueden agregar mas funciones si el action menu necesita.
   const handleSubmitData = (articleObject) => {
     if (action === "edit") {
-      handleEditArticle(articleObject);
+      editArticle(articleObject);
     } else {
       if (action === "add") {
-        handleAddArticle(articleObject);
+        addArticle(articleObject);
       }
     }
   };
@@ -83,6 +81,7 @@ export default function TableArticle() {
     handleOpenArticleDialog(); //se abre el dialog vacio
   };
 
+  //viene del action menu
   const handleArticleEditDialog = (articleData) => {
     setEditData(articleData); //se setean los datos a editar
     setAction("edit");
@@ -96,11 +95,6 @@ export default function TableArticle() {
       sortable: true,
     },
     {
-      name: "Proveedor",
-      selector: (row) => row.supplier,
-      sortable: true,
-    },
-    {
       name: "Marca",
       selector: (row) => row.brand,
       sortable: true,
@@ -111,9 +105,8 @@ export default function TableArticle() {
       sortable: true,
     },
     {
-      name: "Precio",
-      selector: (row) => row.price,
-      sortable: true,
+      name: "Proveedores",
+      cell: (articleData) => <ArticleSuppliers articleData={articleData} />,
     },
     {
       name: "Acción",
@@ -121,7 +114,7 @@ export default function TableArticle() {
         <ArticleActionMenu
           articleData={articleData}
           handleArticleEditDialog={handleArticleEditDialog}
-          handleDeleteArticle={handleDeleteArticle}
+          deleteArticle={deleteArticle}
         />
       ),
       allowOverflow: true,

@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogHeader,
@@ -8,13 +8,10 @@ import {
 } from "@material-tailwind/react";
 
 const initialValues = {
-  supplier: "",
   brand: "",
   category: "",
   details: "",
-  link: "",
   articleName: "",
-  price: "",
 };
 
 export default function ArticleDialog({
@@ -46,7 +43,7 @@ export default function ArticleDialog({
   };
 
   return (
-    <Fragment>
+    <>
       <Dialog onClose={onClose} open={open}>
         {JSON.stringify(editData) === JSON.stringify({}) ? (
           <DialogHeader>Crear un articulo</DialogHeader>
@@ -64,19 +61,7 @@ export default function ArticleDialog({
                     name="articleName"
                     value={formData.articleName}
                     onChange={handleChange}
-                    className="ml-2 border px-2"
-                  />
-                </label>
-              </div>
-              <div>
-                <label>
-                  Proveedor:
-                  <input
-                    type="text"
-                    name="supplier"
-                    value={formData.supplier}
-                    onChange={handleChange}
-                    className="ml-2 border px-2"
+                    className="m-2 border px-2"
                   />
                 </label>
               </div>
@@ -88,7 +73,7 @@ export default function ArticleDialog({
                     name="brand"
                     value={formData.brand}
                     onChange={handleChange}
-                    className="ml-2 border px-2"
+                    className="m-2 border px-2"
                   />
                 </label>
               </div>
@@ -100,7 +85,7 @@ export default function ArticleDialog({
                     name="category"
                     value={formData.category}
                     onChange={handleChange}
-                    className="ml-2 border px-2"
+                    className="m-2 border px-2"
                   />
                 </label>
               </div>
@@ -112,31 +97,7 @@ export default function ArticleDialog({
                     name="details"
                     value={formData.details}
                     onChange={handleChange}
-                    className="ml-2 border px-2"
-                  />
-                </label>
-              </div>
-              <div>
-                <label>
-                  Enlace:
-                  <input
-                    type="text"
-                    name="link"
-                    value={formData.link}
-                    onChange={handleChange}
-                    className="ml-2 border px-2"
-                  />
-                </label>
-              </div>
-              <div>
-                <label>
-                  Precio:
-                  <input
-                    type="text"
-                    name="price"
-                    value={formData.price}
-                    onChange={handleChange}
-                    className="ml-2 border px-2"
+                    className="m-2 border px-2"
                   />
                 </label>
               </div>
@@ -161,6 +122,6 @@ export default function ArticleDialog({
           </Button>
         </DialogFooter>
       </Dialog>
-    </Fragment>
+    </>
   );
 }
