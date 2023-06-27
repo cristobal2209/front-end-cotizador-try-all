@@ -35,46 +35,50 @@ const articleDetails = [
 ];
 
 export default function Article() {
-  function RenderArticleDetail({ articleUnit }) {
+  const [totalSubTotal, setTotalSubTotal] = useState(0);
+
+  const handleTotal = (subTotalArticle, subTotalAnterior) => {
+    // console.log("subtotal " + subTotalArticle);
+    // console.log("subtotal anterior " + subTotalAnterior);
+    subTotalArticle > subTotalAnterior
+      ? setTotalSubTotal(totalSubTotal + (subTotalArticle - subTotalAnterior))
+      : setTotalSubTotal(totalSubTotal - (subTotalAnterior - subTotalArticle));
+  };
+
+  function RenderArticleDetail({ articleUnit, handleTotal }) {
     const [contador, setContador] = useState(1);
+    const [contadorAnterior, setContadorAnterior] = useState(0);
     const [subTotalArticle, setSubTotalArticle] = useState(0);
-    const [additionArticleQuote, setAdditionArticleQuote] = useState(0);
-    const [totalPriceQuote, setTotalPriceQuote] = useState(0);
-    const [totalSubTotal, setTotalSubTotal] = useState(0);
+    const [subTotalAnterior, setSubTotalAnterior] = useState(0);
 
     useEffect(() => {
-      calcularPrecioArticulo();
-      sumaPreciosArticulosCotizacion();
+      console.log("subtotal " + subTotalArticle);
+    }, []);
+
+    useEffect(() => {
+      console.log("contador " + contador);
+      // console.log("contador anterior " + contadorAnterior);
+      setSubTotalArticle(contador * articleUnit.price);
+      handleTotal(subTotalArticle, subTotalAnterior);
     }, [contador]);
 
     useEffect(() => {
-      sumaPreciosArticulosCotizacion();
-    }, [additionArticleQuote]);
-
-
+      setSubTotalAnterior(contadorAnterior * Number(articleUnit.price));
+    }, [contadorAnterior]);
 
     const incrementarContador = () => {
+      setContadorAnterior(contador);
       setContador(contador + 1);
     };
 
     const decrementarContador = () => {
-      if (contador > 0) {
+      // console.log("subtotal " + subTotalArticle);
+      // console.log("subtotal anterior" + subTotalAnterior);
+      if (contador > 1) {
+        setContadorAnterior(contador);
         setContador(contador - 1);
       }
     };
-
-    const calcularPrecioArticulo = () => {
-      setSubTotalArticle(contador * Number(articleUnit.price));
-    };
-
-  // articleDetails.length para saber cuantos elementos hay dentro 
-  const sumaPreciosArticulosCotizacion = () => {
-    const totalPrice = articleDetails.reduce(
-      (accumulator, currentArticle) => accumulator + currentArticle.subTotalArticle,
-      0
-    );
-    setTotalSubTotal(totalPrice);
-  };
 
     return (
       <>
@@ -116,7 +120,7 @@ export default function Article() {
     );
   }
 
-  function ShowOtherPrices({ articleDetails }) {
+  function ShowOtherPrices({ articleDetails, handleTotal }) {
     return (
       <div className="flex w-full max-w-5xl flex-col">
         {articleDetails.map((articleUnit) => (
@@ -124,13 +128,15 @@ export default function Article() {
             className="mt-6 w-full rounded-md bg-secondary px-2 py-2"
             key={articleUnit.id}
           >
-            <RenderArticleDetail articleUnit={articleUnit} />
+            <RenderArticleDetail
+              articleUnit={articleUnit}
+              handleTotal={handleTotal}
+            />
           </div>
         ))}
       </div>
     );
   }
-
 
   return (
     <div className="grid h-full w-full grid-cols-4 2xl:px-20">
@@ -159,7 +165,10 @@ export default function Article() {
         {/* Detalles de la cotizacion*/}
         <div className="  px-10 py-2">
           <h1 className="pt-5 text-xl font-bold">NombreCotizacion</h1>
-          <ShowOtherPrices articleDetails={articleDetails} />
+          <ShowOtherPrices
+            articleDetails={articleDetails}
+            handleTotal={handleTotal}
+          />
         </div>
       </section>
 
@@ -170,10 +179,8 @@ export default function Article() {
             <h1 className="text-lg font-bold text-white">
               -sub total suma articulos cotizados-
             </h1>
-            <div>
-              <RenderArticleDetail totalSubTotal={totalSubTotal} />
-              {/* <span> ${totalSubTotal.toLocaleString()} </span> */}
-            </div>
+            <div className="text-lg font-bold text-white">{totalSubTotal}</div>
+            {/* <div><span> ${totalSubTotal.toLocaleString()} </span></div> */}
           </CardBody>
           <CardFooter>
             <div>
