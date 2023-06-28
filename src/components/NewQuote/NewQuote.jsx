@@ -34,22 +34,16 @@ const articleDetails = [
   },
 ];
 
-function RenderArticleDetail({ articleUnit, handleSubTotal }) {
+function RenderArticleDetail({ articleUnit, handleSubTotal}) {
   const [contador, setContador] = useState(1);
   const [contadorAnterior, setContadorAnterior] = useState(0);
   const [subTotalArticle, setSubTotalArticle] = useState(0);
-  const [subTotalAnterior, setSubTotalAnterior] = useState(0);
 
+  
   useEffect(() => {
-    // console.log("contador anterior " + contadorAnterior);
     setSubTotalArticle(contador * articleUnit.price);
-    handleSubTotal(subTotalArticle, subTotalAnterior);
-    alert()
+    handleSubTotal(articleUnit.price, contador-contadorAnterior);
   }, [contador]);
-
-  useEffect(() => {
-    setSubTotalAnterior(contadorAnterior * Number(articleUnit.price));
-  }, [contadorAnterior]);
 
   const incrementarContador = () => {
     setContadorAnterior(contador);
@@ -57,8 +51,6 @@ function RenderArticleDetail({ articleUnit, handleSubTotal }) {
   };
 
   const decrementarContador = () => {
-    // console.log("subtotal " + subTotalArticle);
-    // console.log("subtotal anterior" + subTotalAnterior);
     if (contador > 1) {
       setContadorAnterior(contador);
       setContador(contador - 1);
@@ -106,7 +98,6 @@ function RenderArticleDetail({ articleUnit, handleSubTotal }) {
 }
 
 function ShowOtherArticles({ articleDetails, handleSubTotal }) {
-
   return (
     <div className="flex w-full max-w-5xl flex-col">
       {articleDetails.map((articleUnit) => (
@@ -130,13 +121,19 @@ export default function Article() {
 // y esto provoca que se comporte como un valor positivo al realizar el primer - y ya al segundo lo reconoce como un valor negativo
 // inicializar estas al precio del articulo no es posible, no reconoce articleUnit.price ni articleDetails.price.
 // y cuando se renderiza el componente de handleSubTotal al editar el codigo, este toma el valor ultimo de articleDetails.price
-  const handleSubTotal = (subTotalArticle, subTotalAnterior) => {
-    // console.log("subtotal " + subTotalArticle);
-    // console.log("subtotal anterior " + subTotalAnterior);
-    subTotalArticle > subTotalAnterior
-      ? setTotalSubTotal(totalSubTotal + (subTotalArticle - subTotalAnterior))
-      : setTotalSubTotal(totalSubTotal - (subTotalAnterior - subTotalArticle));
+  const handleSubTotal = (itemPrice, contChanged) => {
+    console.log('====================================');
+    console.log(itemPrice+" "+ contChanged)
+    console.log('====================================');
+    setTotalSubTotal((prevTotalSubTotal) => prevTotalSubTotal + itemPrice * contChanged);
   };
+  useEffect(() => {
+    setTotalSubTotal(prevTotalSubTotal => {
+      const newTotalSubTotal = prevTotalSubTotal / 2;
+      setTotalSubTotal(prevTotalSubTotal)
+      return 0;
+    });
+  }, []);
 
   return (
     <div className="grid h-full w-full grid-cols-4 2xl:px-20">
