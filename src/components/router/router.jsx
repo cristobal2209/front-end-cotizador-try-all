@@ -13,7 +13,7 @@ export default function Router() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<MainLayout />}>
+        <Route path="/home" element={<MainLayout />}>
           <Route path="" element={<Home />} />
           <Route path="manage" element={<TableArticle />} />
           <Route path="manage/articles" element={<TableArticle />} />
@@ -23,7 +23,7 @@ export default function Router() {
           <Route path="newquote" element={<NewQuote />} />
           <Route path="search" element={<SearchResults />} />
         </Route>
-        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Login />} />
       </Routes>
     </BrowserRouter>
   );

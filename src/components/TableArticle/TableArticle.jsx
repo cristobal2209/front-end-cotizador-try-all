@@ -1,8 +1,8 @@
 import DataTable from "react-data-table-component";
 import React, { useState, Fragment, useEffect } from "react";
 import ArticleActionMenu from "./ArticleActionMenu";
-import ArticleDialog from "./ArticleDialog";
-import ArticleSuppliers from "./ArticleSuppliers";
+import ArticleDetailDialog from "./ArticleDetailDialog";
+import ArticleSuppliersDialog from "./ArticleSuppliersDialog";
 
 import { Button, Spinner } from "@material-tailwind/react";
 import {
@@ -106,7 +106,11 @@ export default function TableArticle() {
     },
     {
       name: "Proveedores",
-      cell: (articleData) => <ArticleSuppliers articleData={articleData} />,
+      cell: (articleData) => (
+        <ArticleSuppliersDialog
+          articleData={articleData}
+        />
+      ),
     },
     {
       name: "Acción",
@@ -134,10 +138,10 @@ export default function TableArticle() {
           </Button>
         </div>
         {openArticleDialog && (
-          <ArticleDialog
+          <ArticleDetailDialog
             editData={editData}
             open={openArticleDialog}
-            onClose={handleCloseArticleDialog}
+            close={handleCloseArticleDialog}
             handleSubmitData={handleSubmitData}
           />
         )}

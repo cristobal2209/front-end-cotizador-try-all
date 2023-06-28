@@ -14,10 +14,10 @@ const initialValues = {
   articleName: "",
 };
 
-export default function ArticleDialog({
+export default function ArticleDetailDialog({
   editData,
   open,
-  onClose,
+  close,
   handleSubmitData,
 }) {
   const [formData, setFormData] = useState(initialValues);
@@ -27,7 +27,7 @@ export default function ArticleDialog({
   }, [editData]);
 
   const handleCancel = () => {
-    onClose(false);
+    close();
   };
 
   //mientras se edita el input, va actualizando el el valor del dato
@@ -39,12 +39,12 @@ export default function ArticleDialog({
   const handleSubmit = (event) => {
     event.preventDefault();
     handleSubmitData(formData);
-    onClose(false);
+    close();
   };
 
   return (
     <>
-      <Dialog onClose={onClose} open={open}>
+      <Dialog open={open}>
         {JSON.stringify(editData) === JSON.stringify({}) ? (
           <DialogHeader>Crear un articulo</DialogHeader>
         ) : (
