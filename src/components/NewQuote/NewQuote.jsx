@@ -44,6 +44,7 @@ function RenderArticleDetail({ articleUnit, handleSubTotal }) {
     // console.log("contador anterior " + contadorAnterior);
     setSubTotalArticle(contador * articleUnit.price);
     handleSubTotal(subTotalArticle, subTotalAnterior);
+    alert()
   }, [contador]);
 
   useEffect(() => {
@@ -104,7 +105,7 @@ function RenderArticleDetail({ articleUnit, handleSubTotal }) {
   );
 }
 
-function ShowOtherPrices({ articleDetails, handleSubTotal }) {
+function ShowOtherArticles({ articleDetails, handleSubTotal }) {
 
   return (
     <div className="flex w-full max-w-5xl flex-col">
@@ -125,7 +126,10 @@ function ShowOtherPrices({ articleDetails, handleSubTotal }) {
 
 export default function Article() {
   const [totalSubTotal, setTotalSubTotal] = useState(0);
-
+// el problema no es la logica, es la iniciacion de subTotalArticle pues si aumenta en 1, pero subTotalAnterior parte en 0
+// y esto provoca que se comporte como un valor positivo al realizar el primer - y ya al segundo lo reconoce como un valor negativo
+// inicializar estas al precio del articulo no es posible, no reconoce articleUnit.price ni articleDetails.price.
+// y cuando se renderiza el componente de handleSubTotal al editar el codigo, este toma el valor ultimo de articleDetails.price
   const handleSubTotal = (subTotalArticle, subTotalAnterior) => {
     // console.log("subtotal " + subTotalArticle);
     // console.log("subtotal anterior " + subTotalAnterior);
@@ -161,7 +165,7 @@ export default function Article() {
         {/* Detalles de la cotizacion*/}
         <div className="  px-10 py-2">
           <h1 className="pt-5 text-xl font-bold">NombreCotizacion</h1>
-          <ShowOtherPrices
+          <ShowOtherArticles
             articleDetails={articleDetails}
             handleSubTotal={handleSubTotal}
           />
@@ -173,9 +177,10 @@ export default function Article() {
         <Card className="bg-secondary">
           <CardBody>
             <h1 className="text-lg font-bold text-white">
-              -sub total suma articulos cotizados-
+              Sub total suma articulos cotizados
             </h1>
-            <div className="text-lg font-bold text-white">{totalSubTotal}</div>
+            <br></br>
+            <div className="text-lg font-bold text-white">${totalSubTotal.toLocaleString()}</div>
             {/* <div><span> ${totalSubTotal.toLocaleString()} </span></div> */}
           </CardBody>
           <CardFooter>
