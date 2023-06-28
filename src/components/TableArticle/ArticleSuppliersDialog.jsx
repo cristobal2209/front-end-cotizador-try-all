@@ -19,6 +19,8 @@ import {
   Input,
 } from "@material-tailwind/react";
 
+import { PencilIcon, CheckIcon } from "@heroicons/react/24/outline";
+
 import { db } from "../../firebaseConfig";
 
 const initialValues = {
@@ -51,35 +53,56 @@ const RenderSingleArticleSupplier = ({ supplier }) => {
         label="Nombre"
         name="id"
         value={formData.id}
-        readOnly={readOnly}
+        labelProps={{
+          className: "hidden",
+        }}
+        disabled={readOnly}
         onChange={handleChange}
-        containerProps={{ className: "px-2 my-2" }}
+        containerProps={{
+          className: `px-2 py-2 ${readOnly ? "" : "bg-white"}`,
+        }}
       />
       <Input
         variant="standard"
         label="Precio"
-        name="precio"
-        value={formData.precio}
-        readOnly={readOnly}
+        name="price"
+        value={formData.price}
+        labelProps={{
+          className: "hidden",
+        }}
+        disabled={readOnly}
         onChange={handleChange}
-        containerProps={{ className: "px-2 my-2" }}
+        containerProps={{
+          className: `px-2 py-2 ${readOnly ? "" : "bg-white"}`,
+        }}
       />
       <Input
         variant="standard"
         label="Link"
         name="link"
         value={formData.link}
-        readOnly={readOnly}
+        labelProps={{
+          className: "hidden",
+        }}
+        disabled={readOnly}
         onChange={handleChange}
-        containerProps={{ className: "px-2 my-2" }}
+        containerProps={{
+          className: `px-2 py-2 ${readOnly ? "" : "bg-white"}`,
+        }}
       />
       {readOnly ? (
-        <button className="my-3 bg-secondary px-3 text-white" onClick={handleButtonClick}>
-          Editar
+        <button
+          className="my-3 ml-2 rounded-md bg-secondary p-2 text-white"
+          onClick={handleButtonClick}
+        >
+          <PencilIcon strokeWidth={2} className="h-5 w-5" />
         </button>
       ) : (
-        <button className="my-3 bg-primary px-3 text-white" onClick={handleButtonClick}>
-          Aceptar
+        <button
+          className="my-3 ml-2 rounded-md bg-primary p-2 text-white"
+          onClick={handleButtonClick}
+        >
+          <CheckIcon strokeWidth={2} className="h-5 w-5" />
         </button>
       )}
     </>
@@ -111,7 +134,7 @@ export default function ArticleSuppliersDialog({ articleData }) {
   };
 
   const renderArticleSuppliers = supplierData.map((supplier) => (
-    <div className="flex flex-row" key={supplier.id}>
+    <div className="flex flex-row items-center" key={supplier.id}>
       <RenderSingleArticleSupplier supplier={supplier} />
     </div>
   ));
@@ -130,8 +153,15 @@ export default function ArticleSuppliersDialog({ articleData }) {
             <DialogHeader>
               Proveedores de {articleData.articleName}
             </DialogHeader>
-            <DialogBody divider>
-              <div className="flex flex-col">{renderArticleSuppliers}</div>
+            <DialogBody divider className="bg-[#ECEFF1]">
+              <div className="flex flex-col">
+                <div className="flex flex-row justify-between px-2">
+                  <div className="grow">Nombre proveedor</div>
+                  <div className="grow">Precio</div>
+                  <div className="grow">Link</div>
+                </div>
+                {renderArticleSuppliers}
+              </div>
             </DialogBody>
             <DialogFooter className="space-x-2">
               <Button variant="outlined" color="red" onClick={handleOpen}>

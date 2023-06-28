@@ -27,7 +27,7 @@ export default function ArticleActionMenu({
       {isOpenActionMenu && (
         <div className="z-9 absolute rounded-md border border-gray-300 bg-white shadow-lg">
           <button
-            className="relative px-4 py-2 text-sm text-gray-700 hover:rounded-l-md hover:bg-blue-500 hover:text-white "
+            className="relative px-4 py-2 text-sm text-gray-700 hover:rounded-l-md hover:bg-secondary hover:text-white "
             onClick={() => handleArticleEditDialog(articleData)}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
@@ -35,7 +35,7 @@ export default function ArticleActionMenu({
             Editar
           </button>
           <button
-            className="relative px-4 py-2 text-sm text-gray-700 hover:rounded-r-md hover:bg-blue-500 hover:text-white"
+            className="relative px-4 py-2 text-sm text-gray-700 hover:rounded-r-md hover:bg-secondary hover:text-white"
             onClick={() => deleteArticle(articleData)}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
