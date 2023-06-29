@@ -1,36 +1,30 @@
-
-import { auth } from "../../firebaseConfig"
+import { auth } from "../../firebaseConfig";
 import { signInWithEmailAndPassword } from "@firebase/auth";
-import React,{ Fragment, useState } from "react";
-import {
-  Button,
-  Dialog,
-  DialogHeader,
-  DialogBody,
-  DialogFooter,
-} from "@material-tailwind/react";
-
+import React, { useState } from "react";
+import { useNavigate, Navigate } from "react-router-dom";
 
 export default function login() {
-
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(!open);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   function signIn(e) {
+    let flag = 1;
     e.preventDefault();
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        console.log(userCredential);
-      }).catch((error) => {
+        console.log(userCredential)
+        navigate("/")
+      })
+      .catch((error) => {
         console.log(error);
+        navigate("/login")
       });
   }
 
   return (
     <main className=" w-full  bg-bgDark">
-      <div className="mx-auto flex flex-col items-center justify-center px-6 py-8 md:h-screen lg:py-0 h-full">
+      <div className="mx-auto flex h-full flex-col items-center justify-center px-6 py-8 md:h-screen lg:py-0">
         <a
           href="https://www.tryall.cl/"
           className="mb-6 flex items-center text-2xl font-semibold text-quaternary dark:text-white"
@@ -44,7 +38,7 @@ export default function login() {
         </a>
         <div className="w-full sm:max-w-md md:mt-0 xl:p-0">
           <div className="space-y-4 p-6 sm:p-8 md:space-y-6">
-            <form onSubmit={signIn} className="space-y-4 md:space-y-6" action="#">
+            <form className="space-y-4 md:space-y-6">
               <div>
                 <input
                   type="email"
@@ -72,21 +66,22 @@ export default function login() {
               <div className="flex items-center justify-between">
                 <div className=" mx-auto">
                   <button
-                    type="Ingresar"
+                    onClick={signIn}
+                    type="submit"
                     className="hover:bg-primary-700 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 w-full rounded-lg bg-secondary px-5 py-2.5 text-center text-sm font-medium text-white focus:outline-none focus:ring-4"
                   >
                     Ingresar
                   </button>
                 </div>
               </div>
-                
             </form>
-            <p class="text-sm text-center font-light text-gray-500 dark:text-gray-400">
-            ¿No tienes cuenta? Contacta con un administrador de TryAll contacto@tryall.cl
+            <p className="text-center text-sm font-light text-gray-500 dark:text-gray-400">
+              ¿No tienes cuenta? Contacta con un administrador de TryAll
+              contacto@tryall.cl
             </p>
           </div>
         </div>
       </div>
     </main>
   );
-};
+}
