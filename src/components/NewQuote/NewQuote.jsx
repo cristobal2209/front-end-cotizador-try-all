@@ -61,6 +61,7 @@ function RenderArticleDetail({ articleUnit, handleSubTotal}) {
     <>
       <div className="flex flex-row items-center py-1">
         <div>
+          agregar link a imagen de articulo
           <img
             src={articleUnit.imgUrl}
             alt=""
@@ -92,6 +93,7 @@ function RenderArticleDetail({ articleUnit, handleSubTotal}) {
         <div>
           <span className=""> ${subTotalArticle.toLocaleString()}</span>
         </div>
+        <div> agregar eliminar articulo</div>
       </div>
     </>
   );
