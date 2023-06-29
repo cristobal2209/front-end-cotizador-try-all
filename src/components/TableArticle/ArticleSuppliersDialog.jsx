@@ -97,7 +97,11 @@ const RenderNewSupplier = ({
   );
 };
 
-const RenderSingleArticleSupplier = ({ supplier, handleSupplierUpdate }) => {
+const RenderSingleArticleSupplier = ({
+  supplier,
+  handleSupplierUpdate,
+  handleDeleteSupplier,
+}) => {
   const [readOnly, setReadOnly] = useState(true);
   const [formData, setFormData] = useState(initialValues);
 
@@ -118,6 +122,11 @@ const RenderSingleArticleSupplier = ({ supplier, handleSupplierUpdate }) => {
   const handleButtonClick = () => {
     setReadOnly(!readOnly);
   };
+
+  const handleDelete = () => {
+    handleDeleteSupplier(supplier.id);
+  };
+
   return (
     <>
       <Input
@@ -138,7 +147,7 @@ const RenderSingleArticleSupplier = ({ supplier, handleSupplierUpdate }) => {
         variant="standard"
         label="Precio"
         name="price"
-        value={"$" + Number(formData.price).toLocaleString()}
+        value={formData.price}
         labelProps={{
           className: "hidden",
         }}
@@ -172,7 +181,7 @@ const RenderSingleArticleSupplier = ({ supplier, handleSupplierUpdate }) => {
           </button>
           <button
             className="my-3 ml-2 rounded-md bg-red-700 p-2 text-white"
-            // onClick={}
+            onClick={handleDelete}
           >
             <TrashIcon strokeWidth={2} className="h-5 w-5" />
           </button>
@@ -246,6 +255,13 @@ export default function ArticleSuppliersDialog({ articleData }) {
     getSuppliersCollection();
   };
 
+  const handleDeleteSupplier = async (supplierId) => {
+    await deleteDoc(
+      doc(db, "prueba-articulos", articleData.id, "suppliers", supplierId)
+    );
+    getSuppliersCollection();
+  };
+
   const handleOpen = () => {
     setOpen(!open);
   };
@@ -261,6 +277,7 @@ export default function ArticleSuppliersDialog({ articleData }) {
         key={supplierRender}
         supplier={supplier}
         handleSupplierUpdate={handleSupplierUpdate}
+        handleDeleteSupplier={handleDeleteSupplier}
       />
     </div>
   ));
