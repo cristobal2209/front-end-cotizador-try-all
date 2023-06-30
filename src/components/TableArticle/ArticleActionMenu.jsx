@@ -1,7 +1,7 @@
-import React, { useState, Fragment, useEffect } from "react";
+import { useState, Fragment } from "react";
 
 export default function ArticleActionMenu({
-  articleData, //entra desde la tabla
+  articleData,
   handleArticleEditDialog,
   deleteArticle,
 }) {

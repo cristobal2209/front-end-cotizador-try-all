@@ -1,5 +1,5 @@
 import DataTable from "react-data-table-component";
-import React, { useState, Fragment, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import UserDialog from "./UserDialog";
 import UserActionMenu from "./UserActionMenu";
 import { Button, Spinner } from "@material-tailwind/react";

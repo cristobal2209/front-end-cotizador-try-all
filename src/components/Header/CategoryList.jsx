@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
 export default function CategoryList() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isMobileCategoriesOpen, setIsMobileCategoriesOpen] =
-    React.useState(false);
+  const [isMobileCategoriesOpen, setIsMobileCategoriesOpen] = useState(false);
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
@@ -41,15 +40,16 @@ export default function CategoryList() {
   return (
     <div className="relative">
       <button
-        className="flex items-center rounded-md bg-transparent px-4 mx-2 py-2 font-semibold text-white hover:bg-primaryHover hover:shadow-md"
+        className="mx-2 flex items-center rounded-md bg-transparent px-4 py-2 font-semibold text-white hover:bg-primaryHover hover:shadow-md"
         onClick={handleToggle}
       >
         Categorías
         <div className="pl-1">
           <ChevronDownIcon
             strokeWidth={2}
-            className={`block h-3 w-3 transition-transform ${isOpen || isMobileCategoriesOpen ? "rotate-180" : ""
-              }`}
+            className={`block h-3 w-3 transition-transform ${
+              isOpen || isMobileCategoriesOpen ? "rotate-180" : ""
+            }`}
           />
         </div>
       </button>

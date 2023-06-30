@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { Button, Input } from "@material-tailwind/react";
 
-import { CheckIcon, PencilIcon } from "@heroicons/react/24/outline";
+import { CheckIcon } from "@heroicons/react/24/outline";
 
 export default function QuoteName() {
   const [quoteName, setQuoteName] = useState("NuevaCotización");
@@ -32,8 +32,8 @@ export default function QuoteName() {
           />
         ) : (
           <div className="">
-            <span className=" text-white mx-2">Cotizacion actual: </span>
-            <span className=" text-white mx-2">{quoteName}</span>
+            <span className=" mx-2 text-white">Cotizacion actual: </span>
+            <span className=" mx-2 text-white">{quoteName}</span>
           </div>
         )}
         <div className="px-2">

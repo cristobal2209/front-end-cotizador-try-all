@@ -1,5 +1,5 @@
 import DataTable from "react-data-table-component";
-import React, { useState, Fragment, useEffect } from "react";
+import { useState, useEffect } from "react";
 import ArticleActionMenu from "./ArticleActionMenu";
 import ArticleDetailDialog from "./ArticleDetailDialog";
 import ArticleSuppliersDialog from "./ArticleSuppliersDialog";
@@ -107,9 +107,7 @@ export default function TableArticle() {
     {
       name: "Proveedores",
       cell: (articleData) => (
-        <ArticleSuppliersDialog
-          articleData={articleData}
-        />
+        <ArticleSuppliersDialog articleData={articleData} />
       ),
     },
     {

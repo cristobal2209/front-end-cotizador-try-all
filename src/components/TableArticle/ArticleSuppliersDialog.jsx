@@ -3,7 +3,6 @@ import { useEffect, useState, Fragment } from "react";
 import {
   doc,
   deleteDoc,
-  addDoc,
   collection,
   updateDoc,
   getDocs,
@@ -16,7 +15,6 @@ import {
   DialogHeader,
   DialogBody,
   DialogFooter,
-  Typography,
   Input,
 } from "@material-tailwind/react";
 

@@ -1,9 +1,4 @@
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  Typography,
-} from "@material-tailwind/react";
+import { Card, CardHeader } from "@material-tailwind/react";
 
 const enterprises = [
   {
@@ -44,32 +39,33 @@ const enterprises = [
   },
 ];
 
-export default function Home() {
-  function GridEnterprises({ enterprises }) {
-    return (
-      <div className="mx-auto grid max-w-6xl place-items-center gap-5 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {enterprises.map((enterprise) => (
-          <a
-            href={enterprise.link}
-            className="h-full w-60 text-center shadow-sm "
-            key={enterprise.id}
-          >
-            <Card className="h-full w-full">
-              <CardHeader floated={false} className="mt-0 h-32 py-1">
-                <img
-                  src={enterprise.imgUrl}
-                  alt=""
-                  className="h-28 w-64 object-contain"
-                />
-              </CardHeader>
-            </Card>
-          </a>
-        ))}
-      </div>
-    );
-  }
+function GridEnterprises({ enterprises }) {
   return (
-    <div className="flex h-full flex-col justify-between">
+    <div className="mx-auto grid max-w-6xl place-items-center gap-5 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {enterprises.map((enterprise) => (
+        <a
+          href={enterprise.link}
+          className="h-full w-60 text-center shadow-sm "
+          key={enterprise.id}
+        >
+          <Card className="h-full w-full">
+            <CardHeader floated={false} className="mt-0 h-32 py-1">
+              <img
+                src={enterprise.imgUrl}
+                alt=""
+                className="h-28 w-64 object-contain"
+              />
+            </CardHeader>
+          </Card>
+        </a>
+      ))}
+    </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <div className="flex h-full max-w-7xl flex-col justify-between">
       <section className="w-full pt-20">
         <div className="p-3 text-center">
           <h1 className="text-3xl">

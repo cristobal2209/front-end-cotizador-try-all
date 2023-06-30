@@ -13,7 +13,12 @@ const initialValues = {
   privileges: "",
 };
 
-export default function UserDialog({ editData, open, onClose, handleSubmitData }) {
+export default function UserDialog({
+  editData,
+  open,
+  onClose,
+  handleSubmitData,
+}) {
   const [formData, setFormData] = useState(initialValues);
 
   useEffect(() => {
