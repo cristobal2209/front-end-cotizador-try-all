@@ -1,12 +1,14 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { Button, Input } from "@material-tailwind/react";
 
-import { CheckIcon } from "@heroicons/react/24/outline";
+import { ShoppingCartIcon, CheckIcon } from "@heroicons/react/24/outline";
 
 export default function QuoteName() {
   const [quoteName, setQuoteName] = useState("NuevaCotización");
   const [isEditing, setIsEditing] = useState(false);
+  const navigate = useNavigate();
 
   const handleNameChange = (e) => {
     setQuoteName(e.target.value);
@@ -16,6 +18,10 @@ export default function QuoteName() {
   const handleSaveName = () => {
     // Aquí puedes realizar las acciones necesarias para guardar el nuevo nombre de cotización
     setIsEditing(false);
+  };
+
+  const handleClickShoppingCart = () => {
+    navigate("/home/newquote");
   };
 
   return (
@@ -32,8 +38,7 @@ export default function QuoteName() {
           />
         ) : (
           <div className="">
-            <span className=" mx-2 text-white">Cotizacion actual: </span>
-            <span className=" mx-2 text-white">{quoteName}</span>
+            <span className=" mx-2 text-white">Cotización actual: {quoteName}</span>
           </div>
         )}
         <div className="px-2">
@@ -43,7 +48,7 @@ export default function QuoteName() {
               className=" rounded bg-quaternary shadow-none hover:bg-quaternaryHover hover:shadow-none"
               onClick={handleSaveName}
             >
-              <CheckIcon className="h-full w-3" />
+              <CheckIcon className="h-4 w-4" />
             </Button>
           ) : (
             <Button
@@ -52,9 +57,17 @@ export default function QuoteName() {
               onClick={() => setIsEditing(true)}
             >
               Cambiar nombre
-              {/* <PencilIcon className="h-full w-3" /> */}
             </Button>
           )}
+        </div>
+        <div>
+          <Button
+            size="sm"
+            className=" rounded bg-quaternary shadow-none hover:bg-quaternaryHover hover:shadow-none"
+            onClick={(event) => handleClickShoppingCart()}
+          >
+            <ShoppingCartIcon className="h-4 w-4" />
+          </Button>
         </div>
       </div>
     </>

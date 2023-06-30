@@ -14,6 +14,7 @@ import {
   Bars3Icon,
   XMarkIcon,
   MagnifyingGlassIcon,
+
 } from "@heroicons/react/24/outline";
 
 export default function Header() {
