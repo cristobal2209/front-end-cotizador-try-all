@@ -65,7 +65,7 @@ function GridEnterprises({ enterprises }) {
 
 export default function Home() {
   return (
-    <div className="flex h-full max-w-7xl flex-col justify-between">
+    <div className="flex h-full max-w-7xl flex-col justify-between mx-auto">
       <section className="w-full pt-20">
         <div className="p-3 text-center">
           <h1 className="text-3xl">
