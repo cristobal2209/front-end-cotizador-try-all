@@ -1,41 +1,43 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   Card,
-  CardHeader,
   CardBody,
   CardFooter,
-  Typography,
   Button,
   IconButton,
   Spinner,
 } from "@material-tailwind/react";
 import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
-import { doc, collection, getDocs } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 
-function GridSearchResults({ articleDataCollection }) {
+function GridSearchResults({ articleResultsCollecion }) {
+  const navigate = useNavigate();
+
+  const handleClick = (articleDataId) => {
+    navigate(`/home/articles/${articleDataId}`);
+  };
+
   return (
     <div className="mx-auto grid max-w-6xl place-items-center gap-5 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {articleDataCollection.map((articleData) => (
-        <a
-          href={"https://www.google.com/"}
-          className="h-full w-56 text-center shadow-md"
-          key={articleData.id}
+      {articleResultsCollecion.map((articleResult) => (
+        <Card
+          className="h-full w-56 cursor-pointer text-center shadow-md"
+          key={articleResult.id}
+          onClick={(event) => handleClick(articleResult.id)}
         >
-          <Card className="h-full w-full ">
-            <CardBody className="h-32">
-              <img
-                src={articleData.imgUrl}
-                alt=""
-                className="h-28 w-64 object-contain"
-              />
-            </CardBody>
-            <CardFooter>
-              <p>{articleData.articleName}</p>
-            </CardFooter>
-          </Card>
-        </a>
+          <CardBody className="h-32">
+            <img
+              src={articleResult.imgUrl}
+              alt=""
+              className="h-28 w-64 object-contain"
+            />
+          </CardBody>
+          <CardFooter>
+            <p>{articleResult.articleName}</p>
+          </CardFooter>
+        </Card>
       ))}
     </div>
   );
@@ -106,8 +108,7 @@ function RenderFilters() {
 export default function SearchResults() {
   const [active, setActive] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
-  const [articleDataCollection, setArticleSearchData] = useState([]);
-  const [renderSearch, setRenderSearch] = useState(1);
+  const [articleResultsCollecion, setArticleResultsCollection] = useState([]);
   const { articleSearch } = useParams();
 
   useEffect(() => {
@@ -121,8 +122,7 @@ export default function SearchResults() {
       id: doc.id,
       ...doc.data(),
     }));
-    setArticleSearchData(newArticleSearch);
-    setRenderSearch((prevTableRender) => prevTableRender + 1); //se renderiza nuevamente la tabla
+    setArticleResultsCollection(newArticleSearch);
     setIsLoading(false);
   };
 
@@ -145,7 +145,7 @@ export default function SearchResults() {
   };
 
   return (
-    <div className="px-10">
+    <div className="mx-auto max-w-7xl px-5">
       <div className="flex flex-row">
         <RenderFilters />
         <section className="grow">
@@ -155,8 +155,7 @@ export default function SearchResults() {
               <Spinner className="mx-auto mt-20 h-12 w-12" />
             ) : (
               <GridSearchResults
-                articleDataCollection={articleDataCollection}
-                key={renderSearch}
+                articleResultsCollecion={articleResultsCollecion}
               />
             )}
           </div>
