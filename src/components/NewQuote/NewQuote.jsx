@@ -5,33 +5,30 @@ import { TrashIcon } from "@heroicons/react/24/outline";
 const articleDetails = [
   {
     id: 1,
-    name: "Raspberry Pi Pico",
-    supplier: "Altronics",
-    price: "16490",
-    brand: "Raspberry",
-    link: "https://altronics.cl/raspberry-pi-pico",
+    name: "Teclado Logitech K600",
+    supplier: "SPdigital",
+    price: "28303",
+    brand: "Logitech",
     imgUrl:
-      "https://altronics.cl/image/image/catalog/productos/electronica/tarjetas/raspberry-pi-pico/raspberry-pi-pico-1-500x500.jpg",
+      "https://media.spdigital.cl/thumbnails/products/yc73yhu0_476525b7_thumbnail_512.jpg",
   },
   {
     id: 2,
-    name: "Taladro Bauker 500w",
-    supplier: "Sodimac",
-    price: "66640",
-    brand: "Bauker",
-    link: "https://sodimac.falabella.com/sodimac-cl/product/110065245/Taladro-percutor-inalambrico-10-mm-12V-incluye-bateria./110065248?exp=sodimac",
+    name: "Datacom Teclado Básico - Blanco",
+    supplier: "falabella",
+    price: "4990",
+    brand: "Datacom",
     imgUrl:
-      "https://sodimac.scene7.com/is/image/SodimacCL/596900X_00?wid=1500&hei=1500&qlt=70",
+      "https://falabella.scene7.com/is/image/Falabella/gsc_120883596_2825949_1?wid=800&hei=800&qlt=70",
   },
   {
     id: 3,
-    name: "Raspberry Pi 2 model B v1.2",
-    supplier: "Newark",
-    price: "27984",
-    brand: "Raspberry",
-    link: "https://www.newark.com/raspberry-pi/rpi2-modb-v1-2/sbc-raspberry-pi-2-model-b-v1/dp/54AJ2909",
+    name: "Teclado Mecánico ASUS ROG Falchion",
+    supplier: "SPdigital",
+    price: "171889",
+    brand: "ASUS",
     imgUrl:
-      "https://www.newark.com/productimages/standard/en_GB/2612474-40.jpg",
+      "https://media.spdigital.cl/thumbnails/products/19w8fx64_4c66bb88_thumbnail_512.jpg",
   },
 ];
 
