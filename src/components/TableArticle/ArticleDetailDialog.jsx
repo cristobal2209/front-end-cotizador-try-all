@@ -12,6 +12,7 @@ const initialValues = {
   category: "",
   details: "",
   articleName: "",
+  imgUrl: "",
 };
 
 export default function ArticleDetailDialog({
@@ -96,6 +97,18 @@ export default function ArticleDetailDialog({
                     type="text"
                     name="details"
                     value={formData.details}
+                    onChange={handleChange}
+                    className="m-2 border px-2"
+                  />
+                </label>
+              </div>
+              <div>
+                <label>
+                  Imagen:
+                  <input
+                    type="text"
+                    name="imgUrl"
+                    value={formData.imgUrl}
                     onChange={handleChange}
                     className="m-2 border px-2"
                   />

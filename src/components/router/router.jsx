@@ -21,7 +21,7 @@ export default function Router() {
           <Route path="manage/users" element={<TableUser />} />
           <Route path="articles/:articleId" element={<Article />} />
           <Route path="newquote" element={<NewQuote />} />
-          <Route path="search" element={<SearchResults />} />
+          <Route path="search/:articleSearch" element={<SearchResults />} />
         </Route>
         <Route path="/" element={<Login />} />
       </Routes>

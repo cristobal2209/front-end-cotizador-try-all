@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import CategoryList from "./CategoryList";
 import Sidebar from "./Sidebar";
 import QuoteName from "./QuoteName";
+import { useNavigate } from "react-router";
 import {
   Navbar,
   Collapse,
@@ -16,17 +17,25 @@ import {
 } from "@heroicons/react/24/outline";
 
 export default function Header() {
-  const [openNav, setOpenNav] = React.useState(false);
+  const navigate = useNavigate();
+  const [openNav, setOpenNav] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [userSearch, setUserSearch] = React.useState("");
-  const onChangeUserSearch = ({ target }) => setUserSearch(target.value);
+  const [userSearch, setUserSearch] = useState("");
 
-  React.useEffect(() => {
+  useEffect(() => {
     window.addEventListener(
       "resize",
       () => window.innerWidth >= 960 && setOpenNav(false)
     );
   }, []);
+
+  const handleclickSearchButton = () => {
+    navigate(`/home/search/${userSearch}`);
+  };
+
+  const onChangeUserSearch = (event) => {
+    setUserSearch(event.target.value);
+  };
 
   return (
     <>
@@ -85,7 +94,6 @@ export default function Header() {
               label="Buscar..."
               className="bg-secondary pr-20 text-white"
               color="white"
-              value={userSearch}
               onChange={onChangeUserSearch}
               containerProps={{
                 className: "min-w-[288px]",
@@ -94,6 +102,7 @@ export default function Header() {
             <Button
               size="sm"
               className="!absolute right-2 rounded bg-quaternary shadow-none hover:bg-quaternaryHover hover:shadow-none"
+              onClick={handleclickSearchButton}
             >
               <MagnifyingGlassIcon className="h-full w-3" />
             </Button>

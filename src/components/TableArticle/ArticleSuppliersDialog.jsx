@@ -33,6 +33,7 @@ const initialValues = {
   id: "",
   price: "",
   link: "",
+  country: "",
 };
 
 const RenderNewSupplier = ({
@@ -66,6 +67,15 @@ const RenderNewSupplier = ({
           variant="outlined"
           label="Precio"
           name="price"
+          onChange={handleChange}
+          containerProps={{
+            className: `m-2`,
+          }}
+        />
+        <Input
+          variant="outlined"
+          label="Pais"
+          name="country"
           onChange={handleChange}
           containerProps={{
             className: `m-2`,
@@ -159,6 +169,20 @@ const RenderSingleArticleSupplier = ({
       />
       <Input
         variant="standard"
+        label="Pais"
+        name="country"
+        value={formData.country}
+        labelProps={{
+          className: "hidden",
+        }}
+        disabled={readOnly}
+        onChange={handleChange}
+        containerProps={{
+          className: `px-2 py-2 ${readOnly ? "" : "bg-white"}`,
+        }}
+      />
+      <Input
+        variant="standard"
         label="Link"
         name="link"
         value={formData.link}
@@ -171,6 +195,7 @@ const RenderSingleArticleSupplier = ({
           className: `px-2 py-2 ${readOnly ? "" : "bg-white"}`,
         }}
       />
+
       {readOnly ? (
         <div className="flex flex-row">
           <button
@@ -250,6 +275,7 @@ export default function ArticleSuppliersDialog({ articleData }) {
     await updateDoc(supplierData, {
       id: newSupplierData.id,
       price: newSupplierData.price,
+      country: newSupplierData.country,
       link: newSupplierData.link,
     });
     getSuppliersCollection();
@@ -301,6 +327,7 @@ export default function ArticleSuppliersDialog({ articleData }) {
                 <div className="flex flex-row px-2">
                   <div className="grow">Nombre proveedor</div>
                   <div className="grow">Precio</div>
+                  <div className="grow">Pais</div>
                   <div className="grow">Link</div>
                 </div>
                 {renderArticleSuppliers}
