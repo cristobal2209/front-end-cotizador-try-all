@@ -79,7 +79,6 @@ export default function Header() {
           </div>
           {/* logo */}
           <div className="flex-shrink-0 px-2">
-            {/* <a href="https://imgur.com/MUXAc62"><img src="https://i.imgur.com/MUXAc62.png" title="source: imgur.com" /></a> */}
             <Link to={"/home"}>
               <img
                 className=""
