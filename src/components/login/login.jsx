@@ -13,12 +13,12 @@ export default function login() {
     e.preventDefault();
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        console.log(userCredential)
-        navigate("/home")
+        console.log(userCredential);
+        navigate("/home");
       })
       .catch((error) => {
         console.log(error);
-        navigate("/")
+        navigate("/");
       });
   }
 
