@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { Button, Input } from "@material-tailwind/react";
 
-import { ShoppingCartIcon, CheckIcon } from "@heroicons/react/24/outline";
+import { ShoppingCartIcon, CheckIcon, PencilIcon } from "@heroicons/react/24/outline";
 
 export default function QuoteName() {
   const [isActiveQuote, setIsActiveQuote] = useState(false);
@@ -63,7 +63,7 @@ export default function QuoteName() {
                 className="mx-1 rounded bg-quaternary hover:bg-quaternaryHover"
                 onClick={() => setIsEditing(true)}
               >
-                Cambiar nombre
+                <PencilIcon className="h-4 w-4"/>
               </Button>
             </>
           )}
