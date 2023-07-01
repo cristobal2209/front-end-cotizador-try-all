@@ -23,7 +23,7 @@ export default function Sidebar() {
   }
 
   return (
-    <div className="flex flex-col justify-between">
+    <div className="flex flex-col justify-between pt-20">
       {/* Sección 1 */}
       <div className="p-4">
         <h2 className="mb-4 text-lg">Sección 1</h2>

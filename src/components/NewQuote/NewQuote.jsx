@@ -143,13 +143,9 @@ export default function Article() {
   }, []);
 
   return (
-    <div className="mx-auto grid h-full w-full max-w-7xl grid-cols-4">
+    <div className="mx-auto grid h-full w-full max-w-7xl grid-cols-4 pt-20">
       {/* bg-red-200 */}
       <section className="col-span-4 flex flex-col  lg:col-span-3">
-        <div>
-          INSERTAR FLUJO tipo "cotizaciones articulos nombreCotizacion calculo"
-        </div>
-
         {/* mejor oferta mobile */}
         <div className=" block  p-2 px-10 lg:hidden">
           <Card className="bg-secondary">

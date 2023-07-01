@@ -125,7 +125,7 @@ export default function TableArticle() {
   ];
 
   return (
-    <section className="h-screen bg-white px-10">
+    <section className="h-screen bg-white px-10 pt-20">
       <div className="mx-auto max-w-7xl">
         <div className="py-10">
           <Button

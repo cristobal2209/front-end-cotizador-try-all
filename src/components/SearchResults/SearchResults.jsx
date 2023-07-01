@@ -145,7 +145,7 @@ export default function SearchResults() {
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-5">
+    <div className="mx-auto max-w-7xl px-5 pt-20">
       <div className="flex flex-row">
         <RenderFilters />
         <section className="grow">
