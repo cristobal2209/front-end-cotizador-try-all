@@ -29,7 +29,10 @@ export default function Sidebar() {
         <h2 className="mb-4 text-lg">Sección 1</h2>
         <ul className="space-y-2">
           <li>
-            <Button className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary">
+            <Button
+              disabled={true}
+              className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
+            >
               <CpuChipIcon strokeWidth={2} className="h-6 w-6" /> Cotizaciones
               Artículos
             </Button>
@@ -53,7 +56,10 @@ export default function Sidebar() {
             </Button>
           </li>
           <li>
-            <Button className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary">
+            <Button
+              disabled={true}
+              className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
+            >
               <ArrowRightOnRectangleIcon strokeWidth={2} className="h-6 w-6" />
               Cerrar Sesión
             </Button>
