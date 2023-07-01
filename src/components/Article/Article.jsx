@@ -6,16 +6,21 @@ import {
   CardFooter,
   Button,
   Spinner,
+  Dialog,
+  DialogHeader,
+  DialogBody,
+  DialogFooter,
 } from "@material-tailwind/react";
-import {
-  doc,
-  collection,
-  getDocs,
-  getDoc,
-} from "firebase/firestore";
+import { doc, collection, getDocs, getDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 
 function ShowOtherPrices({ supplierCollection }) {
+  const [showConfirmation, setShowConfirmation] = useState(false);
+
+  const handleAddToQuote = () => {
+    setShowConfirmation(!showConfirmation);
+  };
+
   return (
     <div className="flex w-full max-w-5xl flex-col justify-between">
       <div className="flex flex-row items-center justify-between px-2">
@@ -43,7 +48,22 @@ function ShowOtherPrices({ supplierCollection }) {
                 Ir a página
               </a>
             </span>
-            <Button className=" bg-quaternary">Agregar a cotizacion</Button>
+            {showConfirmation && (
+              <Dialog open={showConfirmation} handler={handleAddToQuote}>
+                <DialogHeader>Artículo Agregado</DialogHeader>
+                <DialogBody divider>
+                  El artículo ha sido añadido a la cotización.
+                </DialogBody>
+                <DialogFooter>
+                  <Button variant="gradient" color="green" onClick={handleAddToQuote}>
+                    <span>Ok</span>
+                  </Button>
+                </DialogFooter>
+              </Dialog>
+            )}
+            <Button className=" bg-quaternary" onClick={handleAddToQuote}>
+              Agregar a cotizacion
+            </Button>
           </div>
         </div>
       ))}
