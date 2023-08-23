@@ -26,7 +26,6 @@ export default function TableUser() {
   useEffect(() => {
     getUsersCollection();
   }, []);
-  //a
   const getUsersCollection = async () => {
     setIsLoading(true);
     const querySnapshot = await getDocs(collection(db, "prueba-usuarios"));
