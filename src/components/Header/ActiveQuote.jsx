@@ -4,11 +4,7 @@ import CreateQuote from "./CreateQuote";
 
 import { Button, Input } from "@material-tailwind/react";
 
-import {
-  ShoppingCartIcon,
-  CheckIcon,
-  PencilIcon,
-} from "@heroicons/react/24/outline";
+import { ShoppingCartIcon } from "@heroicons/react/24/outline";
 
 const TEST_ACTIVE_USER = "DZiomTYxRrRl7hJYcX2i"; //UUID provisorio para testing
 
@@ -50,15 +46,13 @@ export default function ActiveQuote() {
               </div>
             </>
           )}
-          <div>
-            <Button
-              size="sm"
-              className=" rounded bg-quaternary shadow-none hover:bg-quaternaryHover hover:shadow-none"
-              onClick={(event) => handleClickShoppingCart()}
-            >
-              <ShoppingCartIcon className="h-4 w-4" />
-            </Button>
-          </div>
+          <Button
+            size="sm"
+            className=" rounded bg-quaternary shadow-none hover:bg-quaternaryHover hover:shadow-none"
+            onClick={() => handleClickShoppingCart()}
+          >
+            <ShoppingCartIcon className="h-4 w-4" />
+          </Button>
         </>
       ) : (
         <CreateQuote UUID={TEST_ACTIVE_USER} />
