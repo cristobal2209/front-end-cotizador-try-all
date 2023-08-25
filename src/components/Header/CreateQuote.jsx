@@ -37,6 +37,8 @@ export default function CreateQuote({ UUID }) {
     }
   }, [isEditing]);
 
+  console.log("inputRef:", inputRef);
+
   const handleCreateQuote = () => {
     handleSetInitialQuoteData();
     try {
@@ -81,7 +83,7 @@ export default function CreateQuote({ UUID }) {
             label="Nombre cotización"
             color="white"
             value={quoteName}
-            ref={inputRef}
+            inputRef={inputRef}
             onChange={handleNameChange}
             onKeyDown={handleKeyPress}
           />
