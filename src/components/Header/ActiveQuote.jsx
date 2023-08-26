@@ -24,7 +24,7 @@ export default function ActiveQuote() {
   };
 
   return (
-    <div className="flex flex-row items-center rounded-md p-2">
+    <div className="flex flex-row items-center justify-center rounded-md p-2">
       {isActiveQuote ? (
         <>
           {isEditing ? (

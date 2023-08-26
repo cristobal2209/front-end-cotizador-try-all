@@ -111,7 +111,7 @@ export default function Header() {
             </Button>
           </div>
           {/* opcion de cotizacion actual */}
-          <div className="hidden px-2 lg:block">
+          <div className="hidden lg:block !w-[300px]">
             <ActiveQuote />
           </div>
         </div>
