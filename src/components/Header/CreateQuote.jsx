@@ -1,9 +1,16 @@
 import { useState, useRef, useEffect } from "react";
+
 import PropTypes from "prop-types";
+
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 import { createQuote } from "../../services/createQuoteService";
 
-import { CheckIcon } from "@heroicons/react/24/outline";
+import {
+  CheckIcon,
+  ExclamationTriangleIcon,
+} from "@heroicons/react/24/outline";
 
 import {
   Button,
@@ -12,6 +19,7 @@ import {
   DialogHeader,
   DialogBody,
   DialogFooter,
+  Alert,
 } from "@material-tailwind/react";
 
 const TEMPLATE_QUOTE = {
@@ -22,9 +30,14 @@ const TEMPLATE_QUOTE = {
   version: "",
 };
 
+const validationSchema = Yup.object().shape({
+  quoteName: Yup.string()
+    .min(3, "El nombre debe tener al menos 3 caracteres")
+    .required("El nombre es obligatorio"),
+});
+
 export default function CreateQuote({ UUID }) {
   const [isEditing, setIsEditing] = useState(false);
-  const [quoteName, setQuoteName] = useState("");
   const [openQuoteNameAlert, setOpenQuoteNameAlert] = useState(false);
   const [currentDate] = useState(new Date());
   const inputRef = useRef(null);
@@ -37,7 +50,15 @@ export default function CreateQuote({ UUID }) {
     }
   }, [isEditing]);
 
-  console.log("inputRef:", inputRef);
+  const formik = useFormik({
+    initialValues: {
+      quoteName: "",
+    },
+    validationSchema: validationSchema,
+    onSubmit: () => {
+      handleConfirmName();
+    },
+  });
 
   const handleCreateQuote = () => {
     handleSetInitialQuoteData();
@@ -47,31 +68,32 @@ export default function CreateQuote({ UUID }) {
     } catch (error) {
       console.log(error);
     }
+    handleOpenQuoteNameAlert();
+  };
+
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      formik.handleSubmit();
+    }
+  };
+
+  const handleSetInitialQuoteData = () => {
+    quoteData.quoteName = formik.values.quoteName;
+    quoteData.date = currentDate.toDateString();
+    quoteData.version = "1.0";
+    quoteData.state = 1;
   };
 
   const handleEditing = () => {
     setIsEditing(!isEditing);
   };
 
-  const handleNameChange = (e) => {
-    setQuoteName(e.target.value);
-  };
-
   const handleOpenQuoteNameAlert = () => {
     setOpenQuoteNameAlert(!openQuoteNameAlert);
   };
 
-  const handleKeyPress = (event) => {
-    if (event.key === "Enter") {
-      handleSetInitialQuoteData();
-    }
-  };
-
-  const handleSetInitialQuoteData = () => {
-    quoteData.quoteName = quoteName;
-    quoteData.date = currentDate.toDateString();
-    quoteData.version = "1.0";
-    quoteData.state = 1;
+  const handleConfirmName = () => {
+    handleSetInitialQuoteData();
     handleOpenQuoteNameAlert();
   };
 
@@ -80,17 +102,27 @@ export default function CreateQuote({ UUID }) {
       {isEditing ? (
         <>
           <Input
+            name="quoteName"
             label="Nombre cotización"
             color="white"
-            value={quoteName}
+            value={formik.values.quoteName}
             inputRef={inputRef}
-            onChange={handleNameChange}
+            onChange={formik.handleChange}
             onKeyDown={handleKeyPress}
+            required
           />
+          {formik.touched.quoteName && formik.errors.quoteName ? (
+            <Alert className="absolute mt-[110px] bg-red-500 !w-auto animate-pulse">
+              <div className="flex flex-row items-center">
+                <ExclamationTriangleIcon className="mr-1 h-4 w-4" />
+                {formik.errors.quoteName}
+              </div>
+            </Alert>
+          ) : null}
           <Button
             size="sm"
             className="mx-1 rounded bg-quaternary shadow-none hover:bg-quaternaryHover hover:shadow-none"
-            onClick={() => handleSetInitialQuoteData()}
+            onClick={() => formik.handleSubmit()}
           >
             <CheckIcon className="h-4 w-4" />
           </Button>
@@ -112,7 +144,7 @@ export default function CreateQuote({ UUID }) {
         handler={handleOpenQuoteNameAlert}
       >
         <DialogHeader>Creación de nueva cotización</DialogHeader>
-        <DialogBody className="!h-auto" divider>
+        <DialogBody divider>
           <p className="text-center">
             ¿Está seguro en crear la siguiente cotización?
           </p>
