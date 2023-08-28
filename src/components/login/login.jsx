@@ -15,6 +15,7 @@ export default function login() {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         user = userCredential.user;
+        navigate("/home");
         console.log(user);
       })
       .catch((error) => {
