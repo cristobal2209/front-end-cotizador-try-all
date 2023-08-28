@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { db } from "../../firebaseConfig";
 
 import {
   Button,
@@ -14,23 +13,16 @@ import {
   IconButton,
   Tooltip,
   Input,
+  Dialog,
+  DialogHeader,
+  DialogBody,
+  DialogFooter,
 } from "@material-tailwind/react";
-
-import {
-  doc,
-  deleteDoc,
-  addDoc,
-  collection,
-  updateDoc,
-  getDocs,
-} from "firebase/firestore";
 
 import { PencilIcon } from "@heroicons/react/24/solid";
 
-import {
-  ArrowDownTrayIcon,
-  MagnifyingGlassIcon,
-} from "@heroicons/react/24/outline";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { bool } from "prop-types";
 
 const TABLE_HEAD = ["Transaction", "Amount", "Date", "Status", "Account", ""];
 
@@ -86,6 +78,14 @@ const TABLE_ROWS = [
     expiry: "06/2026",
   },
 ];
+
+const TEMPLATE_USER_DATA = {
+  email: "",
+  password: "",
+  name: "",
+  lastname: "",
+  active: bool,
+};
 
 export default function TableUser() {
   const [userDataCollection, setUserDataCollection] = useState([]);
@@ -275,7 +275,42 @@ export default function TableUser() {
           {/* paginador */}
         </CardFooter>
       </Card>
-      {openCreateUserModal && <></>}
+      {openCreateUserModal && (
+        <Dialog open={openCreateUserModal} handler={handleOpenCreateUserModal}>
+          <DialogHeader>Crear usuario</DialogHeader>
+          <DialogBody divider>
+            <div className="py-2">
+              <Input variant="standard" label="Nombre" />
+            </div>
+            <div className="py-2">
+              <Input variant="standard" label="Apellido" />
+            </div>
+            <div className="py-2">
+              <Input variant="standard" label="Correo" />
+            </div>
+            <div className="py-2">
+              <Input variant="standard" label="Contraseña" />
+            </div>
+          </DialogBody>
+          <DialogFooter>
+            <Button
+              variant="text"
+              color="red"
+              onClick={handleOpenCreateUserModal}
+              className="mr-1"
+            >
+              <span>Cancelar</span>
+            </Button>
+            <Button
+              variant="gradient"
+              color="green"
+              onClick={handleOpenCreateUserModal}
+            >
+              <span>Crear</span>
+            </Button>
+          </DialogFooter>
+        </Dialog>
+      )}
     </>
   );
 }
