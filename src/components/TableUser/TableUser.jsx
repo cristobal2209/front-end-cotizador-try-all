@@ -22,7 +22,10 @@ import {
 import { PencilIcon } from "@heroicons/react/24/solid";
 
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { bool } from "prop-types";
+import { bool, number } from "prop-types";
+
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 const TABLE_HEAD = ["Transaction", "Amount", "Date", "Status", "Account", ""];
 
@@ -79,21 +82,51 @@ const TABLE_ROWS = [
   },
 ];
 
-const TEMPLATE_USER_DATA = {
+const TEMPLATE_USER_FORM = {
   email: "",
   password: "",
   name: "",
   lastname: "",
+  privileges: number,
   active: bool,
 };
+
+const validationSchema = Yup.object().shape({
+  name: Yup.string()
+    .min(3, "El nombre debe contener al menos 3 caracteres")
+    .max(20, "El nombre debe contener a lo mas 20 caracteres")
+    .required("El nombre es obligatorio")
+    .matches(
+      /^[a-zA-Z0-9]*$/,
+      "No se permiten caracteres especiales en el nombre"
+    ),
+  email: Yup.string(),
+});
 
 export default function TableUser() {
   const [userDataCollection, setUserDataCollection] = useState([]);
   const [openCreateUserModal, setOpenCreateUserModal] = useState(false);
 
+  const newUserForm = TEMPLATE_USER_FORM;
+
   useEffect(() => {
     setUserDataCollection(getUserDataCollection);
   }, []);
+
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+      name: "",
+      lastname: "",
+      active: false,
+      privileges: 1,
+    },
+    validationSchema: validationSchema,
+    onSubmit: () => {
+      newUserForm.name = formik.values.name;
+    },
+  });
 
   const getUserDataCollection = () => {};
 
@@ -280,16 +313,22 @@ export default function TableUser() {
           <DialogHeader>Crear usuario</DialogHeader>
           <DialogBody divider>
             <div className="py-2">
-              <Input variant="standard" label="Nombre" />
+              <Input
+                variant="standard"
+                label="Nombre"
+                name="name"
+                value={formik.values.name}
+                onChange={formik.handleChange}
+              />
             </div>
             <div className="py-2">
-              <Input variant="standard" label="Apellido" />
+              <Input variant="standard" label="Apellido" name="lastname" />
             </div>
             <div className="py-2">
-              <Input variant="standard" label="Correo" />
+              <Input variant="standard" label="Correo" name="email" />
             </div>
             <div className="py-2">
-              <Input variant="standard" label="Contraseña" />
+              <Input variant="standard" label="Contraseña" name="password" />
             </div>
           </DialogBody>
           <DialogFooter>
@@ -304,7 +343,7 @@ export default function TableUser() {
             <Button
               variant="gradient"
               color="green"
-              onClick={handleOpenCreateUserModal}
+              onClick={() => formik.handleSubmit()}
             >
               <span>Crear</span>
             </Button>
