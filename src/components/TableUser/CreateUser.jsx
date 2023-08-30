@@ -1,12 +1,11 @@
 import { useState } from "react";
-
-import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebaseConfig";
-
 import { bool, number } from "prop-types";
-
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { createUserData } from "../../services/tableUserServices";
+
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 import {
   Button,
@@ -18,16 +17,12 @@ import {
   DialogFooter,
 } from "@material-tailwind/react";
 
-const TEMPLATE_USER_FORM = {
-  email: "",
-  password: "",
+const TEMPLATE_USER_DATA = {
   name: "",
   lastname: "",
   privileges: number,
   active: bool,
 };
-
-
 
 const validationSchema = Yup.object().shape({
   //validacion de campos del formulario Formik
@@ -67,25 +62,25 @@ export default function CreateUser({
   openCreateUserModal,
   handleOpenCreateUserModal,
 }) {
+  const newUserData = TEMPLATE_USER_DATA;
 
-  const [userUID, setUserUID] = useState();
-
-  const newUserForm = TEMPLATE_USER_FORM;
-
-  function userRegister(email,password) {
-    createUserWithEmailAndPassword(auth, email, password)
+  const userRegister = (formValues) => {
+    createUserWithEmailAndPassword(auth, formValues.email, formValues.password)
       .then((userCredential) => {
-        const user = userCredential.user;
-        setUserUID(userCredential.user.uid);
-        console.log(user);
+        const userUID = userCredential.user.uid;
+        newUserData.name = formValues.name;
+        newUserData.lastname = formValues.lastname;
+        newUserData.active = formValues.active;
+        newUserData.privileges = formValues.privileges;
+        createUserData(userUID, newUserData);
       })
       .catch((error) => {
         console.log(error);
       });
-  }
+  };
 
   const formik = useFormik({
-    //Creacion de un Standar de formularios
+    //Creacion de un estandar de formularios
     initialValues: {
       email: "",
       password: "",
@@ -96,8 +91,7 @@ export default function CreateUser({
     },
     validationSchema: validationSchema,
     onSubmit: () => {
-      newUserForm.name = formik.values.name;
-      userRegister(formik.values.email, formik.values.password);
+      userRegister(formik.values);
       handleOpenCreateUserModal();
     },
     // crear al usuario en firebase autentication con el email y contraseña
@@ -114,6 +108,7 @@ export default function CreateUser({
             name="name"
             value={formik.values.name}
             onChange={formik.handleChange}
+            required
           />
         </div>
         <div className="py-2">
@@ -123,6 +118,7 @@ export default function CreateUser({
             name="lastname"
             value={formik.values.lastname}
             onChange={formik.handleChange}
+            required
           />
         </div>
         <div className="py-2">
@@ -132,6 +128,7 @@ export default function CreateUser({
             name="email"
             value={formik.values.email}
             onChange={formik.handleChange}
+            required
           />
         </div>
         <div className="py-2">
@@ -141,6 +138,7 @@ export default function CreateUser({
             name="password"
             value={formik.values.password}
             onChange={formik.handleChange}
+            required
           />
         </div>
       </DialogBody>
