@@ -8,6 +8,7 @@ import TableUser from "../TableUser/TableUser";
 import SearchResults from "../SearchResults/SearchResults";
 import NewQuote from "../NewQuote/NewQuote";
 import MainLayout from "../MainLayout/MainLayout";
+import PruebaUploadDownload from "../PruebaUploadDownload/PruebaUploadDownload";
 
 export default function Router() {
   return (
@@ -22,6 +23,7 @@ export default function Router() {
           <Route path="articles/:articleId" element={<Article />} />
           <Route path="newquote" element={<NewQuote />} />
           <Route path="search/:articleSearch" element={<SearchResults />} />
+          <Route path="uploadDownload" element={<PruebaUploadDownload />} />
         </Route>
         <Route path="/" element={<Login />} />
       </Routes>
