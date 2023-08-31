@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { auth } from "../../firebaseConfig";
 import { bool, number } from "prop-types";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import axios from "axios";
 import { createUserData } from "../../services/tableUserServices";
 
 import { createUserWithEmailAndPassword } from "firebase/auth";
@@ -16,6 +17,7 @@ import {
   DialogBody,
   DialogFooter,
 } from "@material-tailwind/react";
+import { json } from "react-router-dom";
 
 const TEMPLATE_USER_DATA = {
   name: "",
@@ -62,21 +64,13 @@ export default function CreateUser({
   openCreateUserModal,
   handleOpenCreateUserModal,
 }) {
-  const newUserData = TEMPLATE_USER_DATA;
-
-  const userRegister = (formValues) => {
-    createUserWithEmailAndPassword(auth, formValues.email, formValues.password)
-      .then((userCredential) => {
-        const userUID = userCredential.user.uid;
-        newUserData.name = formValues.name;
-        newUserData.lastname = formValues.lastname;
-        newUserData.active = formValues.active;
-        newUserData.privileges = formValues.privileges;
-        createUserData(userUID, newUserData);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  const userRegister = async (formValues) => {
+    try {
+      const response = await axios.post("/api/createUser", formValues);
+      console.log("Data sent successfully:", response.data);
+    } catch (error) {
+      console.error("Error sending data:", error);
+    }
   };
 
   const formik = useFormik({
@@ -92,6 +86,7 @@ export default function CreateUser({
     validationSchema: validationSchema,
     onSubmit: () => {
       userRegister(formik.values);
+      console.log(auth.currentUser.uid);
       handleOpenCreateUserModal();
     },
     // crear al usuario en firebase autentication con el email y contraseña
