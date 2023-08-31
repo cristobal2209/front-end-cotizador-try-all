@@ -1,4 +1,5 @@
 import { Card, CardHeader } from "@material-tailwind/react";
+import { useEffect } from "react";
 
 const enterprises = [
   {
@@ -45,9 +46,13 @@ const enterprises = [
   },
 ];
 
+
 function GridEnterprises({ enterprises }) {
+  useEffect(() => {
+    document.title= "Home";
+  }, []);
   return (
-    <div className="mx-auto grid max-w-6xl place-items-center gap-5 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="mx-auto grid max-w-6xl place-items-center gap-5 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {enterprises.map((enterprise) => (
         <a
           href={enterprise.link}

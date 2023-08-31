@@ -1,6 +1,6 @@
 import { auth } from "../../firebaseConfig";
 import { signInWithEmailAndPassword } from "@firebase/auth";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 
 export default function login() {
@@ -21,6 +21,10 @@ export default function login() {
         navigate("/");
       });
   }
+
+  useEffect(() => {
+    document.title= "Login";
+  }, []);
 
   return (
     <main className=" w-full  bg-bgDark">
