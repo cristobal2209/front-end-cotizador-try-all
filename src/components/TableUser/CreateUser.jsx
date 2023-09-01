@@ -1,30 +1,16 @@
 import { useEffect, useState } from "react";
-import { auth } from "../../firebaseConfig";
-import { bool, number } from "prop-types";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-import { createUserData } from "../../services/tableUserServices";
-
-import { createUserWithEmailAndPassword } from "firebase/auth";
 
 import {
   Button,
-  Spinner,
   Input,
   Dialog,
   DialogHeader,
   DialogBody,
   DialogFooter,
 } from "@material-tailwind/react";
-import { json } from "react-router-dom";
-
-const TEMPLATE_USER_DATA = {
-  name: "",
-  lastname: "",
-  privileges: number,
-  active: bool,
-};
 
 const validationSchema = Yup.object().shape({
   //validacion de campos del formulario Formik
@@ -61,16 +47,23 @@ const validationSchema = Yup.object().shape({
 });
 
 export default function CreateUser({
+  handleSuccessAlert,
+  handleFailedAlert,
+  setIsCreateUserLoading,
   openCreateUserModal,
   handleOpenCreateUserModal,
 }) {
   const userRegister = async (formValues) => {
+    setIsCreateUserLoading(true);
     try {
       const response = await axios.post("/api/createUser", formValues);
-      console.log("Data sent successfully:", response.data);
+      handleSuccessAlert(response.data);
+      // console.log(response.data);
     } catch (error) {
-      console.error("Error sending data:", error);
+      handleFailedAlert(error);
+      // console.log(error);
     }
+    setIsCreateUserLoading(false);
   };
 
   const formik = useFormik({
@@ -86,74 +79,79 @@ export default function CreateUser({
     validationSchema: validationSchema,
     onSubmit: () => {
       userRegister(formik.values);
-      console.log(auth.currentUser.uid);
+      // console.log(auth.currentUser.uid);
       handleOpenCreateUserModal();
     },
-    // crear al usuario en firebase autentication con el email y contraseña
   });
 
   return (
-    <Dialog open={openCreateUserModal} handler={handleOpenCreateUserModal}>
-      <DialogHeader>Crear usuario</DialogHeader>
-      <DialogBody divider>
-        <div className="py-2">
-          <Input
-            variant="standard"
-            label="Nombre"
-            name="name"
-            value={formik.values.name}
-            onChange={formik.handleChange}
-            required
-          />
-        </div>
-        <div className="py-2">
-          <Input
-            variant="standard"
-            label="Apellido"
-            name="lastname"
-            value={formik.values.lastname}
-            onChange={formik.handleChange}
-            required
-          />
-        </div>
-        <div className="py-2">
-          <Input
-            variant="standard"
-            label="Correo"
-            name="email"
-            value={formik.values.email}
-            onChange={formik.handleChange}
-            required
-          />
-        </div>
-        <div className="py-2">
-          <Input
-            variant="standard"
-            label="Contraseña"
-            name="password"
-            value={formik.values.password}
-            onChange={formik.handleChange}
-            required
-          />
-        </div>
-      </DialogBody>
-      <DialogFooter>
-        <Button
-          variant="text"
-          color="red"
-          onClick={handleOpenCreateUserModal}
-          className="mr-1"
-        >
-          <span>Cancelar</span>
-        </Button>
-        <Button
-          variant="gradient"
-          color="green"
-          onClick={() => formik.handleSubmit()}
-        >
-          <span>Crear</span>
-        </Button>
-      </DialogFooter>
-    </Dialog>
+    <>
+      <Dialog
+        open={openCreateUserModal}
+        handler={handleOpenCreateUserModal}
+        className="z-0"
+      >
+        <DialogHeader>Crear usuario</DialogHeader>
+        <DialogBody divider>
+          <div className="py-2">
+            <Input
+              variant="standard"
+              label="Nombre"
+              name="name"
+              value={formik.values.name}
+              onChange={formik.handleChange}
+              required
+            />
+          </div>
+          <div className="py-2">
+            <Input
+              variant="standard"
+              label="Apellido"
+              name="lastname"
+              value={formik.values.lastname}
+              onChange={formik.handleChange}
+              required
+            />
+          </div>
+          <div className="py-2">
+            <Input
+              variant="standard"
+              label="Correo"
+              name="email"
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              required
+            />
+          </div>
+          <div className="py-2">
+            <Input
+              variant="standard"
+              label="Contraseña"
+              name="password"
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              required
+            />
+          </div>
+        </DialogBody>
+        <DialogFooter>
+          <Button
+            variant="text"
+            color="red"
+            onClick={handleOpenCreateUserModal}
+            className="mr-1"
+          >
+            <span>Cancelar</span>
+          </Button>
+          <Button
+            variant="gradient"
+            color="green"
+            onClick={() => formik.handleSubmit()}
+          >
+            <span>Crear</span>
+          </Button>
+        </DialogFooter>
+      </Dialog>
+    </>
   );
 }
