@@ -115,6 +115,7 @@ export default function CreateUser({
           </div>
           <div className="py-2">
             <Input
+              type="email"
               variant="standard"
               label="Correo"
               name="email"
@@ -125,6 +126,7 @@ export default function CreateUser({
           </div>
           <div className="py-2">
             <Input
+              type="password"
               variant="standard"
               label="Contraseña"
               name="password"

@@ -125,8 +125,8 @@ export default function TableUser() {
                   />
                 </div>
                 {isCreateUserLoading ? (
-                  <div className="flex justify-center align-middle w-[134px]">
-                    <Spinner className="h-[40px] w-[40px]" />
+                  <div className="flex justify-center content-center max-w-[134px]">
+                    <Spinner className="max-h-[40px] max-w-[40px]" />
                   </div>
                 ) : (
                   <>
