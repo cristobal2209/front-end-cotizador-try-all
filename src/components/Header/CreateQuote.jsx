@@ -1,11 +1,9 @@
 import { useState, useRef, useEffect } from "react";
-
 import PropTypes from "prop-types";
-
 import { useFormik } from "formik";
 import * as Yup from "yup";
-
 import { createQuote } from "../../services/createQuoteService";
+import { auth } from "../../firebaseConfig";
 
 import {
   CheckIcon,
@@ -43,7 +41,7 @@ const validationSchema = Yup.object().shape({
     ),
 });
 
-export default function CreateQuote({ UUID }) {
+export default function CreateQuote() {
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isQuoteCreated, setIsQuoteCreated] = useState(false);
@@ -76,11 +74,11 @@ export default function CreateQuote({ UUID }) {
     setIsLoading(true);
     try {
       handleOpenQuoteNameAlert();
-      await createQuote(UUID, quoteData);
+      await createQuote(auth.currentUser.uid, quoteData);
       handleEditing();
     } catch (error) {
       setIsLoading(false);
-      console.log(error);
+      // console.log(error);
     }
     setIsQuoteCreated(true);
     setOpenQuoteCreatedAlert(true);
@@ -216,6 +214,3 @@ export default function CreateQuote({ UUID }) {
     </>
   );
 }
-CreateQuote.propTypes = {
-  UUID: PropTypes.string.isRequired,
-};

@@ -6,8 +6,6 @@ import { Button, Input } from "@material-tailwind/react";
 
 import { ShoppingCartIcon } from "@heroicons/react/24/outline";
 
-const TEST_ACTIVE_USER = "DZiomTYxRrRl7hJYcX2i"; //UUID provisorio para testing
-
 export default function ActiveQuote() {
   const [isActiveQuote, setIsActiveQuote] = useState(false);
   const [quoteName, setQuoteName] = useState("");
@@ -55,7 +53,7 @@ export default function ActiveQuote() {
           </Button>
         </>
       ) : (
-        <CreateQuote UUID={TEST_ACTIVE_USER} />
+        <CreateQuote />
       )}
     </div>
   );
