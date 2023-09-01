@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import CategoryList from "./CategoryList";
 import Sidebar from "./Sidebar";
-import QuoteName from "./QuoteName";
+import ActiveQuote from "./ActiveQuote";
 import { useNavigate, Link } from "react-router-dom";
 import {
   Navbar,
@@ -111,8 +111,8 @@ export default function Header() {
             </Button>
           </div>
           {/* opcion de cotizacion actual */}
-          <div className="hidden px-2 lg:block">
-            <QuoteName />
+          <div className="hidden lg:block !w-[300px]">
+            <ActiveQuote />
           </div>
         </div>
         {/* si openNav es true, se abre este collapse */}

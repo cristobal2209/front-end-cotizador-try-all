@@ -6,9 +6,9 @@ import TableArticle from "../TableArticle/TableArticle";
 import TableQuote from "../TableQuote/TableQuote";
 import TableUser from "../TableUser/TableUser";
 import SearchResults from "../SearchResults/SearchResults";
-import NewQuote from "../NewQuote/NewQuote";
 import MainLayout from "../MainLayout/MainLayout";
 import PruebaUploadDownload from "../PruebaUploadDownload/PruebaUploadDownload";
+import QuoteDetails from "../QuoteDetails/QuoteDetails";
 
 export default function Router() {
   return (
@@ -21,7 +21,7 @@ export default function Router() {
           <Route path="manage/quotes" element={<TableQuote />} />
           <Route path="manage/users" element={<TableUser />} />
           <Route path="articles/:articleId" element={<Article />} />
-          <Route path="newquote" element={<NewQuote />} />
+          <Route path="quoteDetails/:quoteId" element={<QuoteDetails />} />
           <Route path="search/:articleSearch" element={<SearchResults />} />
           <Route path="uploadDownload" element={<PruebaUploadDownload />} />
         </Route>
