@@ -120,7 +120,7 @@ function ShowOtherArticles({ articleDetails, handleSubTotal }) {
   );
 }
 
-export default function Article() {
+export default function QuoteDetails() {
   const [totalSubTotal, setTotalSubTotal] = useState(0);
   // el problema no es la logica, es la iniciacion de subTotalArticle pues si aumenta en 1, pero subTotalAnterior parte en 0
   // y esto provoca que se comporte como un valor positivo al realizar el primer - y ya al segundo lo reconoce como un valor negativo
