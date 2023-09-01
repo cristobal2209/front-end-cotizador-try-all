@@ -125,8 +125,8 @@ export default function TableUser() {
                   />
                 </div>
                 {isCreateUserLoading ? (
-                  <div className="flex justify-center content-center max-w-[134px]">
-                    <Spinner className="max-h-[40px] max-w-[40px]" />
+                  <div className="flex justify-center content-center w-[134px]">
+                    <Spinner className="h-[40px] w-[40px]" />
                   </div>
                 ) : (
                   <>
@@ -142,6 +142,10 @@ export default function TableUser() {
                       onClose={() => setOpenAlertSuccess(false)}
                       className="fixed w-auto right-[26px] mt-[50px]"
                       color="green"
+                      animate={{
+                        mount: { y: 0 },
+                        unmount: { y: 100 },
+                      }}
                     >
                       Usuario Creado
                     </Alert>
@@ -150,6 +154,10 @@ export default function TableUser() {
                       onClose={() => setOpenAlertFailed(false)}
                       className="fixed w-auto right-[16px] mt-[50px]"
                       color="red"
+                      animate={{
+                        mount: { y: 0 },
+                        unmount: { y: 100 },
+                      }}
                     >
                       Error al crear usuario
                     </Alert>

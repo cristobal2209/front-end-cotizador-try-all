@@ -10,18 +10,24 @@ import {
   DialogHeader,
   DialogBody,
   DialogFooter,
+  Alert,
 } from "@material-tailwind/react";
+
+import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
 const validationSchema = Yup.object().shape({
   //validacion de campos del formulario Formik
-  name: Yup.string()
+  firstname: Yup.string()
     .min(3, "El nombre debe contener al menos 3 caracteres")
     .max(20, "El nombre debe contener a lo mas 20 caracteres")
     .required("El nombre es un campo obligatorio")
-    .matches(
-      /^[a-zA-Z0-9]*$/,
-      "No se permiten caracteres especiales en el nombre"
-    ),
+    .matches(/^[A-Za-z\s]*$/, "El campo solo puede contener letras y espacios"),
+
+  lastname: Yup.string()
+    .min(3, "El apellido debe contener al menos 3 caracteres")
+    .max(20, "El apellido debe contener a lo mas 20 caracteres")
+    .required("El apellido es un campo obligatorio")
+    .matches(/^[A-Za-z\s]*$/, "El campo solo puede contener letras y espacios"),
 
   email: Yup.string()
     .email("El correo ingresado no es válido") //.email , valida una serie de instrucciones standar
@@ -31,18 +37,25 @@ const validationSchema = Yup.object().shape({
     .min(5, "La contraseña debe contener al menos 5 caracteres")
     .max(20, "La contraseña debe contener a lo mas 20 caracteres")
     .required("La contraseña es un campo obligatorio")
-    .uppercase("Se necesita al menos una letra MAYUSCULA")
-    .lowercase("Se necesita al menos una letra minúscula"),
-
-  // un caracter especial, un numero
-
-  lastname: Yup.string()
-    .min(3, "El apellido debe contener al menos 3 caracteres")
-    .max(20, "El apellido debe contener a lo mas 20 caracteres")
-    .required("El apellido es un campo obligatorio")
-    .matches(
-      /^[a-zA-Z0-9]*$/,
-      "No se permiten caracteres especiales en el apellido"
+    .test(
+      "at-least-one-special-char",
+      "La contraseña debe contener al menos un caracter especial",
+      (value) => /[!@#$%^&*()_+[\]{};:'",.<>/?\\|]/.test(value)
+    )
+    .test(
+      "at-least-one-uppercase",
+      "La contraseña debe contener al menos una letra mayúscula",
+      (value) => /[A-Z]/.test(value)
+    )
+    .test(
+      "at-least-one-lowercase",
+      "La contraseña debe contener al menos una letra minúscula",
+      (value) => /[a-z]/.test(value)
+    )
+    .test(
+      "at-least-one-number",
+      "La contraseña debe contener al menos un número",
+      (value) => /[0-9]/.test(value)
     ),
 });
 
@@ -71,7 +84,7 @@ export default function CreateUser({
     initialValues: {
       email: "",
       password: "",
-      name: "",
+      firstname: "",
       lastname: "",
       active: false, //  active, se inicializa en falso para su posterior activacion manual luego de la correcta creacion
       privileges: 1, // al no poseer un input por parte del usuario, estos campos no se reflejan o validan con la libreria YUP
@@ -91,17 +104,25 @@ export default function CreateUser({
         handler={handleOpenCreateUserModal}
         className="z-0"
       >
-        <DialogHeader>Crear usuario</DialogHeader>
+        <DialogHeader>Crear nuevo usuario</DialogHeader>
         <DialogBody divider>
           <div className="py-2">
             <Input
               variant="standard"
               label="Nombre"
-              name="name"
-              value={formik.values.name}
+              name="firstname"
+              value={formik.values.firstname}
               onChange={formik.handleChange}
               required
             />
+            {formik.touched.firstname && formik.errors.firstname ? (
+              <Alert className="block mt-[10px] bg-red-500 !w-auto animate-pulse">
+                <div className="flex flex-row items-center">
+                  <ExclamationTriangleIcon className="mr-1 h-4 w-4" />
+                  {formik.errors.firstname}
+                </div>
+              </Alert>
+            ) : null}
           </div>
           <div className="py-2">
             <Input
@@ -112,10 +133,17 @@ export default function CreateUser({
               onChange={formik.handleChange}
               required
             />
+            {formik.touched.lastname && formik.errors.lastname ? (
+              <Alert className="block mt-[10px] bg-red-500 !w-auto animate-pulse">
+                <div className="flex flex-row items-center">
+                  <ExclamationTriangleIcon className="mr-1 h-4 w-4" />
+                  {formik.errors.lastname}
+                </div>
+              </Alert>
+            ) : null}
           </div>
           <div className="py-2">
             <Input
-              type="email"
               variant="standard"
               label="Correo"
               name="email"
@@ -123,6 +151,14 @@ export default function CreateUser({
               onChange={formik.handleChange}
               required
             />
+            {formik.touched.email && formik.errors.email ? (
+              <Alert className="block mt-[10px] bg-red-500 !w-auto animate-pulse">
+                <div className="flex flex-row items-center">
+                  <ExclamationTriangleIcon className="mr-1 h-4 w-4" />
+                  {formik.errors.email}
+                </div>
+              </Alert>
+            ) : null}
           </div>
           <div className="py-2">
             <Input
@@ -134,6 +170,21 @@ export default function CreateUser({
               onChange={formik.handleChange}
               required
             />
+            {formik.touched.password && formik.errors.password ? (
+              <Alert className="block mt-[10px] bg-red-500 !w-auto animate-pulse">
+                <div className="flex flex-row items-center">
+                  <ExclamationTriangleIcon className="mr-1 h-4 w-4" />
+                  {formik.errors.password}
+                </div>
+              </Alert>
+            ) : null}
+          </div>
+          <div className="font-extralight text-xs">
+            <span>
+              (*) Por medidas de seguridad un nuevo usuario no contará con
+              privilegios. Si desea asignar privilegios a este usuario, podrá
+              hacerlo en la tabla de usuarios una vez creado.
+            </span>
           </div>
         </DialogBody>
         <DialogFooter>
