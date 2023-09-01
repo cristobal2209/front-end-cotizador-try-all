@@ -103,6 +103,9 @@ export default function TableUser() {
     setOpenAlertFailed(true);
   };
 
+  useEffect(() => {
+    document.title = "Tabla Usuarios";
+  }, []);
   return (
     <>
       <div className="mx-[10px]">
