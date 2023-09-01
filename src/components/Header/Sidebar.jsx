@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Button, Slider } from "@material-tailwind/react";
+import { Button } from "@material-tailwind/react";
 import {
   ChartPieIcon,
   UsersIcon,
@@ -24,7 +24,6 @@ export default function Sidebar() {
 
   return (
     <div className="flex flex-col justify-between pt-20">
-      <Slider defaultValue={0} />
       {/* Sección 1 */}
       <div className="p-4">
         <h2 className="mb-4 text-lg">Sección 1</h2>
