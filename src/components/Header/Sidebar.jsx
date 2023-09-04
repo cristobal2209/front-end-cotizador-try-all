@@ -11,14 +11,16 @@ import {
   CpuChipIcon,
 } from "@heroicons/react/24/outline";
 
-export default function Sidebar() {
+export default function Sidebar({ setIsSidebarOpen }) {
   const navigate = useNavigate();
 
   function handleNavigateArticles() {
+    setIsSidebarOpen(false);
     navigate("manage/articles");
   }
 
   function handleNavigateUsers() {
+    setIsSidebarOpen(false);
     navigate("manage/users");
   }
 

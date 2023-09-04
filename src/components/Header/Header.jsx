@@ -127,7 +127,7 @@ export default function Header() {
         }`}
       >
         <div className={`absolute  pt-[96px] w-full h-full`}>
-          <Sidebar />
+          <Sidebar setIsSidebarOpen={setIsSidebarOpen} />
         </div>
       </div>
     </>
