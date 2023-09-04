@@ -23,10 +23,9 @@ export default function Sidebar() {
   }
 
   return (
-    <div className="flex flex-col justify-between pt-20">
+    <div className="flex flex-col justify-between overflow-y-auto">
       {/* Sección 1 */}
       <div className="p-4">
-        <h2 className="mb-4 text-lg">Sección 1</h2>
         <ul className="space-y-2">
           <li>
             <Button
@@ -70,7 +69,6 @@ export default function Sidebar() {
       <hr className="mx-auto my-2 w-5/6 border-primary" />
       {/* Sección 2 */}
       <div className=" p-4">
-        <h2 className=" mb-4 text-lg">Sección 2</h2>
         <ul className="space-y-2">
           <li>
             <Button

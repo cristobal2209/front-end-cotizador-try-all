@@ -122,11 +122,13 @@ export default function Header() {
       </Navbar>
       {/*  */}
       <div
-        className={`fixed left-0 top-0 z-40 hidden h-full max-w-lg transform bg-white pt-20 text-primary shadow-2xl duration-300 ease-in-out lg:block ${
+        className={`h-screen w-[300px] relative z-40 left-0 duration-300 transform ease-in-out bg-white text-primary overflow-auto ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <Sidebar />
+        <div className={`absolute  pt-[96px] w-full h-full`}>
+          <Sidebar />
+        </div>
       </div>
     </>
   );
