@@ -122,7 +122,7 @@ export default function Header() {
       </Navbar>
       {/*  */}
       <div
-        className={`h-screen w-[300px] relative z-40 left-0 duration-300 transform ease-in-out bg-white text-primary overflow-auto ${
+        className={`h-screen w-[300px] relative left-0 duration-300 transform ease-in-out bg-white text-primary overflow-auto ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
