@@ -126,7 +126,9 @@ export default function Header() {
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className={`absolute  pt-[96px] w-full h-full`}>
+        <div
+          className={`absolute  pt-[96px] w-full h-full border-4 border-r-gray-400`}
+        >
           <Sidebar setIsSidebarOpen={setIsSidebarOpen} />
         </div>
       </div>
