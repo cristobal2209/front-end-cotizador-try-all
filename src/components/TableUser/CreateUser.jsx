@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import axios from "axios";
-
+import { userRegister } from "../../services/tableUserService";
 import {
   Button,
   Input,
@@ -12,7 +10,6 @@ import {
   DialogFooter,
   Alert,
 } from "@material-tailwind/react";
-
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
 const validationSchema = Yup.object().shape({
@@ -34,7 +31,7 @@ const validationSchema = Yup.object().shape({
     .required("El correo es un campo obligatorio"),
   //en correos electronicos en una sola validacion
   password: Yup.string()
-    .min(5, "La contraseña debe contener al menos 5 caracteres")
+    .min(6, "La contraseña debe contener al menos 6 caracteres")
     .max(20, "La contraseña debe contener a lo mas 20 caracteres")
     .required("La contraseña es un campo obligatorio")
     .test(
@@ -66,16 +63,15 @@ export default function CreateUser({
   openCreateUserModal,
   handleOpenCreateUserModal,
 }) {
-  const userRegister = async (formValues) => {
+  const submitRegister = async (formValues) => {
     setIsCreateUserLoading(true);
-    try {
-      const response = await axios.post("/api/createUser", formValues);
-      handleSuccessAlert(response.data);
-      // console.log(response.data);
-    } catch (error) {
-      handleFailedAlert(error);
-      // console.log(error);
-    }
+    await userRegister(formValues)
+      .then((message) => {
+        handleSuccessAlert(message);
+      })
+      .catch((error) => {
+        handleFailedAlert(error);
+      });
     setIsCreateUserLoading(false);
   };
 
@@ -86,13 +82,12 @@ export default function CreateUser({
       password: "",
       firstname: "",
       lastname: "",
-      active: false, //  active, se inicializa en falso para su posterior activacion manual luego de la correcta creacion
+      disabled: true, //  se inicializa en true para su posterior desactivacion manual luego de la correcta creacion
       privileges: 1, // al no poseer un input por parte del usuario, estos campos no se reflejan o validan con la libreria YUP
     },
     validationSchema: validationSchema,
     onSubmit: () => {
-      userRegister(formik.values);
-      // console.log(auth.currentUser.uid);
+      submitRegister(formik.values);
       handleOpenCreateUserModal();
     },
   });
