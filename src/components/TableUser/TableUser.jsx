@@ -35,8 +35,8 @@ export default function TableUser() {
 
   const getUserData = async () => {
     const userData = await fetchUserData();
-    // const newUserData = await addNewUserData(userData);
-    setUserDataCollection(userData);
+    const newUserData = await addNewUserData(userData);
+    setUserDataCollection(newUserData);
   };
 
   const handleOpenCreateUserModal = () => {
@@ -59,7 +59,7 @@ export default function TableUser() {
   return (
     <>
       <div className="mx-[10px]">
-        <Card className="h-full w-full mt-[100px]">
+        <Card className="h-full w-full mt-[100px] max-w-7xl mx-auto">
           <CardHeader floated={false} shadow={false} className="rounded-none">
             <div className="mb-4 flex flex-col justify-between gap-8 md:flex-row md:items-center">
               <div>
