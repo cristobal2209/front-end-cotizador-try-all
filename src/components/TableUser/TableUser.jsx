@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { fetchUserData } from "../../services/tableUserService";
+import { fetchUserData, addNewUserData } from "../../services/tableUserService";
 import CreateUser from "./CreateUser";
 import {
   Button,
@@ -19,7 +19,7 @@ import {
 } from "@material-tailwind/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
-const TABLE_HEAD = ["Transaction", "Amount", "Date", "Status", "Account", ""];
+const TABLE_HEAD = ["Nombre", "Correo", "Privilegios", "Activo", ""];
 
 export default function TableUser() {
   const [isCreateUserLoading, setIsCreateUserLoading] = useState(false);
@@ -35,6 +35,7 @@ export default function TableUser() {
 
   const getUserData = async () => {
     const userData = await fetchUserData();
+    // const newUserData = await addNewUserData(userData);
     setUserDataCollection(userData);
   };
 
@@ -157,12 +158,6 @@ export default function TableUser() {
                         </Typography>
                       </td>
                       <td className={classes}>
-                        <Switch
-                          checked={!user.disabled}
-                          onChange={handleDisableUser}
-                        />
-                      </td>
-                      <td className={classes}>
                         <Typography
                           variant="small"
                           color="blue-gray"
@@ -170,6 +165,21 @@ export default function TableUser() {
                         >
                           {user.email}
                         </Typography>
+                      </td>
+                      <td className={classes}>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          Privilegio
+                        </Typography>
+                      </td>
+                      <td className={classes}>
+                        <Switch
+                          checked={!user.disabled}
+                          onChange={handleDisableUser}
+                        />
                       </td>
                     </tr>
                   );
