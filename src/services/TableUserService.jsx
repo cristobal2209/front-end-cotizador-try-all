@@ -34,6 +34,19 @@ export const userRegister = async (formValues) => {
     });
 };
 
+export const changeUserStatus = (isDisabled, UID) => {
+  const dataToSend = { status: { disabled: isDisabled }, uid: UID };
+
+  axios
+    .patch("/api/changeUserStatus", dataToSend)
+    .then((response) => {
+      console.log(response.data);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+
 export const fetchUserData = async () => {
   try {
     const response = await axios.get("/api/fetchUsers");
