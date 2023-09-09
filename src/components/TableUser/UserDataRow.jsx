@@ -16,9 +16,9 @@ export default function UserDataRow({ user, classes }) {
   const [isOpenChangeUserStateDialog, setIsOpenChangeUserStateDialog] =
     useState(false);
 
-  const handleConfirmChangeUserStatus = async () => {
+  const handleConfirmChangeUserStatus = () => {
     setUserIsDisabled(!userIsDisabled);
-    await changeUserStatus(!userIsDisabled, user.uid);
+    changeUserStatus(!userIsDisabled, user.uid);
     handleChangeUserStatusDialog();
   };
 
