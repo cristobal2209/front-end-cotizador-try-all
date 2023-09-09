@@ -42,7 +42,7 @@ export default function TableUser() {
     setOpenCreateUserModal(!openCreateUserModal);
   };
 
-  //data se ocupa para mostrar alertas personalizadas
+  //message se ocupa para mostrar alertas personalizadas
   const handleSuccessAlert = (message) => {
     getUserData();
     setOpenAlertSuccess(true);
