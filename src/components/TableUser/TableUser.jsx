@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { fetchUserData, addNewUserData } from "../../services/tableUserService";
+import { fetchUserData } from "../../services/tableUserService";
 import CreateUser from "./CreateUser";
 import UserDataRow from "./UserDataRow";
 import {
@@ -33,8 +33,9 @@ export default function TableUser() {
   const getUserData = async () => {
     setIsLoadingTable(true);
     const userData = await fetchUserData();
-    const newUserData = await addNewUserData(userData);
-    setUserDataCollection(newUserData);
+    console.log(userData);
+    //const newUserData = await addNewUserData(userData);
+    setUserDataCollection(userData);
     setIsLoadingTable(false);
   };
 

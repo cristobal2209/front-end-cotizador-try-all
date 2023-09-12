@@ -1,6 +1,6 @@
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { userRegister } from "../../services/tableUserService";
+import { createUser } from "../../services/tableUserService";
 import {
   Button,
   Input,
@@ -65,7 +65,7 @@ export default function CreateUser({
 }) {
   const submitRegister = async (formValues) => {
     setIsCreateUserLoading(true);
-    await userRegister(formValues)
+    await createUser(formValues)
       .then((message) => {
         handleSuccessAlert(message);
       })

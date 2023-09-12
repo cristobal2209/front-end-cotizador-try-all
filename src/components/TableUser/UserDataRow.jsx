@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Button,
   Typography,
@@ -40,7 +40,11 @@ export default function UserDataRow({ user, classes }) {
       </td>
       <td className={classes}>
         <Typography variant="small" color="blue-gray" className="font-normal">
-          {user.privileges === 1 ? <>Usuario</> : <>Admin</>}
+          {user.customClaims?.privileges === 1
+            ? "Usuario"
+            : user.customClaims?.privileges === 2
+            ? "Admin"
+            : ""}
         </Typography>
       </td>
       <td className={classes}>
