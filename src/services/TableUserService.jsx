@@ -43,15 +43,23 @@ export const changeUserStatus = (isDisabled, UID) => {
       console.log(response.data);
     })
     .catch((error) => {
-      console.log(error);
+      throw new Error(error);
     });
 };
 
 export const fetchUserData = async () => {
+  // await axios
+  //   .get("/api/fetchUsers")
+  //   .then((response) => {
+  //     return response.data;
+  //   })
+  //   .catch((error) => {
+  //     throw new Error(error);
+  //   });
   try {
     const response = await axios.get("/api/fetchUsers");
     return response.data;
   } catch (error) {
-    console.log(error);
+    throw new Error(error);
   }
 };
