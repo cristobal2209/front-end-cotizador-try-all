@@ -3,6 +3,7 @@ import { fetchUserData } from "../../services/tableUserService";
 import CreateUser from "./CreateUser";
 import UserDataRow from "./UserDataRow";
 import AlertFailed from "./AlertFailed";
+import AlertSuccess from "./AlertSuccess";
 import {
   Button,
   Spinner,
@@ -44,25 +45,25 @@ export default function TableUser() {
     setOpenCreateUserModal(!openCreateUserModal);
   };
 
-  const handleOpenAlertSuccess = () => {
-    setOpenAlertSuccess(!openAlertSuccess);
+  const handleOpenAlertSuccess = (boolean) => {
+    setOpenAlertSuccess(boolean);
   };
 
-  const handleOpenFailedAlert = () => {
-    setOpenAlertFailed(!openAlertFailed);
+  const handleOpenAlertFailed = (boolean) => {
+    setOpenAlertFailed(boolean);
   };
 
   //message se ocupa para mostrar alertas personalizadas
   const handleSuccessAlert = (message) => {
     getUserData();
     setAlertData(message);
-    handleOpenAlertSuccess();
+    handleOpenAlertSuccess(true);
   };
 
   //error se ocupa para mostrar el error al usuario
   const handleFailedAlert = (error) => {
     setAlertData(error);
-    handleOpenFailedAlert();
+    handleOpenAlertFailed(true);
   };
 
   return (
@@ -100,21 +101,14 @@ export default function TableUser() {
                     >
                       Crear usuario
                     </Button>
-                    <Alert
+                    <AlertSuccess
                       open={openAlertSuccess}
-                      onClose={() => setOpenAlertSuccess(false)}
-                      className="fixed w-auto right-[8px] mt-[-60px]"
-                      color="green"
-                      animate={{
-                        mount: { y: 0 },
-                        unmount: { y: 100 },
-                      }}
-                    >
-                      Usuario Creado
-                    </Alert>
+                      handler={handleOpenAlertSuccess}
+                      data={alertData}
+                    />
                     <AlertFailed
                       open={openAlertFailed}
-                      handler={handleOpenFailedAlert}
+                      handler={handleOpenAlertFailed}
                       error={alertData}
                     />
                   </>
