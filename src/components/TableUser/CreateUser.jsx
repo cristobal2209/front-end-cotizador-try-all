@@ -60,8 +60,8 @@ export default function CreateUser({
   handleSuccessAlert,
   handleFailedAlert,
   setIsCreateUserLoading,
-  openCreateUserModal,
-  handleOpenCreateUserModal,
+  open,
+  handler,
 }) {
   const submitRegister = async (formValues) => {
     setIsCreateUserLoading(true);
@@ -70,6 +70,7 @@ export default function CreateUser({
         handleSuccessAlert(message);
       })
       .catch((error) => {
+        console.log("error en componente CreateUser", error);
         handleFailedAlert(error);
       });
     setIsCreateUserLoading(false);
@@ -88,17 +89,13 @@ export default function CreateUser({
     validationSchema: validationSchema,
     onSubmit: () => {
       submitRegister(formik.values);
-      handleOpenCreateUserModal();
+      handler();
     },
   });
 
   return (
     <>
-      <Dialog
-        open={openCreateUserModal}
-        handler={handleOpenCreateUserModal}
-        className="z-0"
-      >
+      <Dialog open={open} handler={handler} className="z-0">
         <DialogHeader>Crear nuevo usuario</DialogHeader>
         <DialogBody divider>
           <div className="py-2">
@@ -183,12 +180,7 @@ export default function CreateUser({
           </div>
         </DialogBody>
         <DialogFooter>
-          <Button
-            variant="text"
-            color="red"
-            onClick={handleOpenCreateUserModal}
-            className="mr-1"
-          >
+          <Button variant="text" color="red" onClick={handler} className="mr-1">
             <span>Cancelar</span>
           </Button>
           <Button

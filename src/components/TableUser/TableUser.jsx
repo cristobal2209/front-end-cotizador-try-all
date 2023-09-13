@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { fetchUserData } from "../../services/tableUserService";
 import CreateUser from "./CreateUser";
 import UserDataRow from "./UserDataRow";
+import AlertFailed from "./AlertFailed";
 import {
   Button,
   Spinner,
@@ -24,6 +25,7 @@ export default function TableUser() {
   const [openAlertFailed, setOpenAlertFailed] = useState(false);
   const [userDataCollection, setUserDataCollection] = useState([{}]);
   const [openCreateUserModal, setOpenCreateUserModal] = useState(false);
+  const [alertData, setAlertData] = useState();
 
   useEffect(() => {
     document.title = "Tabla Usuarios";
@@ -43,15 +45,25 @@ export default function TableUser() {
     setOpenCreateUserModal(!openCreateUserModal);
   };
 
+  const handleOpenAlertSuccess = () => {
+    setOpenAlertSuccess(!openAlertSuccess);
+  };
+
+  const handleOpenFailedAlert = () => {
+    setOpenAlertFailed(!openAlertFailed);
+  };
+
   //message se ocupa para mostrar alertas personalizadas
   const handleSuccessAlert = (message) => {
     getUserData();
-    setOpenAlertSuccess(true);
+    setAlertData(message);
+    handleOpenAlertSuccess();
   };
 
   //error se ocupa para mostrar el error al usuario
   const handleFailedAlert = (error) => {
-    setOpenAlertFailed(true);
+    setAlertData(error);
+    handleOpenFailedAlert();
   };
 
   return (
@@ -92,7 +104,7 @@ export default function TableUser() {
                     <Alert
                       open={openAlertSuccess}
                       onClose={() => setOpenAlertSuccess(false)}
-                      className="fixed w-auto right-[26px] mt-[50px]"
+                      className="fixed w-auto right-[8px] mt-[-60px]"
                       color="green"
                       animate={{
                         mount: { y: 0 },
@@ -101,18 +113,11 @@ export default function TableUser() {
                     >
                       Usuario Creado
                     </Alert>
-                    <Alert
+                    <AlertFailed
                       open={openAlertFailed}
-                      onClose={() => setOpenAlertFailed(false)}
-                      className="fixed w-auto right-[16px] mt-[50px]"
-                      color="red"
-                      animate={{
-                        mount: { y: 0 },
-                        unmount: { y: 100 },
-                      }}
-                    >
-                      Error al crear usuario
-                    </Alert>
+                      handler={handleOpenFailedAlert}
+                      data={alertData}
+                    />
                   </>
                 )}
               </div>
@@ -179,8 +184,8 @@ export default function TableUser() {
             handleSuccessAlert={handleSuccessAlert}
             handleFailedAlert={handleFailedAlert}
             setIsCreateUserLoading={setIsCreateUserLoading}
-            openCreateUserModal={openCreateUserModal}
-            handleOpenCreateUserModal={handleOpenCreateUserModal}
+            open={openCreateUserModal}
+            handler={handleOpenCreateUserModal}
           />
         )}
       </div>

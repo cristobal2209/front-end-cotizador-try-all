@@ -30,7 +30,8 @@ export const createUser = async (formValues) => {
       return response.data;
     })
     .catch((error) => {
-      throw new Error(error);
+      console.log("error en servicio:", error.response.data);
+      throw new Error(error.response.data);
     });
 };
 
