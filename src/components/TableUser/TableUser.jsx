@@ -35,7 +35,6 @@ export default function TableUser() {
   const getUserData = async () => {
     setIsLoadingTable(true);
     const userData = await fetchUserData();
-    console.log(userData);
     //const newUserData = await addNewUserData(userData);
     setUserDataCollection(userData);
     setIsLoadingTable(false);
@@ -116,7 +115,7 @@ export default function TableUser() {
                     <AlertFailed
                       open={openAlertFailed}
                       handler={handleOpenFailedAlert}
-                      data={alertData}
+                      error={alertData}
                     />
                   </>
                 )}

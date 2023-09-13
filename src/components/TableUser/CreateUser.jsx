@@ -70,7 +70,6 @@ export default function CreateUser({
         handleSuccessAlert(message);
       })
       .catch((error) => {
-        console.log("error en componente CreateUser", error);
         handleFailedAlert(error);
       });
     setIsCreateUserLoading(false);

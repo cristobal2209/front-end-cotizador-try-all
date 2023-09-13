@@ -1,7 +1,6 @@
 import { Alert } from "@material-tailwind/react";
 
-export default function AlertFailed({ open, handler, data }) {
-  console.log(data);
+export default function AlertFailed({ open, handler, error }) {
   return (
     <>
       <Alert
@@ -14,7 +13,12 @@ export default function AlertFailed({ open, handler, data }) {
           unmount: { y: 100 },
         }}
       >
-        Error al crear usuario
+        Error:{" "}
+        {error
+          ? error.message
+            ? error.message
+            : "Error , por favor intente nuevamente"
+          : ""}
       </Alert>
     </>
   );

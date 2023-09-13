@@ -24,15 +24,36 @@ export const createUser = async (formValues) => {
   formValues.displayName = formValues.firstname + " " + formValues.lastname;
   delete formValues.firstname;
   delete formValues.lastname;
-  await axios
-    .post("/api/createUser", formValues)
-    .then((response) => {
-      return response.data;
-    })
-    .catch((error) => {
-      console.log("error en servicio:", error.response.data);
-      throw new Error(error.response.data);
-    });
+  // await axios
+  //   .post("/api/createUser", formValues)
+  //   .then((response) => {
+  //     console.log(response);
+  //     return response.data;
+  //   })
+  //   .catch((error) => {
+  //     //console.log(error);
+  //     if (error.response) {
+  //       if (error.response.data.code === "auth/email-already-exists") {
+  //         throw new Error("El correo ya está siendo ocupado por otra cuenta.");
+  //       }
+  //     } else {
+  //       throw new Error("Ha ocurrido un error, por favor intente nuevamente.");
+  //     }
+  //   });
+
+  try {
+    const response = await axios.post("/api/createUser", formValues);
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      if (error.response.data.code === "auth/email-already-exists") {
+        throw new Error("El correo ya está siendo ocupado por otra cuenta.");
+      }
+    } else {
+      throw new Error("Ha ocurrido un error, por favor intente nuevamente.");
+    }
+  }
 };
 
 export const changeUserStatus = (isDisabled, UID) => {
@@ -44,7 +65,7 @@ export const changeUserStatus = (isDisabled, UID) => {
       console.log(response.data);
     })
     .catch((error) => {
-      throw new Error(error);
+      throw new Error("Error al crear un usuario");
     });
 };
 
