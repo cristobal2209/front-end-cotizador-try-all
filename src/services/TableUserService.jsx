@@ -27,7 +27,6 @@ export const createUser = async (formValues) => {
 
   try {
     const response = await axios.post("/api/createUser", formValues);
-    console.log(response.data);
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -35,37 +34,27 @@ export const createUser = async (formValues) => {
         throw new Error("El correo ya está siendo ocupado por otra cuenta.");
       }
     } else {
-      throw new Error("Ha ocurrido un error, por favor intente nuevamente.");
+      throw new Error("No se ha podido crear un usuario.");
     }
   }
 };
 
-export const changeUserStatus = (isDisabled, UID) => {
+export const changeUserStatus = async (isDisabled, UID) => {
   const dataToSend = { status: { disabled: isDisabled }, uid: UID };
 
-  axios
-    .patch("/api/changeUserStatus", dataToSend)
-    .then((response) => {
-      console.log(response.data);
-    })
-    .catch((error) => {
-      throw new Error("Error al cambiar privilegios");
-    });
+  try {
+    const response = await axios.patch("/api/changeUserStatus", dataToSend);
+    return response.data;
+  } catch (error) {
+    throw new Error("No se pudo cambiar los privilegios.");
+  }
 };
 
 export const fetchUserData = async () => {
-  // await axios
-  //   .get("/api/fetchUsers")
-  //   .then((response) => {
-  //     return response.data;
-  //   })
-  //   .catch((error) => {
-  //     throw new Error(error);
-  //   });
   try {
     const response = await axios.get("/api/fetchUsers");
     return response.data;
   } catch (error) {
-    throw new Error(error);
+    throw new Error("No se pudo recuperar los datos de usuarios.");
   }
 };

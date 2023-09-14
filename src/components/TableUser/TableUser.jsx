@@ -159,6 +159,8 @@ export default function TableUser() {
                             user={user}
                             classes={classes}
                             key={user.uid}
+                            handleSuccessAlert={handleSuccessAlert}
+                            handleFailedAlert={handleFailedAlert}
                           />
                         </tr>
                       );
@@ -169,7 +171,7 @@ export default function TableUser() {
             </table>
           </CardBody>
           <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
-            {/* paginador */}
+            <>{/* paginador */}</>
           </CardFooter>
         </Card>
         {openCreateUserModal && (

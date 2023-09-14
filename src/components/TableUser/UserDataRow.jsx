@@ -11,14 +11,25 @@ import {
 
 import { changeUserStatus } from "../../services/tableUserService";
 
-export default function UserDataRow({ user, classes }) {
+export default function UserDataRow({
+  user,
+  classes,
+  handleSuccessAlert,
+  handleFailedAlert,
+}) {
   const [userIsDisabled, setUserIsDisabled] = useState(user.disabled);
   const [isOpenChangeUserStateDialog, setIsOpenChangeUserStateDialog] =
     useState(false);
 
   const handleConfirmChangeUserStatus = () => {
     setUserIsDisabled(!userIsDisabled);
-    changeUserStatus(!userIsDisabled, user.uid);
+    changeUserStatus(!userIsDisabled, user.uid)
+      .then((data) => {
+        handleSuccessAlert(data);
+      })
+      .catch((error) => {
+        handleFailedAlert(error);
+      });
     handleChangeUserStatusDialog();
   };
 
@@ -30,21 +41,23 @@ export default function UserDataRow({ user, classes }) {
     <>
       <td className={classes}>
         <Typography variant="small" color="blue-gray" className="font-normal">
-          {user.displayName}
+          <>{user.displayName}</>
         </Typography>
       </td>
       <td className={classes}>
         <Typography variant="small" color="blue-gray" className="font-normal">
-          {user.email}
+          <>{user.email}</>
         </Typography>
       </td>
       <td className={classes}>
         <Typography variant="small" color="blue-gray" className="font-normal">
-          {user.customClaims?.privileges === 1
-            ? "Usuario"
-            : user.customClaims?.privileges === 2
-            ? "Admin"
-            : ""}
+          <>
+            {user.customClaims?.privileges === 1
+              ? "Usuario"
+              : user.customClaims?.privileges === 2
+              ? "Admin"
+              : ""}
+          </>
         </Typography>
       </td>
       <td className={classes}>
@@ -74,7 +87,7 @@ export default function UserDataRow({ user, classes }) {
       <Dialog
         open={isOpenChangeUserStateDialog}
         handler={handleChangeUserStatusDialog}
-        size="sm"
+        size="md"
       >
         <DialogHeader>
           <svg
@@ -98,8 +111,7 @@ export default function UserDataRow({ user, classes }) {
           <span className="font-bold">
             {userIsDisabled ? "habilitar" : "deshabilitar"}
           </span>{" "}
-          el usuario <span className="font-bold">{user.email}</span>:{" "}
-          <span className="font-bold">{user.displayName}</span>?
+          el usuario <span className="font-bold">{user.email}</span>?
         </DialogBody>
         <DialogFooter>
           <Button
