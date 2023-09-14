@@ -47,10 +47,16 @@ export default function TableUser() {
 
   const handleOpenAlertSuccess = (boolean) => {
     setOpenAlertSuccess(boolean);
+    setTimeout(() => {
+      setOpenAlertSuccess(false);
+    }, 5000);
   };
 
   const handleOpenAlertFailed = (boolean) => {
     setOpenAlertFailed(boolean);
+    setTimeout(() => {
+      setOpenAlertFailed(false);
+    }, 5000);
   };
 
   //message se ocupa para mostrar alertas personalizadas
