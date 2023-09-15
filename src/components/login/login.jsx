@@ -23,6 +23,10 @@ export default function Login() {
   }
 
   useEffect(() => {
+    console.log(auth);
+  });
+
+  useEffect(() => {
     document.title = "Login";
   }, []);
 

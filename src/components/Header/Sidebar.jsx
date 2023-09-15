@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@material-tailwind/react";
+import { logOut } from "../../services/SidebarService";
 import {
   ChartPieIcon,
   UsersIcon,
@@ -18,6 +19,10 @@ export default function Sidebar({ setIsSidebarOpen }) {
     setIsSidebarOpen(false);
     navigate("manage/articles");
   }
+
+  const handleLogOut = () => {
+    logOut() ? navigate("/") : "";
+  };
 
   function handleNavigateUsers() {
     setIsSidebarOpen(false);
@@ -58,7 +63,7 @@ export default function Sidebar({ setIsSidebarOpen }) {
           </li>
           <li>
             <Button
-              disabled={true}
+              onClick={() => handleLogOut()}
               className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
             >
               <ArrowRightOnRectangleIcon strokeWidth={2} className="h-6 w-6" />
