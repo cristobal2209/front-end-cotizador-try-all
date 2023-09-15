@@ -1,12 +1,27 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../firebaseConfig";
-import { signInWithEmailAndPassword } from "@firebase/auth";
+import { signInWithEmailAndPassword, onAuthStateChanged } from "@firebase/auth";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/auth.user
+        navigate("/home");
+        // ...
+      } else {
+        // User is signed out
+        // ...
+      }
+    });
+    document.title = "Login";
+  }, []);
 
   function signIn(e) {
     e.preventDefault();
@@ -18,17 +33,12 @@ export default function Login() {
       })
       .catch((error) => {
         // console.log(error);
-        navigate("/");
       });
   }
 
   useEffect(() => {
     console.log(auth);
   });
-
-  useEffect(() => {
-    document.title = "Login";
-  }, []);
 
   return (
     <main className=" w-full  bg-bgDark">

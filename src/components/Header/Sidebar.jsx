@@ -21,13 +21,18 @@ export default function Sidebar({ setIsSidebarOpen }) {
   }
 
   const handleLogOut = () => {
-    logOut() ? navigate("/") : "";
+    logOut() ? navigate("/login") : "";
   };
 
   function handleNavigateUsers() {
     setIsSidebarOpen(false);
     navigate("manage/users");
   }
+
+  const handleNavigateQuotes = () => {
+    setIsSidebarOpen(false);
+    navigate("manage/quotes");
+  };
 
   return (
     <div className="flex flex-col justify-between overflow-y-auto">
@@ -36,20 +41,11 @@ export default function Sidebar({ setIsSidebarOpen }) {
         <ul className="space-y-2">
           <li>
             <Button
-              disabled={true}
+              onClick={() => handleNavigateQuotes()}
               className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
             >
               <CpuChipIcon strokeWidth={2} className="h-6 w-6" /> Cotizaciones
-              Artículos
-            </Button>
-          </li>
-          <li>
-            <Button
-              className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
-              disabled={true}
-            >
-              <BriefcaseIcon strokeWidth={2} className="h-6 w-6" /> Cotizaciones
-              Proyectos
+              Mis cotizaciones
             </Button>
           </li>
           <li>
@@ -88,7 +84,7 @@ export default function Sidebar({ setIsSidebarOpen }) {
           <li>
             <Button
               className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
-              onClick={handleNavigateUsers}
+              onClick={() => handleNavigateUsers}
             >
               <UsersIcon strokeWidth={2} className="h-6 w-6" />
               Usuarios

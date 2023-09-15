@@ -14,9 +14,8 @@ export default function Router() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/home" element={<MainLayout />}>
-          <Route path="" element={<Home />} />
-          <Route path="manage" element={<TableArticle />} />
+        <Route path="/" element={<MainLayout />}>
+          <Route path="home" element={<Home />} />
           <Route path="manage/articles" element={<TableArticle />} />
           <Route path="manage/quotes" element={<TableQuote />} />
           <Route path="manage/users" element={<TableUser />} />
@@ -25,7 +24,7 @@ export default function Router() {
           <Route path="search/:articleSearch" element={<SearchResults />} />
           <Route path="uploadDownload" element={<PruebaUploadDownload />} />
         </Route>
-        <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
     </BrowserRouter>
   );

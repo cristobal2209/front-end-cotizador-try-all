@@ -1,6 +1,8 @@
 import { Card, CardHeader } from "@material-tailwind/react";
 import { useEffect } from "react";
 import { auth } from "../../firebaseConfig";
+import { useNavigate } from "react-router-dom";
+import { onAuthStateChanged } from "firebase/auth";
 
 const enterprises = [
   {
@@ -48,6 +50,7 @@ const enterprises = [
 ];
 
 function GridEnterprises({ enterprises }) {
+  const navigate = useNavigate();
   useEffect(() => {
     document.title = "Home";
   }, []);
