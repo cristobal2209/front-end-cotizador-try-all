@@ -9,25 +9,24 @@ import {
   ArrowRightOnRectangleIcon,
   UserCircleIcon,
   BriefcaseIcon,
-  CpuChipIcon,
 } from "@heroicons/react/24/outline";
 
 export default function Sidebar({ setIsSidebarOpen }) {
   const navigate = useNavigate();
 
-  function handleNavigateArticles() {
+  const handleNavigateArticles = () => {
     setIsSidebarOpen(false);
     navigate("manage/articles");
-  }
+  };
 
   const handleLogOut = () => {
     logOut() ? navigate("/login") : "";
   };
 
-  function handleNavigateUsers() {
+  const handleNavigateUsers = () => {
     setIsSidebarOpen(false);
     navigate("manage/users");
-  }
+  };
 
   const handleNavigateQuotes = () => {
     setIsSidebarOpen(false);
@@ -44,7 +43,7 @@ export default function Sidebar({ setIsSidebarOpen }) {
               onClick={() => handleNavigateQuotes()}
               className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
             >
-              <CpuChipIcon strokeWidth={2} className="h-6 w-6" /> Cotizaciones
+              <BriefcaseIcon strokeWidth={2} className="h-6 w-6" />
               Mis cotizaciones
             </Button>
           </li>
@@ -84,7 +83,7 @@ export default function Sidebar({ setIsSidebarOpen }) {
           <li>
             <Button
               className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
-              onClick={() => handleNavigateUsers}
+              onClick={() => handleNavigateUsers()}
             >
               <UsersIcon strokeWidth={2} className="h-6 w-6" />
               Usuarios
@@ -93,7 +92,7 @@ export default function Sidebar({ setIsSidebarOpen }) {
           <li>
             <Button
               className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
-              onClick={handleNavigateArticles}
+              onClick={() => handleNavigateArticles()}
             >
               <ClipboardDocumentCheckIcon strokeWidth={2} className="h-6 w-6" />{" "}
               Artículos

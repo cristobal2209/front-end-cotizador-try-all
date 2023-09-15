@@ -16,7 +16,6 @@ export default function MainLayout() {
         // https://firebase.google.com/docs/reference/js/auth.user
         // ...
         setUserIsLogged(true);
-        navigate("/home");
       } else {
         // User is signed out
         // ...
