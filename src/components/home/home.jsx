@@ -52,7 +52,7 @@ const enterprises = [
 function GridEnterprises({ enterprises }) {
   const navigate = useNavigate();
   useEffect(() => {
-    document.title = "Home";
+    document.title = "Página principal";
   }, []);
   useEffect(() => {
     console.log(auth);
