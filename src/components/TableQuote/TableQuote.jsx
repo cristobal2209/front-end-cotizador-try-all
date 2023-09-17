@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { fetchUserQuotes } from "../../services/TableQuoteService";
+import UserQuoteRow from "./UserQuoteRow";
 import {
   Button,
   Spinner,
@@ -20,7 +21,6 @@ export default function TableQuote() {
   const [openAlertFailed, setOpenAlertFailed] = useState(false);
   const [userQuotesCollection, setUserQuotesCollection] = useState([{}]);
   const [alertData, setAlertData] = useState();
-  const [currentUserUID, setCurrentUserUID] = useState();
 
   useEffect(() => {
     document.title = "Tabla Usuarios";
@@ -30,7 +30,8 @@ export default function TableQuote() {
   const getUserQuotes = async () => {
     setIsLoadingTable(true);
     const userQuotes = await fetchUserQuotes();
-    //setUserQuotesCollection(userQuotes);
+    console.log(userQuotes);
+    setUserQuotesCollection(userQuotes);
     setIsLoadingTable(false);
   };
 
@@ -69,11 +70,10 @@ export default function TableQuote() {
             <div className="mb-4 flex flex-col justify-between gap-8 md:flex-row md:items-center">
               <div>
                 <Typography variant="h5" color="blue-gray">
-                  Tabla de gestión de usuarios
+                  Mis cotizaciones
                 </Typography>
                 <Typography color="gray" className="mt-1 font-normal">
-                  En esta sección podrá gestionar los usuarios que se encuentran
-                  en el sistema.
+                  Aquí podrá ver las cotizaciones que usted ha hecho.
                 </Typography>
               </div>
               <div className="flex w-full shrink-0 gap-2 md:w-max">
@@ -127,23 +127,22 @@ export default function TableQuote() {
                   </tr>
                 ) : (
                   <>
-                    {userQuotesCollection.map((user, index) => {
+                    {userQuotesCollection.map((quote, index) => {
                       const isLast = index === userQuotesCollection.length - 1;
                       const classes = isLast
                         ? "p-4"
                         : "p-4 border-b border-blue-gray-50";
 
                       return (
-                        <></>
-                        // <tr key={user.uid}>
-                        //   <UserQuoteRow
-                        //     user={user}
-                        //     classes={classes}
-                        //     key={user.uid}
-                        //     handleSuccessAlert={handleSuccessAlert}
-                        //     handleFailedAlert={handleFailedAlert}
-                        //   />
-                        // </tr>
+                        <tr key={quote.id}>
+                          <UserQuoteRow
+                            quote={quote}
+                            classes={classes}
+                            key={quote.id}
+                            handleSuccessAlert={handleSuccessAlert}
+                            handleFailedAlert={handleFailedAlert}
+                          />
+                        </tr>
                       );
                     })}
                   </>

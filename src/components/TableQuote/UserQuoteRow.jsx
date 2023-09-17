@@ -19,21 +19,29 @@ export default function UserQuoteRow({
     <>
       <td className={classes}>
         <Typography variant="small" color="blue-gray" className="font-normal">
-          <></>
+          {quote.quoteName}
+        </Typography>
+      </td>
+      <td className={classes}>
+        <Typography variant="small" color="blue-gray" className="font-normal">
+          {quote.version}
+        </Typography>
+      </td>
+      <td className={classes}>
+        <Typography variant="small" color="blue-gray" className="font-normal">
+          {quote.state == 1
+            ? "Activa"
+            : quote.state == 2
+            ? "En curso"
+            : quote.state == 3
+            ? "Finalizada"
+            : "Existe"}
         </Typography>
       </td>
       <td className={classes}>
         <Typography variant="small" color="blue-gray" className="font-normal">
           <></>
         </Typography>
-      </td>
-      <td className={classes}>
-        <Typography variant="small" color="blue-gray" className="font-normal">
-          <></>
-        </Typography>
-      </td>
-      <td className={classes}>
-        <Switch checked={!userIsDisabled} onChange={""} />
       </td>
       <td className={classes}>
         <Button variant="text" className="">
