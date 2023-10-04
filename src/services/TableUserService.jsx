@@ -52,7 +52,7 @@ export const changeUserStatus = async (isDisabled, UID) => {
 
 export const fetchUserData = async () => {
   try {
-    const response = await axios.get("/api/fetchUsers");
+    const response = await axios.get("/api/getUsers");
     return response.data;
   } catch (error) {
     throw new Error("No se pudo recuperar los datos de usuarios.");
