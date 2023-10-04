@@ -31,7 +31,7 @@ export default function AlertSuccess({ open, handler, data }) {
           unmount: { y: 100 },
         }}
       >
-        {data?.createdUser ? `Usuario ${data.createdUser} creado.` : ""}
+        {data?.email ? `Usuario ${data.email} creado.` : ""}
         {data?.userStatusChanged && data.disabled
           ? `Usuario ${data.userStatusChanged} deshabilitado.`
           : ""}
