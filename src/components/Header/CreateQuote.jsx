@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { createQuote } from "../../services/createQuoteService";
-import { auth } from "../../firebaseConfig";
 
 import {
   CheckIcon,
