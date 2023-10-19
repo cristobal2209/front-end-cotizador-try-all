@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import PropTypes from "prop-types";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { createQuote } from "../../services/createQuoteService";
@@ -28,6 +27,8 @@ const TEMPLATE_QUOTE = {
   date: "",
   state: "",
   version: "",
+  responsibleName: "",
+  responsibleUUID: "",
 };
 
 const validationSchema = Yup.object().shape({
@@ -36,7 +37,7 @@ const validationSchema = Yup.object().shape({
     .max(20, "El nombre debe contener a lo mas 20 caracteres")
     .required("El nombre es obligatorio")
     .matches(
-      /^[a-zA-Z0-9]*$/,
+      /^[a-zA-Z0-9 ]*$/,
       "No se permiten caracteres especiales en el nombre"
     ),
 });
@@ -74,7 +75,7 @@ export default function CreateQuote() {
     setIsLoading(true);
     try {
       handleOpenQuoteNameAlert();
-      await createQuote(auth.currentUser.uid, quoteData);
+      await createQuote(quoteData);
       handleEditing();
     } catch (error) {
       setIsLoading(false);
