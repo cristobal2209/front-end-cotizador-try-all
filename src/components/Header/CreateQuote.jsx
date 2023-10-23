@@ -1,7 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { createQuote } from "../../services/createQuoteService";
+import {
+  createQuote,
+  subscribeToActiveQuote,
+} from "../../services/QuoteService";
 
 import {
   CheckIcon,
@@ -48,9 +51,26 @@ export default function CreateQuote() {
   const [openQuoteCreatedAlert, setOpenQuoteCreatedAlert] = useState(true);
   const [openQuoteNameAlert, setOpenQuoteNameAlert] = useState(false);
   const [currentDate] = useState(new Date());
+  const [activeQuote, setActiveQuote] = useState(null);
+  const [contador, setContador] = useState(0);
   const inputRef = useRef(null);
 
   const quoteData = TEMPLATE_QUOTE;
+
+  useEffect(() => {
+    const unsubscribe = subscribeToActiveQuote((data) => {
+      setActiveQuote(data);
+    });
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    setContador(contador + 1);
+  }, [activeQuote]);
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
@@ -61,16 +81,19 @@ export default function CreateQuote() {
   const formik = useFormik({
     initialValues: {
       quoteName: "",
+      date: currentDate.toDateString(),
+      version: "1.0",
     },
     validationSchema: validationSchema,
     onSubmit: () => {
       quoteData.quoteName = formik.values.quoteName;
+      quoteData.date = formik.values.date;
+      quoteData.version = formik.values.version;
       handleOpenQuoteNameAlert();
     },
   });
 
   const handleCreateQuote = async () => {
-    handleSetInitialQuoteData();
     setIsLoading(true);
     try {
       handleOpenQuoteNameAlert();
@@ -78,7 +101,6 @@ export default function CreateQuote() {
       handleEditing();
     } catch (error) {
       setIsLoading(false);
-      // console.log(error);
     }
     setIsQuoteCreated(true);
     setOpenQuoteCreatedAlert(true);
@@ -89,12 +111,6 @@ export default function CreateQuote() {
     if (event.key === "Enter") {
       formik.handleSubmit();
     }
-  };
-
-  const handleSetInitialQuoteData = () => {
-    quoteData.date = currentDate.toDateString();
-    quoteData.version = "1.0";
-    quoteData.state = 1;
   };
 
   const handleNewQuoteButtonPress = () => {
@@ -157,13 +173,21 @@ export default function CreateQuote() {
             </>
           ) : (
             <>
-              <Button
-                size="sm"
-                className="mx-1 rounded bg-quaternary hover:bg-quaternaryHover font-light"
-                onClick={handleNewQuoteButtonPress}
-              >
-                Nueva cotización
-              </Button>
+              {activeQuote ? (
+                <>
+                  <div>Cotizacion Activa: {activeQuote.quoteName}</div>
+                </>
+              ) : (
+                <>
+                  <Button
+                    size="sm"
+                    className="mx-1 rounded bg-quaternary hover:bg-quaternaryHover font-light"
+                    onClick={handleNewQuoteButtonPress}
+                  >
+                    Nueva cotización
+                  </Button>
+                </>
+              )}
             </>
           )}
         </>

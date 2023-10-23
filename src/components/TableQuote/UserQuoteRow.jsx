@@ -30,7 +30,7 @@ export default function UserQuoteRow({
 
   useEffect(() => {
     setQuoteStatus(String(quote.state));
-    setContador(contador + 1);
+    //setContador(contador + 1);
   }, [quote]);
 
   useEffect(() => {
