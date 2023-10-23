@@ -1,8 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  getUserQuotes,
-  subscribeToCollection,
-} from "../../services/TableQuoteService";
+import { subscribeToCollection } from "../../services/TableQuoteService";
 import UserQuoteRow from "./UserQuoteRow";
 import AlertFailed from "./AlertFailed";
 import AlertSuccess from "./AlertSuccess";
