@@ -1,4 +1,4 @@
-import { Alert } from "@material-tailwind/react";
+import { Alert, Typography } from "@material-tailwind/react";
 
 export default function AlertSuccess({ open, handler, data }) {
   function Icon() {
@@ -30,7 +30,9 @@ export default function AlertSuccess({ open, handler, data }) {
           mount: { y: 0 },
           unmount: { y: 100 },
         }}
-      ></Alert>
+      >
+        <Typography></Typography>
+      </Alert>
     </>
   );
 }

@@ -20,7 +20,7 @@ function GridSearchResults({ articleResultsCollecion }) {
   };
 
   useEffect(() => {
-    document.title= "Resultado Busqueda";
+    document.title = "Resultado Busqueda";
   }, []);
 
   return (

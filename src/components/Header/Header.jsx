@@ -30,7 +30,7 @@ export default function Header() {
   }, []);
 
   const handleclickSearchButton = () => {
-    navigate(`/home/search/${userSearch}`);
+    navigate(`/search/${userSearch}`);
   };
 
   const onChangeUserSearch = (event) => {
