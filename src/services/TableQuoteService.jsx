@@ -7,6 +7,7 @@ import {
   updateDoc,
   query,
   where,
+  onSnapshot,
 } from "firebase/firestore";
 
 //se busca que documento tiene el atributo "initialized" y se quita del arreglo
@@ -41,7 +42,7 @@ export const getUserQuotes = async () => {
   return filterUserQuotes(userQuotes);
 };
 
-export const changeQuoteStatus = async (quoteUID, newStatus) => {
+export const changeQuoteStatus = async (quoteId, newStatus) => {
   return new Promise(async (resolve, reject) => {
     try {
       const user = auth.currentUser;
@@ -50,7 +51,19 @@ export const changeQuoteStatus = async (quoteUID, newStatus) => {
         return;
       }
 
-      const quoteRef = doc(db, "usersQuotes", user.uid, "quotes", quoteUID);
+      //si el nuevo estado es 1 (activo), se buscara todas las cotizaciones que tengan ese estado y se cambiaran a 2 (en curso)
+      if (newStatus == 1) {
+        const quotesRef = collection(db, "usersQuotes", user.uid, "quotes");
+        const q = query(quotesRef, where("state", "==", 1));
+        const querySnapshot = await getDocs(q);
+
+        for (const quote of querySnapshot.docs) {
+          const docRef = doc(db, "usersQuotes", user.uid, "quotes", quote.id);
+          await updateDoc(docRef, { state: 2 });
+        }
+      }
+      //se actualiza el estado de la cotizacion
+      const quoteRef = doc(db, "usersQuotes", user.uid, "quotes", quoteId);
       await updateDoc(quoteRef, { state: newStatus });
 
       resolve(newStatus);
@@ -62,22 +75,40 @@ export const changeQuoteStatus = async (quoteUID, newStatus) => {
 };
 
 export const checkActiveQuotesExists = async () => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const user = auth.currentUser;
-      if (!user) {
-        reject("Usuario no autenticado");
-        return;
-      }
-
-      const quotesRef = collection(db, "usersQuotes", user.uid, "quotes");
-      const q = query(quotesRef, where("state", "==", 1));
-      const querySnapshot = await getDocs(q);
-
-      resolve(querySnapshot.empty);
-    } catch (error) {
-      console.error("Error al actualizar el estado:", error);
-      reject(error);
+  try {
+    const user = auth.currentUser;
+    if (!user) {
+      throw new Error("Usuario no autenticado");
     }
+
+    const quotesRef = collection(db, "usersQuotes", user.uid, "quotes");
+    const q = query(quotesRef, where("state", "==", 1));
+    const querySnapshot = await getDocs(q);
+
+    return querySnapshot.empty;
+  } catch (error) {
+    console.error("Error al actualizar el estado:", error);
+    throw new Error(error);
+  }
+};
+
+export const subscribeToCollection = (collectionName, callback) => {
+  const user = auth.currentUser;
+  if (!user) {
+    throw new Error("Usuario no autenticado");
+  }
+
+  const quotesRef = collection(db, "usersQuotes", user.uid, collectionName);
+  const unsubscribe = onSnapshot(quotesRef, (snapshot) => {
+    const data = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    console.log("Evento onSnapshot activado. Datos actualizados:", data);
+    callback(data);
   });
+
+  console.log("Suscripción a la colección configurada correctamente.");
+
+  return unsubscribe; // Retornar el unsubscribe para permitir la anulación de la suscripción.
 };

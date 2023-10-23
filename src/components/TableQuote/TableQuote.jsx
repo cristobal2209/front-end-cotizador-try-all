@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
-import { getUserQuotes } from "../../services/TableQuoteService";
+import {
+  getUserQuotes,
+  subscribeToCollection,
+} from "../../services/TableQuoteService";
 import UserQuoteRow from "./UserQuoteRow";
 import AlertFailed from "./AlertFailed";
 import AlertSuccess from "./AlertSuccess";
@@ -29,16 +32,23 @@ export default function TableQuote() {
   const [alertData, setAlertData] = useState();
 
   useEffect(() => {
-    document.title = "Tabla Usuarios";
-    getAllUserQuotes();
+    document.title = "Mis cotizaciones";
+    const unsubscribe = subscribeToCollection("quotes", (data) => {
+      setUserQuotesCollection(data);
+    });
+    return () => {
+      if (unsubscribe) {
+        unsubscribe(); // Anular la suscripción al desmontar el componente
+      }
+    };
   }, []);
 
-  const getAllUserQuotes = async () => {
-    setIsLoadingTable(true);
-    const userQuotes = await getUserQuotes();
-    setUserQuotesCollection(userQuotes);
-    setIsLoadingTable(false);
-  };
+  // const getAllUserQuotes = async () => {
+  //   setIsLoadingTable(true);
+  //   const userQuotes = await getUserQuotes();
+  //   setUserQuotesCollection(userQuotes);
+  //   setIsLoadingTable(false);
+  // };
 
   const handleOpenAlertSuccess = (boolean) => {
     setOpenAlertSuccess(boolean);
