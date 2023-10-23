@@ -26,6 +26,17 @@ export default function UserQuoteRow({
   const [newQuoteStatus, setNewQuoteStatus] = useState(quoteStatus);
   const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] =
     useState(false);
+  const [contador, setContador] = useState(0);
+
+  useEffect(() => {
+    setQuoteStatus(String(quote.state));
+    setContador(contador + 1);
+  }, [quote]);
+
+  useEffect(() => {
+    setNewQuoteStatus(quoteStatus);
+    setContador(contador + 1);
+  }, [quoteStatus]);
 
   const handleChangeUserStatus = (newQuoteStatus) => {
     setIsConfirmationDialogOpen(true);
@@ -41,7 +52,6 @@ export default function UserQuoteRow({
       quote.id,
       parseInt(newQuoteStatus, 10)
     );
-    setQuoteStatus(String(response));
     setIsConfirmationDialogOpen(false);
   };
 

@@ -30,6 +30,7 @@ export default function TableQuote() {
   const [openAlertFailed, setOpenAlertFailed] = useState(false);
   const [userQuotesCollection, setUserQuotesCollection] = useState([]);
   const [alertData, setAlertData] = useState();
+  const [contador, setContador] = useState(0);
 
   useEffect(() => {
     document.title = "Mis cotizaciones";
@@ -38,10 +39,14 @@ export default function TableQuote() {
     });
     return () => {
       if (unsubscribe) {
-        unsubscribe(); // Anular la suscripción al desmontar el componente
+        unsubscribe();
       }
     };
   }, []);
+
+  useEffect(() => {
+    setContador(contador + 1);
+  }, [userQuotesCollection]);
 
   // const getAllUserQuotes = async () => {
   //   setIsLoadingTable(true);

@@ -104,11 +104,7 @@ export const subscribeToCollection = (collectionName, callback) => {
       id: doc.id,
       ...doc.data(),
     }));
-    console.log("Evento onSnapshot activado. Datos actualizados:", data);
     callback(data);
   });
-
-  console.log("Suscripción a la colección configurada correctamente.");
-
-  return unsubscribe; // Retornar el unsubscribe para permitir la anulación de la suscripción.
+  return unsubscribe;
 };
