@@ -51,13 +51,7 @@ export default function UserDataRow({
       </td>
       <td className={classes}>
         <Typography variant="small" color="blue-gray" className="font-normal">
-          <>
-            {user.customClaims?.privileges === 1
-              ? "Usuario"
-              : user.customClaims?.privileges === 2
-              ? "Admin"
-              : ""}
-          </>
+          <>{user.customClaims?.admin ? "Admin" : "Usuario"}</>
         </Typography>
       </td>
       <td className={classes}>

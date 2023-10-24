@@ -83,7 +83,7 @@ export default function CreateUser({
       firstname: "",
       lastname: "",
       disabled: true, //  se inicializa en true para su posterior desactivacion manual luego de la correcta creacion
-      privileges: 1, // al no poseer un input por parte del usuario, estos campos no se reflejan o validan con la libreria YUP
+      admin: true, // al no poseer un input por parte del usuario, estos campos no se reflejan o validan con la libreria YUP
     },
     validationSchema: validationSchema,
     onSubmit: () => {

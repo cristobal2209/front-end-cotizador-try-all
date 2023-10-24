@@ -52,7 +52,10 @@ export const subscribeToCollection = (collectionName, callback) => {
       id: doc.id,
       ...doc.data(),
     }));
-    callback(data);
+    const newData = data.filter(
+      (object) => !Object.prototype.hasOwnProperty.call(object, "initialized")
+    );
+    callback(newData);
   });
   return unsubscribe;
 };
