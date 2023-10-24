@@ -38,10 +38,6 @@ export default function Login() {
       });
   }
 
-  useEffect(() => {
-    console.log(auth);
-  });
-
   return (
     !userIsLogged && (
       <main className=" w-full  bg-bgDark">
