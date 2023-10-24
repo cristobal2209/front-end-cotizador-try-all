@@ -11,6 +11,8 @@ import {
 import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
+import { from } from "stylis";
+import { array } from "yup";
 
 function GridSearchResults({ articleResultsCollecion }) {
   const navigate = useNavigate();
@@ -22,7 +24,7 @@ function GridSearchResults({ articleResultsCollecion }) {
   useEffect(() => {
     document.title= "Resultado Busqueda";
   }, []);
-
+  
   return (
     <div className="mx-auto grid max-w-6xl place-items-center gap-5 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {articleResultsCollecion.map((articleResult) => (
@@ -32,14 +34,14 @@ function GridSearchResults({ articleResultsCollecion }) {
           onClick={(event) => handleClick(articleResult.id)}
         >
           <CardBody className="h-32">
-            <img
-              src={articleResult.imgUrl}
+            <img  //src = campos usados desde coleccion firebase, article result y imgSrc
+              src={articleResult.imgSrc}
               alt=""
               className="h-28 w-64 object-contain"
             />
           </CardBody>
           <CardFooter>
-            <p>{articleResult.articleName}</p>
+            <p>{articleResult.description}</p>
           </CardFooter>
         </Card>
       ))}
@@ -115,18 +117,28 @@ export default function SearchResults() {
   const [articleResultsCollecion, setArticleResultsCollection] = useState([]);
   const { articleSearch } = useParams();
 
+
   useEffect(() => {
     getArticlesSearchCollection();
   }, []);
 
   const getArticlesSearchCollection = async () => {
     setIsLoading(true);
-    const querySnapshot = await getDocs(collection(db, "prueba-articulos")); //recupera desde la coleccion "prueba-articulos"
-    const newArticleSearch = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    setArticleResultsCollection(newArticleSearch);
+    const allProducts=[];
+    const collectionSnapshot = collection(db,'categories'); 
+    // const querySnapshot = await getDocs(
+    //   collection(db, "categories")
+    // );
+    
+    // db.collection("categories").snapshotChanges((querySnapshot) => {
+    //   querySnapshot.forEach((doc) => {
+    //     console.log(doc.data()); // Para los datos dentro del doc
+    //     console.log(doc.id); // Para el nombre del doc
+    //   });
+    // });
+   
+    console.log(collectionSnapshot.docs);
+    setArticleResultsCollection(allProducts);
     setIsLoading(false);
   };
 
@@ -160,6 +172,7 @@ export default function SearchResults() {
             ) : (
               <GridSearchResults
                 articleResultsCollecion={articleResultsCollecion}
+
               />
             )}
           </div>
