@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import CategoryList from "./CategoryList";
 import Sidebar from "./Sidebar";
 import ActiveQuote from "./ActiveQuote";
-import { searchInput } from "../../services/SearchService";
 import { useNavigate, Link } from "react-router-dom";
 import {
   Navbar,
@@ -17,7 +16,7 @@ import {
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 
-export default  function Header() {
+export default function Header() {
   const navigate = useNavigate();
   const [openNav, setOpenNav] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -30,9 +29,8 @@ export default  function Header() {
     );
   }, []);
 
-   const handleclickSearchButton = async() => {
-    // navigate(`/search/${userSearch}`);
-    await searchInput();
+  const handleclickSearchButton = async () => {
+    navigate(`/search/${userSearch}`);
   };
 
   const onChangeUserSearch = (event) => {

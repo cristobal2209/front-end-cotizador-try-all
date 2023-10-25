@@ -8,40 +8,33 @@ import {
   IconButton,
   Spinner,
 } from "@material-tailwind/react";
+import { getProductsFromInput } from "../../services/SearchService";
 import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "../../firebaseConfig";
-import { from } from "stylis";
-import { array } from "yup";
 
-function GridSearchResults({ articleResultsCollecion }) {
+function GridSearchResults({ products }) {
   const navigate = useNavigate();
 
-  const handleClick = (articleDataId) => {
-    navigate(`/home/articles/${articleDataId}`);
+  const handleClick = (productDataId) => {
+    navigate(`/articles/${productDataId}`);
   };
 
-  useEffect(() => {
-    document.title= "Resultado Busqueda";
-  }, []);
-  
   return (
     <div className="mx-auto grid max-w-6xl place-items-center gap-5 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {articleResultsCollecion.map((articleResult) => (
+      {products.map((productResult) => (
         <Card
           className="h-full w-56 cursor-pointer text-center shadow-md"
-          key={articleResult.id}
-          onClick={(event) => handleClick(articleResult.id)}
+          key={productResult.id}
+          onClick={(event) => handleClick(productResult.id)}
         >
           <CardBody className="h-32">
-            <img  //src = campos usados desde coleccion firebase, article result y imgSrc
-              src={articleResult.imgSrc}
+            <img //src = campos usados desde coleccion firebase, product result y imgSrc
+              src={productResult.imgSrc}
               alt=""
               className="h-28 w-64 object-contain"
             />
           </CardBody>
           <CardFooter>
-            <p>{articleResult.description}</p>
+            <p>{productResult.description}</p>
           </CardFooter>
         </Card>
       ))}
@@ -114,31 +107,19 @@ function RenderFilters() {
 export default function SearchResults() {
   const [active, setActive] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
-  const [articleResultsCollecion, setArticleResultsCollection] = useState([]);
-  const { articleSearch } = useParams();
-
+  const [productsSearchResultsCollection, setProductsSearchResultsCollection] =
+    useState([]);
+  const { productSearchParam } = useParams();
 
   useEffect(() => {
+    document.title = `Resultado Busqueda ${productSearchParam}`;
     getArticlesSearchCollection();
   }, []);
 
   const getArticlesSearchCollection = async () => {
     setIsLoading(true);
-    const allProducts=[];
-    const collectionSnapshot = collection(db,'categories'); 
-    // const querySnapshot = await getDocs(
-    //   collection(db, "categories")
-    // );
-    
-    // db.collection("categories").snapshotChanges((querySnapshot) => {
-    //   querySnapshot.forEach((doc) => {
-    //     console.log(doc.data()); // Para los datos dentro del doc
-    //     console.log(doc.id); // Para el nombre del doc
-    //   });
-    // });
-   
-    console.log(collectionSnapshot.docs);
-    setArticleResultsCollection(allProducts);
+    const searchResults = await getProductsFromInput(productSearchParam);
+    setProductsSearchResultsCollection(searchResults);
     setIsLoading(false);
   };
 
@@ -170,10 +151,7 @@ export default function SearchResults() {
             {isLoading ? (
               <Spinner className="mx-auto mt-20 h-12 w-12" />
             ) : (
-              <GridSearchResults
-                articleResultsCollecion={articleResultsCollecion}
-
-              />
+              <GridSearchResults products={productsSearchResultsCollection} />
             )}
           </div>
           {/*FIN mosaico de articulos Resultados busqueda*/}
