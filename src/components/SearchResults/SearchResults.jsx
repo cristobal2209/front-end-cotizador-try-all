@@ -105,6 +105,8 @@ function RenderFilters() {
 }
 
 export default function SearchResults() {
+ 
+  
   const [active, setActive] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [productsSearchResultsCollection, setProductsSearchResultsCollection] =
@@ -129,10 +131,14 @@ export default function SearchResults() {
     onClick: () => setActive(index),
   });
 
-  const next = () => {
-    if (active === 5) return;
+ const itemsPerPage = 30;
 
-    setActive(active + 1);
+  const totalItems = 10;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const next = () => {
+    if (active < totalPages) {
+      setActive(active + 1);
+    }
   };
 
   const prev = () => {
@@ -169,11 +175,11 @@ export default function SearchResults() {
           <ArrowLeftIcon strokeWidth={2} className="mx-auto h-4 w-4" /> Previous
         </Button>
         <div className="flex items-center justify-center gap-2">
-          <IconButton {...getItemProps(1)}>1</IconButton>
-          <IconButton {...getItemProps(2)}>2</IconButton>
-          <IconButton {...getItemProps(3)}>3</IconButton>
-          <IconButton {...getItemProps(4)}>4</IconButton>
-          <IconButton {...getItemProps(5)}>5</IconButton>
+        {[...Array(totalPages)].map((_, index) => (
+                  <IconButton key={index} {...getItemProps(index + 1)}>
+                    {index + 1}
+                  </IconButton>
+                ))}
         </div>
         <Button
           variant="text"
