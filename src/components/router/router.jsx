@@ -15,11 +15,22 @@ import { useEffect, useState } from "react";
 export default function Router() {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [counter, setCounter] = useState(0);
+  const [token, setToken] = useState(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (authUser) => {
       setUser(authUser);
+      if (authUser) {
+        authUser
+          .getIdTokenResult()
+          .then((idTokenResult) => {
+            setToken(idTokenResult);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+
       setIsLoading(false); // Set loading to false once the auth state is determined.
     });
 
@@ -28,18 +39,10 @@ export default function Router() {
     };
   }, []); // Empty dependency array ensures this effect runs only once.
 
-  useEffect(() => {
-    console.log(user);
-    incrementCounter();
-  }, [user]);
-
   onAuthStateChanged(auth, (authUser) => {
     setUser(authUser);
+    console.log(authUser);
   });
-
-  const incrementCounter = () => {
-    setCounter(counter + 1);
-  };
 
   return isLoading ? (
     // Display a loading spinner or some loading message here
@@ -56,27 +59,15 @@ export default function Router() {
         <Route path="articles/:articleId" element={<Article />} />
         <Route path="quoteDetails/:quoteId" element={<QuoteDetails />} />
         <Route path="search/:articleSearch" element={<SearchResults />} />
-        <Route path="manage/articles" element={<TableArticle />} />
-        <Route path="manage/users" element={<TableUser />} />
+        {user ? (
+          <Route element={!token.claims.admin ? <Navigate to="/" /> : ""}>
+            <Route path="manage/articles" element={<TableArticle />} />
+            <Route path="manage/users" element={<TableUser />} />
+          </Route>
+        ) : (
+          <></>
+        )}
       </Route>
     </Routes>
   );
 }
-// function PrivateRoutes({ user }) {
-//   const navigate = useNavigate();
-//   if (!user) {
-//     console.log("User no logeado");
-//     <Navigate to="/login" />;
-//   }
-//   return (
-//     <Route path="/" element={<MainLayout />}>
-//       <Route path="/home" element={<Home />} />
-//       <Route path="manage/quotes" element={<TableQuote />} />
-//       <Route path="articles/:articleId" element={<Article />} />
-//       <Route path="quoteDetails/:quoteId" element={<QuoteDetails />} />
-//       <Route path="search/:articleSearch" element={<SearchResults />} />
-//       <Route path="manage/articles" element={<TableArticle />} />
-//       <Route path="manage/users" element={<TableUser />} />
-//     </Route>
-//   );
-// }
