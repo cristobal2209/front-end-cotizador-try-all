@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Home from "../home/home";
 import Article from "../Article/Article";
 import Login from "../login/login";
@@ -8,6 +8,7 @@ import TableUser from "../TableUser/TableUser";
 import SearchResults from "../SearchResults/SearchResults";
 import MainLayout from "../MainLayout/MainLayout";
 import QuoteDetails from "../QuoteDetails/QuoteDetails";
+import RedirectToLogin from "./RedirectToLogin";
 import { auth } from "../../firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
@@ -41,7 +42,6 @@ export default function Router() {
 
   onAuthStateChanged(auth, (authUser) => {
     setUser(authUser);
-    console.log(authUser);
   });
 
   return isLoading ? (
@@ -49,6 +49,12 @@ export default function Router() {
     <>{console.log("cargando")}</>
   ) : (
     <Routes>
+      <Route
+        path="*"
+        element={
+          !user ? <Navigate to="/login" replace /> : <Navigate to="/" replace />
+        }
+      />
       <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
       <Route
         path="/"
@@ -59,14 +65,13 @@ export default function Router() {
         <Route path="articles/:articleId" element={<Article />} />
         <Route path="quoteDetails/:quoteId" element={<QuoteDetails />} />
         <Route path="search/:articleSearch" element={<SearchResults />} />
+        <Route path="redirectLogin" element={<RedirectToLogin />} />
         {user ? (
           <Route element={!token.claims.admin ? <Navigate to="/" /> : ""}>
             <Route path="manage/articles" element={<TableArticle />} />
             <Route path="manage/users" element={<TableUser />} />
           </Route>
-        ) : (
-          <></>
-        )}
+        ) : null}
       </Route>
     </Routes>
   );
