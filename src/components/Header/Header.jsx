@@ -64,11 +64,11 @@ export default function Header() {
   return (
     <>
       <Navbar
-        className="fixed z-50 mx-auto rounded-none border-primary bg-primary px-4 py-1"
+        className="fixed z-50 py-3 mx-auto rounded-none border-primary bg-primary px-4"
         fullWidth={true}
         blurred={false}
       >
-        <div className="mx-auto flex h-[70px] max-w-7xl flex-row items-center text-white lg:justify-between">
+        <div className="mx-auto flex max-w-7xl flex-row items-center text-white lg:justify-between">
           {/* Boton abrir sidebar */}
           <div className="flex-shrink-0 px-2">
             <IconButton
