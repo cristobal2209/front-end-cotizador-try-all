@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import CategoryList from "./CategoryList";
 import Sidebar from "./Sidebar";
 import ActiveQuote from "./ActiveQuote";
@@ -21,6 +21,23 @@ export default function Header() {
   const [openNav, setOpenNav] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userSearch, setUserSearch] = useState("");
+  const [openCategories, setOpenCategories] = useState(false);
+  const menuRef = useRef(null);
+  const categoriesRef = useRef(null);
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleCategoriesClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleCategoriesClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleMenuClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleMenuClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     window.addEventListener(
@@ -28,6 +45,21 @@ export default function Header() {
       () => window.innerWidth >= 960 && setOpenNav(false)
     );
   }, []);
+
+  const handleCategoriesClickOutside = (event) => {
+    if (
+      categoriesRef.current &&
+      !categoriesRef.current.contains(event.target)
+    ) {
+      setOpenCategories(false);
+    }
+  };
+
+  const handleMenuClickOutside = (event) => {
+    if (menuRef.current && !menuRef.current.contains(event.target)) {
+      setIsSidebarOpen(false);
+    }
+  };
 
   const handleclickSearchButton = () => {
     navigate(`/search/${userSearch}`);
@@ -87,8 +119,31 @@ export default function Header() {
             </Link>
           </div>
           {/* llamado a categorias en escritorio */}
-          <div className="hidden lg:block">
-            <CategoryList />
+          <div className="hidden lg:block" ref={categoriesRef}>
+            <button
+              className="mx-2 flex items-center rounded-md bg-transparent px-4 py-2 font-semibold text-white hover:bg-primaryHover hover:shadow-md"
+              onClick={() => {
+                setOpenCategories(!openCategories);
+              }}
+            >
+              <CategoryList open={openCategories} ref={categoriesRef} />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className={`ml-1 block w-3 h-3 transition-transform ${
+                  openCategories ? "rotate-180" : ""
+                }`}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                />
+              </svg>
+            </button>
           </div>
           {/* barra de busqueda */}
           <div className="relative hidden w-1/3 lg:flex lg:flex-row lg:items-center lg:justify-center">
@@ -125,6 +180,7 @@ export default function Header() {
         className={`h-screen w-[300px] relative left-0 duration-300 transform ease-in-out bg-white text-primary overflow-auto ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
+        ref={menuRef}
       >
         <div
           className={`absolute  pt-[96px] w-full h-full border-4 border-r-gray-400`}

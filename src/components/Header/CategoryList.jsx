@@ -2,14 +2,7 @@ import { useState } from "react";
 
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
-export default function CategoryList() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isMobileCategoriesOpen, setIsMobileCategoriesOpen] = useState(false);
-
-  const handleToggle = () => {
-    setIsOpen(!isOpen);
-  };
-
+export default function CategoryList({ open }) {
   const categories = [
     "Categoría1",
     "Categoría2",
@@ -38,22 +31,9 @@ export default function CategoryList() {
   ));
 
   return (
-    <div className="relative">
-      <button
-        className="mx-2 flex items-center rounded-md bg-transparent px-4 py-2 font-semibold text-white hover:bg-primaryHover hover:shadow-md"
-        onClick={handleToggle}
-      >
-        Categorías
-        <div className="pl-1">
-          <ChevronDownIcon
-            strokeWidth={2}
-            className={`block h-3 w-3 transition-transform ${
-              isOpen || isMobileCategoriesOpen ? "rotate-180" : ""
-            }`}
-          />
-        </div>
-      </button>
-      {isOpen && (
+    <div className="relative font-normal">
+      Categorías
+      {open && (
         <div className="fixed left-0 top-20 flex min-h-[220px] w-full items-center justify-center rounded-md bg-primary shadow-lg ">
           <div className="grid w-2/3 grid-cols-4 gap-2 px-5 duration-300 ease-in-out">
             {renderCategories}
