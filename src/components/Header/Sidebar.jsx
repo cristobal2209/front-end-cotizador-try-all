@@ -36,26 +36,11 @@ export default function Sidebar({ setIsSidebarOpen }) {
     };
   }, []); // Empty dependency array ensures this effect runs only once.
 
-  const handleNavigateArticles = () => {
-    setIsSidebarOpen(false);
-    navigate("manage/articles");
-  };
-
   const handleLogOut = () => {
     auth
       .signOut()
       .then(<Navigate to="/login" />)
       .catch();
-  };
-
-  const handleNavigateUsers = () => {
-    setIsSidebarOpen(false);
-    navigate("manage/users");
-  };
-
-  const handleNavigateQuotes = () => {
-    setIsSidebarOpen(false);
-    navigate("manage/quotes");
   };
 
   return (
@@ -65,7 +50,10 @@ export default function Sidebar({ setIsSidebarOpen }) {
         <ul className="space-y-2">
           <li>
             <Button
-              onClick={() => handleNavigateQuotes()}
+              onClick={() => {
+                setIsSidebarOpen(false);
+                navigate("manage/quotes");
+              }}
               className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
             >
               <BriefcaseIcon strokeWidth={2} className="h-6 w-6" />
@@ -92,52 +80,61 @@ export default function Sidebar({ setIsSidebarOpen }) {
           </li>
         </ul>
       </div>
-      {/* Barra horizontal */}
-      <hr className="mx-auto my-2 w-5/6 border-primary" />
+
       {/* Sección 2 */}
       {token?.claims.admin ? (
-        <div className=" p-4">
-          <ul className="space-y-2">
-            <li>
-              <Button
-                className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
-                disabled={true}
-              >
-                <ChartPieIcon strokeWidth={2} className="h-6 w-6" /> Dashboard
-              </Button>
-            </li>
-            <li>
-              <Button
-                className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
-                onClick={() => handleNavigateUsers()}
-              >
-                <UsersIcon strokeWidth={2} className="h-6 w-6" />
-                Usuarios
-              </Button>
-            </li>
-            <li>
-              <Button
-                className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
-                onClick={() => handleNavigateArticles()}
-              >
-                <ClipboardDocumentCheckIcon
-                  strokeWidth={2}
-                  className="h-6 w-6"
-                />{" "}
-                Artículos
-              </Button>
-            </li>
-            <li>
-              <Button
-                className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
-                disabled={true}
-              >
-                <BanknotesIcon strokeWidth={2} className="h-6 w-6" />{" "}
-                Cotizaciones generales
-              </Button>
-            </li>
-          </ul>
-        </div>
+        <>
+          {/* Barra horizontal */}
+          <hr className="mx-auto my-2 w-5/6 border-primary" />
+          <div className=" p-4">
+            <ul className="space-y-2">
+              <li>
+                <Button
+                  className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
+                  disabled={true}
+                >
+                  <ChartPieIcon strokeWidth={2} className="h-6 w-6" /> Dashboard
+                </Button>
+              </li>
+              <li>
+                <Button
+                  className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
+                  onClick={() => {
+                    setIsSidebarOpen(false);
+                    navigate("manage/users");
+                  }}
+                >
+                  <UsersIcon strokeWidth={2} className="h-6 w-6" />
+                  Usuarios
+                </Button>
+              </li>
+              <li>
+                <Button
+                  className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
+                  onClick={() => {
+                    setIsSidebarOpen(false);
+                    navigate("manage/articles");
+                  }}
+                >
+                  <ClipboardDocumentCheckIcon
+                    strokeWidth={2}
+                    className="h-6 w-6"
+                  />{" "}
+                  Artículos
+                </Button>
+              </li>
+              <li>
+                <Button
+                  className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
+                  disabled={true}
+                >
+                  <BanknotesIcon strokeWidth={2} className="h-6 w-6" />{" "}
+                  Cotizaciones generales
+                </Button>
+              </li>
+            </ul>
+          </div>
+        </>
       ) : null}
     </div>
     // </div>

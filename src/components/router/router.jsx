@@ -46,7 +46,7 @@ export default function Router() {
 
   return isLoading ? (
     // Display a loading spinner or some loading message here
-    <>{console.log("cargando")}</>
+    <></>
   ) : (
     <Routes>
       <Route
