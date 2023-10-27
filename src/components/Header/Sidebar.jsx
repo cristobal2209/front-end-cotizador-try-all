@@ -1,6 +1,5 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import { Button } from "@material-tailwind/react";
-import { logOut } from "../../services/SidebarService";
 import {
   ChartPieIcon,
   UsersIcon,
@@ -10,6 +9,7 @@ import {
   UserCircleIcon,
   BriefcaseIcon,
 } from "@heroicons/react/24/outline";
+import { auth } from "../../firebaseConfig";
 
 export default function Sidebar({ setIsSidebarOpen }) {
   const navigate = useNavigate();
@@ -20,7 +20,10 @@ export default function Sidebar({ setIsSidebarOpen }) {
   };
 
   const handleLogOut = () => {
-    logOut() ? navigate("/login") : "";
+    auth
+      .signOut()
+      .then(<Navigate to="/login" />)
+      .catch();
   };
 
   const handleNavigateUsers = () => {
