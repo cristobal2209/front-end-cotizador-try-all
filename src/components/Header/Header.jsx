@@ -18,7 +18,6 @@ import {
 
 export default function Header() {
   const navigate = useNavigate();
-  const [openNav, setOpenNav] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userSearch, setUserSearch] = useState("");
   const [openCategories, setOpenCategories] = useState(false);
@@ -37,13 +36,6 @@ export default function Header() {
     return () => {
       document.removeEventListener("mousedown", handleMenuClickOutside);
     };
-  }, []);
-
-  useEffect(() => {
-    window.addEventListener(
-      "resize",
-      () => window.innerWidth >= 960 && setOpenNav(false)
-    );
   }, []);
 
   const handleCategoriesClickOutside = (event) => {
@@ -77,22 +69,6 @@ export default function Header() {
         blurred={false}
       >
         <div className="mx-auto flex h-[80px] max-w-7xl flex-row items-center text-white lg:justify-between">
-          {/* boton menu categorias */}
-          <div className="flex-shrink-0 px-2">
-            <IconButton
-              variant="text"
-              color="white"
-              className="lg:hidden"
-              onClick={() => setOpenNav(!openNav)}
-            >
-              {/* si openNav es true, muestra un icono X, sino, muestra un icono tres barras */}
-              {openNav ? (
-                <XMarkIcon className="h-6 w-6" strokeWidth={2} />
-              ) : (
-                <Bars3Icon className="h-6 w-6" strokeWidth={2} />
-              )}
-            </IconButton>
-          </div>
           {/* sidebar */}
           <div className="flex-shrink-0 px-2">
             <IconButton
@@ -126,7 +102,7 @@ export default function Header() {
                 setOpenCategories(!openCategories);
               }}
             >
-              <CategoryList open={openCategories} ref={categoriesRef} />
+              <CategoryList open={openCategories} />
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -170,10 +146,6 @@ export default function Header() {
             <ActiveQuote />
           </div>
         </div>
-        {/* si openNav es true, se abre este collapse */}
-        <Collapse open={openNav}>
-          <CategoryList />
-        </Collapse>
       </Navbar>
       {/*  */}
       <div
@@ -182,11 +154,7 @@ export default function Header() {
         }`}
         ref={menuRef}
       >
-        <div
-          className={`absolute  pt-[96px] w-full h-full border-4 border-r-gray-400`}
-        >
-          <Sidebar setIsSidebarOpen={setIsSidebarOpen} />
-        </div>
+        <Sidebar setIsSidebarOpen={setIsSidebarOpen} />
       </div>
     </>
   );

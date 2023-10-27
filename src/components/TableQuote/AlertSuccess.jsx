@@ -31,7 +31,7 @@ export default function AlertSuccess({ open, handler, data }) {
           unmount: { y: 100 },
         }}
       >
-        <Typography></Typography>
+        <Typography> </Typography>
       </Alert>
     </>
   );

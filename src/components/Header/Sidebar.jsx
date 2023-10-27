@@ -44,99 +44,106 @@ export default function Sidebar({ setIsSidebarOpen }) {
   };
 
   return (
-    <div className="flex flex-col justify-between overflow-y-auto">
-      {/* Sección 1 */}
-      <div className="p-4">
-        <ul className="space-y-2">
-          <li>
-            <Button
-              onClick={() => {
-                setIsSidebarOpen(false);
-                navigate("manage/quotes");
-              }}
-              className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
-            >
-              <BriefcaseIcon strokeWidth={2} className="h-6 w-6" />
-              Mis cotizaciones
-            </Button>
-          </li>
-          <li>
-            <Button
-              className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
-              disabled={true}
-            >
-              <UserCircleIcon strokeWidth={2} className="h-6 w-6" /> Editar
-              Perfil
-            </Button>
-          </li>
-          <li>
-            <Button
-              onClick={() => handleLogOut()}
-              className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
-            >
-              <ArrowRightOnRectangleIcon strokeWidth={2} className="h-6 w-6" />
-              Cerrar Sesión
-            </Button>
-          </li>
-        </ul>
-      </div>
+    <div
+      className={`absolute  pt-[96px] w-full h-full border-4 border-r-gray-400`}
+    >
+      <div className="flex flex-col justify-between overflow-y-auto">
+        {/* Sección 1 */}
+        <div className="p-4">
+          <ul className="space-y-2">
+            <li>
+              <Button
+                onClick={() => {
+                  setIsSidebarOpen(false);
+                  navigate("manage/quotes");
+                }}
+                className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
+              >
+                <BriefcaseIcon strokeWidth={2} className="h-6 w-6" />
+                Mis cotizaciones
+              </Button>
+            </li>
+            <li>
+              <Button
+                className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
+                disabled={true}
+              >
+                <UserCircleIcon strokeWidth={2} className="h-6 w-6" /> Editar
+                Perfil
+              </Button>
+            </li>
+            <li>
+              <Button
+                onClick={() => handleLogOut()}
+                className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
+              >
+                <ArrowRightOnRectangleIcon
+                  strokeWidth={2}
+                  className="h-6 w-6"
+                />
+                Cerrar Sesión
+              </Button>
+            </li>
+          </ul>
+        </div>
 
-      {/* Sección 2 */}
-      {token?.claims.admin ? (
-        <>
-          {/* Barra horizontal */}
-          <hr className="mx-auto my-2 w-5/6 border-primary" />
-          <div className=" p-4">
-            <ul className="space-y-2">
-              <li>
-                <Button
-                  className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
-                  disabled={true}
-                >
-                  <ChartPieIcon strokeWidth={2} className="h-6 w-6" /> Dashboard
-                </Button>
-              </li>
-              <li>
-                <Button
-                  className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
-                  onClick={() => {
-                    setIsSidebarOpen(false);
-                    navigate("manage/users");
-                  }}
-                >
-                  <UsersIcon strokeWidth={2} className="h-6 w-6" />
-                  Usuarios
-                </Button>
-              </li>
-              <li>
-                <Button
-                  className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
-                  onClick={() => {
-                    setIsSidebarOpen(false);
-                    navigate("manage/articles");
-                  }}
-                >
-                  <ClipboardDocumentCheckIcon
-                    strokeWidth={2}
-                    className="h-6 w-6"
-                  />{" "}
-                  Artículos
-                </Button>
-              </li>
-              <li>
-                <Button
-                  className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
-                  disabled={true}
-                >
-                  <BanknotesIcon strokeWidth={2} className="h-6 w-6" />{" "}
-                  Cotizaciones generales
-                </Button>
-              </li>
-            </ul>
-          </div>
-        </>
-      ) : null}
+        {/* Sección 2 */}
+        {token?.claims.admin ? (
+          <>
+            {/* Barra horizontal */}
+            <hr className="mx-auto my-2 w-5/6 border-primary" />
+            <div className=" p-4">
+              <ul className="space-y-2">
+                <li>
+                  <Button
+                    className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
+                    disabled={true}
+                  >
+                    <ChartPieIcon strokeWidth={2} className="h-6 w-6" />{" "}
+                    Dashboard
+                  </Button>
+                </li>
+                <li>
+                  <Button
+                    className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
+                    onClick={() => {
+                      setIsSidebarOpen(false);
+                      navigate("manage/users");
+                    }}
+                  >
+                    <UsersIcon strokeWidth={2} className="h-6 w-6" />
+                    Usuarios
+                  </Button>
+                </li>
+                <li>
+                  <Button
+                    className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
+                    onClick={() => {
+                      setIsSidebarOpen(false);
+                      navigate("manage/articles");
+                    }}
+                  >
+                    <ClipboardDocumentCheckIcon
+                      strokeWidth={2}
+                      className="h-6 w-6"
+                    />{" "}
+                    Artículos
+                  </Button>
+                </li>
+                <li>
+                  <Button
+                    className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
+                    disabled={true}
+                  >
+                    <BanknotesIcon strokeWidth={2} className="h-6 w-6" />{" "}
+                    Cotizaciones generales
+                  </Button>
+                </li>
+              </ul>
+            </div>
+          </>
+        ) : null}
+      </div>
     </div>
-    // </div>
   );
 }
