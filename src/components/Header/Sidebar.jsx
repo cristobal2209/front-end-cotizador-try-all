@@ -44,9 +44,7 @@ export default function Sidebar({ setIsSidebarOpen }) {
   };
 
   return (
-    <div
-      className={`absolute  pt-[96px] w-full h-full border-4 border-r-gray-400`}
-    >
+    <div className="absolute  pt-[96px] w-full h-full border-2 border-r-primary">
       <div className="flex flex-col justify-between overflow-y-auto">
         {/* Sección 1 */}
         <div className="p-4">

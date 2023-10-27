@@ -14,7 +14,7 @@ const renderCategories = categories.map((category, index) => (
   <a
     href={`#${category}`}
     key={index}
-    className="rounded-md p-2 text-white hover:bg-primaryHover hover:shadow-md "
+    className="rounded-md p-2 text-gray-500 font-semibold hover:bg-transparent hover:shadow-lg "
   >
     <div className="flex items-center gap-3 rounded-lg">
       {/* icono categoria */}
@@ -25,17 +25,12 @@ const renderCategories = categories.map((category, index) => (
   </a>
 ));
 
-export default function CategoryList({ open }) {
+export default function CategoryList() {
   return (
-    <div className="relative font-">
-      Categorías
-      {open && (
-        <div className="fixed left-0 top-20 flex min-h-[220px] w-full items-center justify-center rounded-md bg-primary shadow-lg ">
-          <div className="grid w-2/3 grid-cols-4 gap-2 px-5 duration-300 ease-in-out">
-            {renderCategories}
-          </div>
-        </div>
-      )}
+    <div className=" flex h-full w-full items-center justify-center">
+      <div className="grid w-2/3 grid-cols-4 gap-2 px-5">
+        {renderCategories}
+      </div>
     </div>
   );
 }

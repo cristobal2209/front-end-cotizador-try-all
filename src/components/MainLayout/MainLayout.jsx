@@ -4,7 +4,7 @@ import { Outlet } from "react-router-dom";
 export default function MainLayout() {
   return (
     <>
-      <header className="fixed top-0 z-50 w-full max-h-[100px]">
+      <header className="fixed top-0 z-50 w-full">
         <Header />
       </header>
       <div className="min-h-screen">
