@@ -18,7 +18,7 @@ const renderCategories = categories.map((category, index) => (
   >
     <div className="flex items-center gap-3 rounded-lg">
       {/* icono categoria */}
-      <div className={`rounded-lg bg-white p-5`}></div>
+      <div className={`rounded-lg bg-white p-5 shadow-md`}></div>
       {/* titulo categoria */}
       <div className="text-center">{category}</div>
     </div>

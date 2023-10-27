@@ -97,7 +97,7 @@ export default function Header() {
           <div className="relative hidden w-full lg:flex lg:flex-row lg:items-center lg:justify-center">
             <Button
               size="sm"
-              className=" left-0 rounded bg-transparent !shadow-none !hover:shadow-lg z-10"
+              className=" left-0 mr-1 rounded bg-transparent !shadow-none !hover:shadow- z-10 hover:bg-primaryHover"
               onClick={handleclickSearchButton}
             >
               <MagnifyingGlassIcon className="h-5 w-5" />
@@ -110,11 +110,13 @@ export default function Header() {
               color="white"
               onChange={onChangeUserSearch}
               containerProps={{
-                className: "min-w-0",
+                className: "min-w-0 bg-secondary rounded-md",
               }}
             />
             <button
-              className="py-1 mx-1 border-l-2  !absolute right-0 flex items-center rounded-r-md h-ful px-4 font-normal text-white hover:bg-primaryHover hover:shadow-lg"
+              className={`py-1 mx-1 border-l-2  !absolute right-0 flex items-center rounded-r-md h-ful px-4 font-normal text-white hover:bg-secondaryHover hover:shadow-lg ${
+                openCategories ? "bg-secondaryHover" : ""
+              }`}
               onClick={() => {
                 setOpenCategories(!openCategories);
               }}
