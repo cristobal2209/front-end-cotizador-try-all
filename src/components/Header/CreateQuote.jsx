@@ -23,7 +23,7 @@ import {
   Spinner,
 } from "@material-tailwind/react";
 
-const TEMPLATE_QUOTE = {
+const SCHEMA_QUOTE = {
   quoteName: "",
   articles: [],
   date: "",
@@ -55,12 +55,14 @@ export default function CreateQuote() {
   const [contador, setContador] = useState(0);
   const inputRef = useRef(null);
 
-  const quoteData = TEMPLATE_QUOTE;
+  const quoteData = SCHEMA_QUOTE;
 
   useEffect(() => {
+    setIsLoading(true);
     const unsubscribe = subscribeToActiveQuote((data) => {
       setActiveQuote(data);
     });
+    setIsLoading(false);
     return () => {
       if (unsubscribe) {
         unsubscribe();
@@ -158,14 +160,14 @@ export default function CreateQuote() {
               ) : null}
               <Button
                 size="sm"
-                className="mx-1 rounded bg-quaternary shadow-none hover:bg-quaternaryHover !px-2"
+                className="m-1 my-2 rounded bg-quaternary shadow-none hover:bg-quaternaryHover !px-2"
                 onClick={() => formik.handleSubmit()}
               >
                 <CheckIcon className="h-3 w-3" />
               </Button>
               <Button
                 size="sm"
-                className="mx-1 rounded bg-red-600 shadow-none hover:bg-red-400 !px-2"
+                className="m-1 my-2 rounded bg-red-600 shadow-none hover:bg-red-400 !px-2"
                 onClick={() => handleEditing()}
               >
                 <XMarkIcon className="h-3 w-3" />
@@ -174,9 +176,35 @@ export default function CreateQuote() {
           ) : (
             <>
               {activeQuote ? (
-                <>
-                  <div>Cotizacion Activa: {activeQuote.quoteName}</div>
-                </>
+                <div className="bg-quaternary pl-3 rounded-md border-whiteHover border-solid border-2 flex items-center">
+                  {/* <span className="border-dashed border-b-2 mb-1 ">
+                      Cotización activa
+                    </span> */}
+                  <span className="font-bold italic mr-2">
+                    {activeQuote.quoteName}
+                  </span>
+                  <div>
+                    <Button
+                      size="sm"
+                      className="m-1 rounded bg-transparent shadow-none hover:shadow-lg hover:bg-quaternaryHover"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="w-6 h-6"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
+                        />
+                      </svg>
+                    </Button>
+                  </div>
+                </div>
               ) : (
                 <>
                   <Button

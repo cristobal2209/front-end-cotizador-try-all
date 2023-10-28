@@ -1,15 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import CategoryList from "./CategoryList";
 import Sidebar from "./Sidebar";
-import ActiveQuote from "./ActiveQuote";
+import CreateQuote from "./CreateQuote";
 import { useNavigate, Link } from "react-router-dom";
-import {
-  Navbar,
-  Collapse,
-  IconButton,
-  Button,
-  Input,
-} from "@material-tailwind/react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../../firebaseConfig";
+import { Navbar, IconButton, Button, Input } from "@material-tailwind/react";
 import {
   Bars3Icon,
   XMarkIcon,
@@ -21,8 +17,13 @@ export default function Header() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userSearch, setUserSearch] = useState("");
   const [openCategories, setOpenCategories] = useState(false);
+  const [user, setUser] = useState(null);
   const menuRef = useRef(null);
   const categoriesRef = useRef(null);
+
+  useEffect(() => {
+    setUser(auth.currentUser);
+  }, []);
 
   useEffect(() => {
     document.addEventListener("mousedown", handleCategoriesClickOutside);
@@ -85,7 +86,7 @@ export default function Header() {
             </IconButton>
           </div>
           {/* logo */}
-          <div className="flex-shrink-0 px-2">
+          <div className="flex-shrink-0 mx-5">
             <Link to={"/"}>
               <img
                 className=""
@@ -95,24 +96,24 @@ export default function Header() {
           </div>
           {/* barra de busqueda */}
           <div className="relative hidden w-full lg:flex lg:flex-row lg:items-center lg:justify-center">
-            <Button
-              size="sm"
-              className=" left-0 mr-1 rounded bg-transparent !shadow-none !hover:shadow- z-10 hover:bg-primaryHover"
-              onClick={handleclickSearchButton}
-            >
-              <MagnifyingGlassIcon className="h-5 w-5" />
-            </Button>
             <Input
               type="search"
               name="navbarSearch"
               label="Buscar"
-              className="pr-32"
+              className="pr-48"
               color="white"
               onChange={onChangeUserSearch}
               containerProps={{
-                className: "min-w-0 bg-secondary rounded-md",
+                className: "mx-auto min-w-0 bg-secondary rounded-md",
               }}
             />
+            <Button
+              size="sm"
+              className="py-1 mx-1 right-32 rounded !absolute bg-transparent !shadow-none !hover:shadow- z-10 hover:bg-secondaryHover"
+              onClick={handleclickSearchButton}
+            >
+              <MagnifyingGlassIcon className="h-6 w-6" />
+            </Button>
             <button
               className={`py-1 mx-1 border-l-2  !absolute right-0 flex items-center rounded-r-md h-ful px-4 font-normal text-white hover:bg-secondaryHover hover:shadow-lg ${
                 openCategories ? "bg-secondaryHover" : ""
@@ -141,15 +142,33 @@ export default function Header() {
               </svg>
             </button>
           </div>
+          {/* usuario actual */}
+          <div className="hidden lg:flex mx-2 min-w-[200px] justify-center align-middle">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-7 h-7"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+              />
+            </svg>
+            <span className="mx-1">{user?.displayName}</span>
+          </div>
           {/* opcion de cotizacion actual */}
-          <div className="hidden lg:block !w-[300px]">
-            <ActiveQuote />
+          <div className="hidden lg:flex mx-2 w-1/2 justify-center">
+            <CreateQuote />
           </div>
         </div>
       </Navbar>
       {/* Sidebar */}
       <div
-        className={`h-screen w-[300px] relative left-0 duration-300 transform ease-in-out bg-white text-primary overflow-auto ${
+        className={`h-screen w-[300px] relative left-0 duration-300 transform ease-in-out bg-white  text-primary overflow-auto ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
         ref={menuRef}
