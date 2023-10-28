@@ -80,12 +80,19 @@ export default function CreateQuote() {
     }
   }, [isEditing]);
 
+  setTimeout(() => {
+    setOpenQuoteCreatedAlert(false);
+  }, 3000);
+
   const formik = useFormik({
     initialValues: {
       quoteName: "",
       date: currentDate.toDateString(),
       version: "1.0",
     },
+    validateOnMount: true,
+    validateOnChange: true,
+    validateOnBlur: true,
     validationSchema: validationSchema,
     onSubmit: () => {
       quoteData.quoteName = formik.values.quoteName;
@@ -150,8 +157,8 @@ export default function CreateQuote() {
                 onKeyDown={handleKeyPress}
                 required
               />
-              {formik.touched.quoteName && formik.errors.quoteName ? (
-                <Alert className="absolute mt-[130px] bg-red-500 !w-auto animate-pulse">
+              {formik.errors.quoteName ? (
+                <Alert className="absolute mt-[70px] bg-red-500 !w-auto animate-pulse">
                   <div className="flex flex-row items-center">
                     <ExclamationTriangleIcon className="mr-1 h-4 w-4" />
                     {formik.errors.quoteName}

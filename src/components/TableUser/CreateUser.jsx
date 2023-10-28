@@ -106,7 +106,7 @@ export default function CreateUser({
               onChange={formik.handleChange}
               required
             />
-            {formik.touched.firstname && formik.errors.firstname ? (
+            {formik.errors.firstname ? (
               <Alert className="block mt-[10px] bg-red-500 !w-auto animate-pulse">
                 <div className="flex flex-row items-center">
                   <ExclamationTriangleIcon className="mr-1 h-4 w-4" />
@@ -124,7 +124,7 @@ export default function CreateUser({
               onChange={formik.handleChange}
               required
             />
-            {formik.touched.lastname && formik.errors.lastname ? (
+            {formik.errors.lastname ? (
               <Alert className="block mt-[10px] bg-red-500 !w-auto animate-pulse">
                 <div className="flex flex-row items-center">
                   <ExclamationTriangleIcon className="mr-1 h-4 w-4" />
@@ -142,7 +142,7 @@ export default function CreateUser({
               onChange={formik.handleChange}
               required
             />
-            {formik.touched.email && formik.errors.email ? (
+            {formik.errors.email ? (
               <Alert className="block mt-[10px] bg-red-500 !w-auto animate-pulse">
                 <div className="flex flex-row items-center">
                   <ExclamationTriangleIcon className="mr-1 h-4 w-4" />
@@ -161,7 +161,7 @@ export default function CreateUser({
               onChange={formik.handleChange}
               required
             />
-            {formik.touched.password && formik.errors.password ? (
+            {formik.errors.password ? (
               <Alert className="block mt-[10px] bg-red-500 !w-auto animate-pulse">
                 <div className="flex flex-row items-center">
                   <ExclamationTriangleIcon className="mr-1 h-4 w-4" />
