@@ -29,11 +29,11 @@ export default function Login() {
   }
 
   return (
-    <main className=" w-full  bg-bgDark">
+    <main className=" w-full  bg-dark">
       <div className="mx-auto flex h-full flex-col items-center justify-center px-6 py-8 md:h-screen lg:py-0">
         <a
           href="https://www.tryall.cl/"
-          className="mb-6 flex items-center text-2xl font-semibold text-quaternary dark:text-white"
+          className="mb-6 flex items-center text-2xl font-semibold text-four dark:text-white"
         >
           <img
             className="h-15 mr-2 w-40"
@@ -50,7 +50,7 @@ export default function Login() {
                   type="email"
                   name="email"
                   id="email"
-                  className="focus:border-primary-600 text-gray block w-full rounded-lg border border-primary bg-primary p-2.5 text-center text-white focus:ring-primary dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
+                  className="focus:border-one-600 text-gray block w-full rounded-lg border border-one bg-one p-2.5 text-center text-white focus:ring-one dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
                   placeholder="Nombre de usuario"
                   required=""
                   value={email}
@@ -63,7 +63,7 @@ export default function Login() {
                   name="password"
                   id="password"
                   placeholder="Contraseña"
-                  className="text-gray block w-full rounded-lg bg-primary p-2.5 text-center text-white focus:border-primary dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
+                  className="text-gray block w-full rounded-lg bg-one p-2.5 text-center text-white focus:border-one dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
                   required=""
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -74,7 +74,7 @@ export default function Login() {
                   <button
                     onClick={signIn}
                     type="submit"
-                    className="hover:bg-primary-700 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 w-full rounded-lg bg-secondary px-5 py-2.5 text-center text-sm font-medium text-white focus:outline-none focus:ring-4"
+                    className="hover:bg-one-700 focus:ring-one-300 dark:bg-one-600 dark:hover:bg-one-700 dark:focus:ring-one-800 w-full rounded-lg bg-two px-5 py-2.5 text-center text-sm font-medium text-white focus:outline-none focus:ring-4"
                   >
                     Ingresar
                   </button>

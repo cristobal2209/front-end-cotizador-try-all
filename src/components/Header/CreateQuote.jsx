@@ -21,6 +21,7 @@ import {
   DialogFooter,
   Alert,
   Spinner,
+  Typography,
 } from "@material-tailwind/react";
 
 const SCHEMA_QUOTE = {
@@ -167,7 +168,7 @@ export default function CreateQuote() {
               ) : null}
               <Button
                 size="sm"
-                className="m-1 my-2 rounded bg-quaternary shadow-none hover:bg-quaternaryHover !px-2"
+                className="m-1 my-2 rounded bg-four shadow-none hover:bg-fourHover !px-2"
                 onClick={() => formik.handleSubmit()}
               >
                 <CheckIcon className="h-3 w-3" />
@@ -183,17 +184,17 @@ export default function CreateQuote() {
           ) : (
             <>
               {activeQuote ? (
-                <div className="bg-quaternary pl-3 rounded-md border-whiteHover border-solid border-2 flex items-center">
+                <div className="bg-four pl-3 rounded-md border-whiteHover border-solid border-2 flex items-center">
                   {/* <span className="border-dashed border-b-2 mb-1 ">
                       Cotización activa
                     </span> */}
-                  <span className="font-bold italic mr-2">
+                  <Typography className="font-bold italic mr-2">
                     {activeQuote.quoteName}
-                  </span>
+                  </Typography>
                   <div>
                     <Button
                       size="sm"
-                      className="m-1 rounded bg-transparent shadow-none hover:shadow-lg hover:bg-quaternaryHover"
+                      className="m-1 rounded bg-transparent shadow-none hover:shadow-lg hover:bg-fourHover"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -216,7 +217,7 @@ export default function CreateQuote() {
                 <>
                   <Button
                     size="sm"
-                    className="mx-1 rounded bg-quaternary hover:bg-quaternaryHover font-light"
+                    className="mx-1 rounded bg-four hover:bg-fourHover font-light"
                     onClick={handleNewQuoteButtonPress}
                   >
                     Nueva cotización

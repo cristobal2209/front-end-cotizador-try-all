@@ -50,7 +50,7 @@ function GridSearchResults({ articleResultsCollecion }) {
 function RenderFilters() {
   return (
     <aside className="flex-start col-span-1 flex flex-col pr-10 pt-20">
-      <div className=" max-w-[300px] rounded-lg bg-secondary p-4 shadow-lg">
+      <div className=" max-w-[300px] rounded-lg bg-two p-4 shadow-lg">
         Precio (CLP)
         <div className="mb-5 flex">
           <div className="w-1/2 pr-2">
@@ -95,7 +95,7 @@ function RenderFilters() {
             ></label>
             <select
               id="selectOption"
-              className="w-full rounded border border-gray-300 bg-primary px-4 py-2 text-gray-400"
+              className="w-full rounded border border-gray-300 bg-one px-4 py-2 text-gray-400"
             >
               <option value="">Marcas</option>
               <option value="option1">Bauker</option>

@@ -38,37 +38,38 @@ export default function UserDataRow({
   };
 
   return (
-    <>
+    <tr className="hover:bg-two">
       <td className={classes}>
-        <Typography variant="small" color="blue-gray" className="font-normal">
-          <>{user.displayName}</>
+        <Typography variant="small" className="font-normal text-light">
+          {user.displayName}
         </Typography>
       </td>
       <td className={classes}>
-        <Typography variant="small" color="blue-gray" className="font-normal">
-          <>{user.email}</>
+        <Typography variant="small" className="font-normal text-light">
+          {user.email}
         </Typography>
       </td>
       <td className={classes}>
-        <Typography variant="small" color="blue-gray" className="font-normal">
-          <>{user.customClaims?.admin ? "Admin" : "Usuario"}</>
+        <Typography variant="small" className="font-normal text-light">
+          {user.customClaims?.admin ? "Admin" : "Usuario"}
         </Typography>
       </td>
       <td className={classes}>
         <Switch
           checked={!userIsDisabled}
+          color="green"
           onChange={() => handleChangeUserStatusDialog()}
         />
       </td>
       <td className={classes}>
-        <Button variant="text" className="">
+        <Button variant="text" className="hover:bg-twoHover">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
             strokeWidth={2}
             stroke="currentColor"
-            className="w-4 h-4"
+            className="w-4 h-4 text-light"
           >
             <path
               strokeLinecap="round"
@@ -125,6 +126,6 @@ export default function UserDataRow({
           </Button>
         </DialogFooter>
       </Dialog>
-    </>
+    </tr>
   );
 }

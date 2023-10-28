@@ -62,9 +62,9 @@ export default function UserQuoteRow({
 
   return (
     <>
-      <tr className="hover:bg-gray-200">
+      <tr className="hover:bg-two">
         <td className={classes}>
-          <Typography variant="small" color="blue-gray" className="font-normal">
+          <Typography variant="small" className="font-normal text-light">
             {quote.quoteName}
           </Typography>
         </td>
@@ -79,21 +79,23 @@ export default function UserQuoteRow({
               value={newQuoteStatus}
               onChange={handleChangeUserStatus}
               variant="standard"
+              className="text-light"
+              menuProps={{ className: "bg-dark text-light" }}
             >
               <Option
-                className={quoteStatus === "1" ? "hidden" : ""}
+                className={` ${quoteStatus === "1" ? "hidden" : ""}`}
                 value={"1"}
               >
                 Activa
               </Option>
               <Option
-                className={quoteStatus === "2" ? "hidden" : ""}
+                className={`${quoteStatus === "2" ? "hidden" : ""}`}
                 value={"2"}
               >
                 En curso
               </Option>
               <Option
-                className={quoteStatus === "3" ? "hidden" : ""}
+                className={` ${quoteStatus === "3" ? "hidden" : ""}`}
                 value={"3"}
               >
                 Finalizada
@@ -102,19 +104,22 @@ export default function UserQuoteRow({
           </div>
         </td>
         <td className={classes}>
-          <Typography variant="small" color="blue-gray" className="font-normal">
+          <Typography
+            variant="small"
+            className="font-normal text-light opacity-70"
+          >
             {quote.date}
           </Typography>
         </td>
         <td className={classes}>
-          <Button variant="text" className="px-3">
+          <Button variant="text" className="px-3 hover:bg-twoHover">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth={1.5}
               stroke="currentColor"
-              className="w-6 h-6"
+              className="w-6 h-6 text-light"
             >
               <path
                 strokeLinecap="round"
@@ -134,7 +139,7 @@ export default function UserQuoteRow({
             <MenuHandler>
               <Button
                 variant="text"
-                className="px-3"
+                className="px-3 hover:bg-twoHover"
                 onClick={handleOpenThreeDotsOptions}
               >
                 <svg
@@ -143,7 +148,7 @@ export default function UserQuoteRow({
                   viewBox="0 0 24 24"
                   strokeWidth={1.5}
                   stroke="currentColor"
-                  className="w-6 h-6"
+                  className="w-6 h-6 text-light"
                 >
                   <path
                     strokeLinecap="round"
@@ -160,10 +165,12 @@ export default function UserQuoteRow({
             </MenuList>
           </Menu>
         </td>
-        <Dialog open={isConfirmationDialogOpen}>
-          <DialogHeader>Confirmar Cambio de Estado</DialogHeader>
-          <DialogBody>
-            ¿Estás seguro de que deseas cambiar el estado?
+        <Dialog open={isConfirmationDialogOpen} className="bg-dark">
+          <DialogHeader className="text-light">
+            Confirmar Cambio de Estado
+          </DialogHeader>
+          <DialogBody className="text-light opacity-70">
+            ¿Estás seguro en cambiar el estado?
           </DialogBody>
           <DialogFooter>
             <Button

@@ -113,14 +113,18 @@ export default function TableQuote() {
   return (
     <>
       <div className="mx-[10px] pb-[10px]">
-        <Card className="h-full w-full mt-[100px] max-w-7xl mx-auto">
-          <CardHeader floated={false} shadow={false} className="rounded-none">
+        <Card className="h-full w-full mt-[100px] max-w-7xl mx-auto bg-dark3 shadow-2xl">
+          <CardHeader
+            floated={false}
+            shadow={false}
+            className="rounded-none bg-dark3"
+          >
             <div className="mb-4 flex flex-col justify-between gap-8 md:flex-row md:items-center">
               <div>
-                <Typography variant="h5" color="blue-gray">
+                <Typography variant="h5" className="text-light">
                   Mis cotizaciones
                 </Typography>
-                <Typography color="gray" className="mt-1 font-normal">
+                <Typography className="mt-1 font-normal text-light opacity-70">
                   Aquí podrá ver las cotizaciones que usted ha hecho.
                 </Typography>
               </div>
@@ -128,7 +132,10 @@ export default function TableQuote() {
                 <div className="w-full md:w-72">
                   <Input
                     label="Buscar cotización"
-                    icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+                    icon={
+                      <MagnifyingGlassIcon className="h-5 w-5 text-light" />
+                    }
+                    color="white"
                   />
                   <AlertSuccess
                     open={openAlertSuccess}
@@ -161,11 +168,11 @@ export default function TableQuote() {
               <>
                 {userQuotesCollection.length === 0 ? (
                   <>
-                    <div className="w-full text-center font-bold">
+                    <Typography className="w-full text-center font-bold text-light">
                       Usted no tiene tiene cotizaciones guardadas. Para crear
                       una cotización, presione el botón "Nueva cotización" en la
                       barra de navegación.
-                    </div>
+                    </Typography>
                   </>
                 ) : (
                   <>
@@ -175,12 +182,11 @@ export default function TableQuote() {
                           {TABLE_HEAD.map((head) => (
                             <th
                               key={head}
-                              className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4"
+                              className="border-y border-light bg-dark p-4 border-opacity-50"
                             >
                               <Typography
                                 variant="small"
-                                color="blue-gray"
-                                className="font-normal leading-none opacity-70"
+                                className="font-normal leading-none opacity-70 text-light"
                               >
                                 {head}
                               </Typography>
@@ -212,14 +218,14 @@ export default function TableQuote() {
             )}
           </CardBody>
           <CardFooter
-            className={`overflow-x-auto flex items-center justify-between border-t border-blue-gray-50 p-4 ${
+            className={`overflow-x-auto flex items-center justify-between border-t border-light-50 p-4 ${
               userQuotesCollection.length === 0 ? "hidden" : "block"
             }`}
           >
             <div className="flex items-center gap-4">
               <Button
                 variant="text"
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 bg-one text-light"
                 onClick={prev}
                 disabled={active === 1}
               >
@@ -228,14 +234,18 @@ export default function TableQuote() {
               </Button>
               <div className="flex items-center gap-2">
                 {[...Array(totalPages)].map((_, index) => (
-                  <IconButton key={index} {...getItemProps(index + 1)}>
+                  <IconButton
+                    key={index}
+                    {...getItemProps(index + 1)}
+                    className="bg-one hover:bg-oneHover text-light"
+                  >
                     {index + 1}
                   </IconButton>
                 ))}
               </div>
               <Button
                 variant="text"
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 bg-one text-light"
                 onClick={next}
                 disabled={active === totalPages}
               >

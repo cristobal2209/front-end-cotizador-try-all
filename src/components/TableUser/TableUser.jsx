@@ -75,14 +75,18 @@ export default function TableUser() {
   return (
     <>
       <div className="mx-[10px]">
-        <Card className="h-full w-full mt-[100px] max-w-7xl mx-auto">
-          <CardHeader floated={false} shadow={false} className="rounded-none">
+        <Card className="h-full w-full mt-[100px] max-w-7xl mx-auto bg-dark3">
+          <CardHeader
+            floated={false}
+            shadow={false}
+            className="rounded-none bg-dark3"
+          >
             <div className="mb-4 flex flex-col justify-between gap-8 md:flex-row md:items-center">
               <div>
-                <Typography variant="h5" color="blue-gray">
+                <Typography variant="h5" className="text-light">
                   Tabla de gestión de usuarios
                 </Typography>
-                <Typography color="gray" className="mt-1 font-normal">
+                <Typography className="mt-1 font-normal text-light opacity-70">
                   En esta sección podrá gestionar los usuarios que se encuentran
                   en el sistema.
                 </Typography>
@@ -91,6 +95,7 @@ export default function TableUser() {
                 <div className="w-full md:w-72">
                   <Input
                     label="Buscar usuario"
+                    color="white"
                     icon={<MagnifyingGlassIcon className="h-5 w-5" />}
                   />
                 </div>
@@ -101,7 +106,7 @@ export default function TableUser() {
                 ) : (
                   <>
                     <Button
-                      className="flex items-center gap-3"
+                      className="flex items-center gap-3 bg-two hover:bg-twoHover"
                       size="sm"
                       onClick={handleOpenCreateUserModal}
                     >
@@ -122,19 +127,19 @@ export default function TableUser() {
               </div>
             </div>
           </CardHeader>
-          <CardBody className="overflow-scroll px-0">
+          <CardBody className="overflow-scroll p-0">
             <table className="w-full min-w-max table-auto text-left">
               <thead>
                 <tr>
                   {TABLE_HEAD.map((head) => (
                     <th
                       key={head}
-                      className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4"
+                      className="border-y border-light bg-dark border-opacity-50 p-4"
                     >
                       <Typography
                         variant="small"
                         color="blue-gray"
-                        className="font-normal leading-none opacity-70"
+                        className="font-normal leading-none  text-light opacity-70"
                       >
                         {head}
                       </Typography>
@@ -160,15 +165,13 @@ export default function TableUser() {
                         : "p-4 border-b border-blue-gray-50";
 
                       return (
-                        <tr key={user.uid}>
-                          <UserDataRow
-                            user={user}
-                            classes={classes}
-                            key={user.uid}
-                            handleSuccessAlert={handleSuccessAlert}
-                            handleFailedAlert={handleFailedAlert}
-                          />
-                        </tr>
+                        <UserDataRow
+                          user={user}
+                          classes={classes}
+                          key={user.uid}
+                          handleSuccessAlert={handleSuccessAlert}
+                          handleFailedAlert={handleFailedAlert}
+                        />
                       );
                     })}
                   </>

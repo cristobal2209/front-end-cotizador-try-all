@@ -44,7 +44,7 @@ export default function Sidebar({ setIsSidebarOpen }) {
   };
 
   return (
-    <div className="absolute  pt-[96px] w-full h-full border-2 border-r-primary">
+    <div className="absolute  pt-[96px] w-full h-full border-2 border-dark2 text-light">
       <div className="flex flex-col justify-between overflow-y-auto">
         {/* Sección 1 */}
         <div className="p-4">
@@ -55,7 +55,7 @@ export default function Sidebar({ setIsSidebarOpen }) {
                   setIsSidebarOpen(false);
                   navigate("manage/quotes");
                 }}
-                className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
+                className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case shadow-none hover:bg-two  hover:shadow-lg"
               >
                 <BriefcaseIcon strokeWidth={2} className="h-6 w-6" />
                 Mis cotizaciones
@@ -63,7 +63,7 @@ export default function Sidebar({ setIsSidebarOpen }) {
             </li>
             <li>
               <Button
-                className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
+                className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case  shadow-none hover:bg-two  hover:shadow-lg"
                 disabled={true}
               >
                 <UserCircleIcon strokeWidth={2} className="h-6 w-6" /> Editar
@@ -73,7 +73,7 @@ export default function Sidebar({ setIsSidebarOpen }) {
             <li>
               <Button
                 onClick={() => handleLogOut()}
-                className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
+                className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case  shadow-none hover:bg-two  hover:shadow-lg"
               >
                 <ArrowRightOnRectangleIcon
                   strokeWidth={2}
@@ -89,12 +89,12 @@ export default function Sidebar({ setIsSidebarOpen }) {
         {token?.claims.admin ? (
           <>
             {/* Barra horizontal */}
-            <hr className="mx-auto my-2 w-5/6 border-primary" />
+            <hr className="mx-auto my-2 w-5/6 border-dark2" />
             <div className=" p-4">
               <ul className="space-y-2">
                 <li>
                   <Button
-                    className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
+                    className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case  shadow-none hover:bg-two  hover:shadow-lg"
                     disabled={true}
                   >
                     <ChartPieIcon strokeWidth={2} className="h-6 w-6" />{" "}
@@ -103,7 +103,7 @@ export default function Sidebar({ setIsSidebarOpen }) {
                 </li>
                 <li>
                   <Button
-                    className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
+                    className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case  shadow-none hover:bg-two  hover:shadow-lg"
                     onClick={() => {
                       setIsSidebarOpen(false);
                       navigate("manage/users");
@@ -115,7 +115,7 @@ export default function Sidebar({ setIsSidebarOpen }) {
                 </li>
                 <li>
                   <Button
-                    className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
+                    className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case  shadow-none hover:bg-two  hover:shadow-lg"
                     onClick={() => {
                       setIsSidebarOpen(false);
                       navigate("manage/articles");
@@ -130,7 +130,7 @@ export default function Sidebar({ setIsSidebarOpen }) {
                 </li>
                 <li>
                   <Button
-                    className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case text-primary shadow-none hover:bg-whiteHover hover:shadow-md hover:shadow-quaternary"
+                    className="flex w-full items-center gap-3 bg-transparent text-start text-base normal-case  shadow-none hover:bg-two  hover:shadow-lg"
                     disabled={true}
                   >
                     <svg

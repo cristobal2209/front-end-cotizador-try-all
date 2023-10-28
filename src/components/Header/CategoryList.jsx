@@ -14,7 +14,7 @@ const renderCategories = categories.map((category, index) => (
   <a
     href={`#${category}`}
     key={index}
-    className="rounded-md p-2 text-gray-500 font-semibold hover:bg-transparent hover:shadow-lg "
+    className="rounded-md p-2 text-light font-semibold hover:bg-transparent hover:shadow-lg "
   >
     <div className="flex items-center gap-3 rounded-lg">
       {/* icono categoria */}

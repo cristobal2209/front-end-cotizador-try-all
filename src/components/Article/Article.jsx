@@ -31,7 +31,7 @@ function ShowOtherPrices({ supplierCollection }) {
       </div>
       {supplierCollection.map((articleSupplier) => (
         <div
-          className="mt-6 w-full rounded-md bg-secondary px-2 py-2"
+          className="mt-6 w-full rounded-md bg-two px-2 py-2"
           key={articleSupplier.id}
         >
           <div className="flex flex-row items-center justify-between px-2">
@@ -55,13 +55,17 @@ function ShowOtherPrices({ supplierCollection }) {
                   El artículo ha sido añadido a la cotización.
                 </DialogBody>
                 <DialogFooter>
-                  <Button variant="gradient" color="green" onClick={handleAddToQuote}>
+                  <Button
+                    variant="gradient"
+                    color="green"
+                    onClick={handleAddToQuote}
+                  >
                     <span>Ok</span>
                   </Button>
                 </DialogFooter>
               </Dialog>
             )}
-            <Button className=" bg-quaternary" onClick={handleAddToQuote}>
+            <Button className=" bg-fourry" onClick={handleAddToQuote}>
               Agregar a cotizacion
             </Button>
           </div>
@@ -168,7 +172,7 @@ export default function Article() {
             {/* <ShowOtherImgs articleImgs={articleImgs} /> */}
           </div>
           {/* llamada a ofertas de otras empresas*/}
-          <div className="mx-10 rounded-md bg-primary p-5  shadow-md">
+          <div className="mx-10 rounded-md bg-one p-5  shadow-md">
             <h1 className="py-5 text-xl font-bold">Lista proveedores</h1>
             <ShowOtherPrices supplierCollection={supplierCollection} />
           </div>
@@ -178,7 +182,7 @@ export default function Article() {
       {/* mejor oferta escritorio */}
       {!isLoading && (
         <aside className="flex-start col-span-1 px-10">
-          <Card className="bg-secondary">
+          <Card className="bg-two">
             <CardBody>
               <h1 className="text-lg font-bold text-white">
                 Aquí irá la mejor oferta.
@@ -186,7 +190,7 @@ export default function Article() {
             </CardBody>
             <CardFooter>
               <div>
-                <Button className="bg-quaternary">Añadir a cotización</Button>
+                <Button className="bg-fourry">Añadir a cotización</Button>
               </div>
             </CardFooter>
           </Card>

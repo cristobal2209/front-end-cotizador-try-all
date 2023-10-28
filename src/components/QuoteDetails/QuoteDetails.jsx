@@ -60,7 +60,7 @@ function RenderArticleDetail({ articleUnit, handleSubTotal }) {
   };
 
   useEffect(() => {
-    document.title= "Cotizacion|recuperarNombre|";
+    document.title = "Cotizacion|recuperarNombre|";
   }, []);
 
   return (
@@ -79,17 +79,11 @@ function RenderArticleDetail({ articleUnit, handleSubTotal }) {
           <span className="block">{articleUnit.brand}</span>
         </div>
         <div className="flex w-1/4 flex-row px-1 py-10">
-          <Button
-            className=" bg-quaternary px-2 py-2"
-            onClick={decrementarContador}
-          >
+          <Button className=" bg-four px-2 py-2" onClick={decrementarContador}>
             -
           </Button>
           <div className="px-2 py-1">{contador}</div>
-          <Button
-            className=" bg-quaternary px-2 py-2"
-            onClick={incrementarContador}
-          >
+          <Button className=" bg-four px-2 py-2" onClick={incrementarContador}>
             +
           </Button>
         </div>
@@ -111,7 +105,7 @@ function ShowOtherArticles({ articleDetails, handleSubTotal }) {
     <div className="flex w-full max-w-5xl flex-col">
       {articleDetails.map((articleUnit) => (
         <div
-          className="mt-6 w-full rounded-md bg-secondary px-2 py-2"
+          className="mt-6 w-full rounded-md bg-two px-2 py-2"
           key={articleUnit.id}
         >
           <RenderArticleDetail
@@ -152,7 +146,7 @@ export default function QuoteDetails() {
       <section className="col-span-4 flex flex-col  lg:col-span-3">
         {/* mejor oferta mobile */}
         <div className=" block  p-2 px-10 lg:hidden">
-          <Card className="bg-secondary">
+          <Card className="bg-two">
             <CardBody>
               <h1 className="text-lg font-bold text-white">
                 -sub total suma articulos cotizados-
@@ -160,7 +154,7 @@ export default function QuoteDetails() {
             </CardBody>
             <CardFooter>
               <div>
-                <Button className="bg-quaternary">Generar contización</Button>
+                <Button className="bg-four">Generar contización</Button>
               </div>
             </CardFooter>
           </Card>
@@ -178,7 +172,7 @@ export default function QuoteDetails() {
 
       {/* mejor oferta escritorio */}
       <aside className="flex-start hidden px-10 pt-20 lg:col-span-1 lg:block ">
-        <Card className="bg-secondary">
+        <Card className="bg-two">
           <CardBody>
             <h1 className="text-lg font-bold text-white">
               Sub total suma articulos cotizados
@@ -191,7 +185,7 @@ export default function QuoteDetails() {
           </CardBody>
           <CardFooter>
             <div>
-              <Button className="bg-quaternary">Generar contización</Button>
+              <Button className="bg-four">Generar contización</Button>
             </div>
           </CardFooter>
         </Card>
