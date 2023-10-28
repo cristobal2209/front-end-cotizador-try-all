@@ -85,6 +85,9 @@ export default function CreateUser({
       disabled: true, //  se inicializa en true para su posterior desactivacion manual luego de la correcta creacion
       admin: true, // al no poseer un input por parte del usuario, estos campos no se reflejan o validan con la libreria YUP
     },
+    validateOnMount: true,
+    validateOnChange: true,
+    validateOnBlur: true,
     validationSchema: validationSchema,
     onSubmit: () => {
       submitRegister(formik.values);
