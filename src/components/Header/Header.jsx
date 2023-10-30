@@ -66,8 +66,9 @@ export default function Header() {
     }
   };
 
-  const handleclickSearchButton = () => {
+  const handleclickSearchButton = async () => {
     navigate(`/search/${userSearch}`);
+    window.location.reload();
   };
 
   const onChangeUserSearch = (event) => {

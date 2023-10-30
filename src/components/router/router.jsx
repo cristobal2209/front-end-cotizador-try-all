@@ -64,7 +64,7 @@ export default function Router() {
         <Route path="manage/quotes" element={<TableQuote />} />
         <Route path="articles/:articleId" element={<Article />} />
         <Route path="quoteDetails/:quoteId" element={<QuoteDetails />} />
-        <Route path="search/:articleSearch" element={<SearchResults />} />
+        <Route path="search/:productSearchParam" element={<SearchResults />} />
         <Route path="redirectLogin" element={<RedirectToLogin />} />
         {user ? (
           <Route element={!token.claims.admin ? <Navigate to="/" /> : ""}>
