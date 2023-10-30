@@ -7,7 +7,53 @@ import {
   MenuList,
   MenuItem,
 } from "@material-tailwind/react";
+import * as xlsx from 'xlsx';
+function imprimir(quote){
+ const  ElementosCotizacion={
+  articles: ['A', 'B' ],
+  date: "Wed Oct 25 2023",
+  id: "ABE1O4GTC2jCp0E1mdSY",
+  quoteName: "Cotizacion Brandon",
+  responsibleName: "admin  uno",
+  responsibleUUID: "0VOroWOgCjZkt1X5mrAvNrQCLsp2",
+  state: 2, version: "1.0",
+ }
 
+  
+  ElementosCotizacion.articles.forEach(element => {
+    console.log(quote);
+  });
+}
+
+function generarPlanillaExcel(quote) {
+  //hace la matriz de excel campo por campo
+  let ElementosCotizacion = [
+    ["NombreCotizacion"],
+    ["", quote.quoteName],
+    ["Productos"],
+  ];
+  console.log(quote.products);
+  //pone los articulos
+  ElementosCotizacion.push(["", "Producto","NumeroParte", "Cantidad", "Precio"]);
+
+  for (const product of quote.products){
+  ElementosCotizacion.push(["",product.description,product.manufacturerPartNo,product.quantity,product.price]);
+  }
+  
+
+  ElementosCotizacion.push(["Otras filas"]);
+  ElementosCotizacion.push([""]);
+  ElementosCotizacion.push(["Total"]);
+
+  const workbook = xlsx.utils.book_new();
+  const worksheet = xlsx.utils.aoa_to_sheet(ElementosCotizacion);
+
+  xlsx.utils.book_append_sheet(workbook, worksheet, "Cotización");
+
+  const nombrecotizacion = quote.quoteName + ".xlsx";
+  xlsx.writeFile(workbook, nombrecotizacion);
+  //console.log(ElementosCotizacion);
+}
 export default function UserQuoteRow({
   quote,
   classes,
@@ -98,7 +144,8 @@ export default function UserQuoteRow({
             </MenuHandler>
             <MenuList>
               <MenuItem>Cambiar nombre</MenuItem>
-              <MenuItem>Ver versiones</MenuItem>
+              <MenuItem onClick={() => imprimir(quote)}>Ver Versiones</MenuItem>
+              <MenuItem onClick={() => generarPlanillaExcel(quote)}>Descargar Excel</MenuItem>
               <MenuItem>Eliminar</MenuItem>
             </MenuList>
           </Menu>
