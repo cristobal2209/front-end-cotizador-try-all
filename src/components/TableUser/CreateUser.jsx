@@ -97,8 +97,8 @@ export default function CreateUser({
 
   return (
     <>
-      <Dialog open={open} handler={handler} className="z-0">
-        <DialogHeader>Crear nuevo usuario</DialogHeader>
+      <Dialog open={open} handler={handler} className="z-0 bg-dark3">
+        <DialogHeader className="text-light">Crear nuevo usuario</DialogHeader>
         <DialogBody divider>
           <div className="py-2">
             <Input
@@ -107,6 +107,7 @@ export default function CreateUser({
               name="firstname"
               value={formik.values.firstname}
               onChange={formik.handleChange}
+              color="white"
               required
             />
             {formik.errors.firstname ? (
@@ -125,6 +126,7 @@ export default function CreateUser({
               name="lastname"
               value={formik.values.lastname}
               onChange={formik.handleChange}
+              color="white"
               required
             />
             {formik.errors.lastname ? (
@@ -143,6 +145,7 @@ export default function CreateUser({
               name="email"
               value={formik.values.email}
               onChange={formik.handleChange}
+              color="white"
               required
             />
             {formik.errors.email ? (
@@ -162,6 +165,7 @@ export default function CreateUser({
               name="password"
               value={formik.values.password}
               onChange={formik.handleChange}
+              color="white"
               required
             />
             {formik.errors.password ? (

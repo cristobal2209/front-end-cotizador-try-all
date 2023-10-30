@@ -106,7 +106,7 @@ export default function TableUser() {
                 ) : (
                   <>
                     <Button
-                      className="flex items-center gap-3 bg-two hover:bg-twoHover"
+                      className="flex items-center gap-3 bg-three hover:bg-threeHover"
                       size="sm"
                       onClick={handleOpenCreateUserModal}
                     >

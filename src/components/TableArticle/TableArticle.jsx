@@ -125,11 +125,11 @@ export default function TableArticle() {
   ];
 
   useEffect(() => {
-    document.title= "Tabla Articulos";
+    document.title = "Tabla Articulos";
   }, []);
 
   return (
-    <section className="h-screen bg-white px-10 pt-20">
+    <section className="h-screen text-white bg-dark px-10 pt-20">
       <div className="mx-auto max-w-7xl">
         <div className="py-10">
           <Button

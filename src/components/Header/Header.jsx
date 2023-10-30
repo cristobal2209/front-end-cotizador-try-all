@@ -45,6 +45,12 @@ export default function Header() {
     };
   }, []);
 
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      navigate(`/search/${userSearch}`);
+    }
+  };
+
   const handleCategoriesClickOutside = (event) => {
     if (
       categoriesRef.current &&
@@ -77,7 +83,7 @@ export default function Header() {
       >
         <div className="mx-auto flex max-w-7xl flex-row items-center text-light lg:justify-between">
           {/* Boton abrir sidebar */}
-          <div className="flex-shrink-0 px-2">
+          <div className="flex-shrink-0 px-2 justify-start">
             <IconButton
               variant="text"
               color="white"
@@ -92,7 +98,7 @@ export default function Header() {
             </IconButton>
           </div>
           {/* logo */}
-          <div className="flex-shrink-0 mx-5">
+          <div className="flex-shrink-0 mx-5 justify-center">
             <Link to={"/"}>
               <img
                 className=""
@@ -100,28 +106,8 @@ export default function Header() {
               />
             </Link>
           </div>
-          {/* usuario actual */}
-          <div className="hidden lg:flex mx-2 min-w-[200px] justify-center align-middle">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-7 h-7"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
-              />
-            </svg>
-            <Typography size="small" className="mx-1 font-normal">
-              {user?.displayName}
-            </Typography>
-          </div>
           {/* barra de busqueda */}
-          <div className="relative hidden w-full lg:flex lg:flex-row lg:items-center lg:justify-center">
+          <div className="ml-10 relative hidden w-full lg:flex lg:flex-row lg:items-center lg:justify-center">
             <Input
               type="search"
               name="navbarSearch"
@@ -129,27 +115,28 @@ export default function Header() {
               className="pr-48"
               color="white"
               onChange={onChangeUserSearch}
+              onKeyDown={handleKeyPress}
               containerProps={{
-                className: "mx-auto min-w-0 bg-two rounded-md",
+                className: "mx-auto min-w-0 bg-four rounded-md",
               }}
             />
             <Button
               size="sm"
-              className="py-1 right-32 rounded !absolute bg-transparent !shadow-none !hover:shadow- z-10 hover:bg-twoHover"
+              className="py-1 right-32 rounded !absolute bg-transparent !shadow-none !hover:shadow-lg z-10 hover:bg-fourHover"
               onClick={handleclickSearchButton}
             >
               <MagnifyingGlassIcon className="h-6 w-6" />
             </Button>
             <button
-              className={`py-1 mx-1 border-l-2  !absolute right-0 flex items-center rounded-r-md h-ful px-4 font-normal  hover:bg-twoHover hover:shadow-lg ${
-                openCategories ? "bg-twoHover" : ""
+              className={`py-1 mx-1 border-l-2  !absolute right-0 flex items-center rounded-r-md h-ful px-4 font-normal  hover:bg-fourHover hover:shadow-lg ${
+                openCategories ? "bg-fourHover shadow-lg" : ""
               }`}
               onClick={() => {
                 setOpenCategories(!openCategories);
               }}
               ref={categoriesRef}
             >
-              <Typography variant="small" className="font-normal text-light">
+              <Typography variant="small" className="!font-mono text-light">
                 Categorías
               </Typography>
               <svg
@@ -170,9 +157,28 @@ export default function Header() {
               </svg>
             </button>
           </div>
-
+          {/* usuario actual */}
+          <div className="hidden lg:flex mx-1 min-w-[200px] justify-center align-middle">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-7 h-7"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+              />
+            </svg>
+            <Typography size="small" className="mx-1 font-normal">
+              {user?.displayName}
+            </Typography>
+          </div>
           {/* opcion de cotizacion actual */}
-          <div className="hidden lg:flex mx-2 w-1/2 justify-center">
+          <div className="hidden lg:flex mx-1 w-1/2">
             <CreateQuote />
           </div>
         </div>

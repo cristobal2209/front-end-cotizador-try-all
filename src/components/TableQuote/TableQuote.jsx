@@ -125,7 +125,7 @@ export default function TableQuote() {
                   Mis cotizaciones
                 </Typography>
                 <Typography className="mt-1 font-normal text-light opacity-70">
-                  Aquí podrá ver las cotizaciones que usted ha hecho.
+                  Historial de cotizaciones.
                 </Typography>
               </div>
               <div className="flex w-full shrink-0 gap-2 md:w-max">
@@ -136,6 +136,7 @@ export default function TableQuote() {
                       <MagnifyingGlassIcon className="h-5 w-5 text-light" />
                     }
                     color="white"
+                    //containerProps={{ className: "bg-four rounded-md" }}
                   />
                   <AlertSuccess
                     open={openAlertSuccess}

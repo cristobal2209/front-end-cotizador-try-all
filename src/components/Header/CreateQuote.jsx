@@ -26,9 +26,9 @@ import {
 
 const SCHEMA_QUOTE = {
   quoteName: "",
-  articles: [],
+  products: [],
   date: "",
-  state: "",
+  status: "",
   version: "",
   responsibleName: "",
   responsibleUUID: "",
@@ -168,17 +168,43 @@ export default function CreateQuote() {
               ) : null}
               <Button
                 size="sm"
-                className="m-1 my-2 rounded bg-four shadow-none hover:bg-fourHover !px-2"
+                className="rounded bg-three shadow-none hover:bg-threeHover mx-1 my-2 px-2"
                 onClick={() => formik.handleSubmit()}
               >
-                <CheckIcon className="h-3 w-3" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-4 h-4"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M4.5 12.75l6 6 9-13.5"
+                  />
+                </svg>
               </Button>
               <Button
                 size="sm"
-                className="m-1 my-2 rounded bg-red-600 shadow-none hover:bg-red-400 !px-2"
+                className="rounded bg-red-600 shadow-none hover:bg-red-400 mx-1 my-2 px-2"
                 onClick={() => handleEditing()}
               >
-                <XMarkIcon className="h-3 w-3" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-4 h-4"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
               </Button>
             </>
           ) : (
@@ -217,7 +243,7 @@ export default function CreateQuote() {
                 <>
                   <Button
                     size="sm"
-                    className="mx-1 rounded bg-four hover:bg-fourHover font-light"
+                    className="mx-1 rounded bg-three hover:bg-threeHover font-normal"
                     onClick={handleNewQuoteButtonPress}
                   >
                     Nueva cotización
@@ -258,7 +284,7 @@ export default function CreateQuote() {
       </Dialog>
       {isQuoteCreated && (
         <Alert
-          className="absolute mt-[130px] bg-green-500 !w-auto"
+          className="absolute mt-[70px] bg-green-500 !w-auto"
           open={openQuoteCreatedAlert}
           onClose={() => setOpenQuoteCreatedAlert(false)}
           animate={{
