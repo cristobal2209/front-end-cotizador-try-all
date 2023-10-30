@@ -22,14 +22,14 @@ export default function UserQuoteRow({
   handleFailedAlert,
 }) {
   const [openThreeDotsOptions, setOpenThreeDotsOptions] = useState(false);
-  const [quoteStatus, setQuoteStatus] = useState(String(quote.state));
+  const [quoteStatus, setQuoteStatus] = useState(String(quote.status));
   const [newQuoteStatus, setNewQuoteStatus] = useState(quoteStatus);
   const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] =
     useState(false);
   const [contador, setContador] = useState(0);
 
   useEffect(() => {
-    setQuoteStatus(String(quote.state));
+    setQuoteStatus(String(quote.status));
     //setContador(contador + 1);
   }, [quote]);
 

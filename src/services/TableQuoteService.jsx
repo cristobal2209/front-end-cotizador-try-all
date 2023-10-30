@@ -21,17 +21,17 @@ export const changeQuoteStatus = async (quoteId, newStatus) => {
     //si el nuevo estado es 1 (activo), se buscara todas las cotizaciones que tengan ese estado y se cambiaran a 2 (en curso)
     if (newStatus == 1) {
       const quotesRef = collection(db, "usersQuotes", user.uid, "quotes");
-      const q = query(quotesRef, where("state", "==", 1));
+      const q = query(quotesRef, where("status", "==", 1));
       const querySnapshot = await getDocs(q);
 
       for (const quote of querySnapshot.docs) {
         const docRef = doc(db, "usersQuotes", user.uid, "quotes", quote.id);
-        await updateDoc(docRef, { state: 2 });
+        await updateDoc(docRef, { status: 2 });
       }
     }
     //se actualiza el estado de la cotizacion
     const quoteRef = doc(db, "usersQuotes", user.uid, "quotes", quoteId);
-    await updateDoc(quoteRef, { state: newStatus });
+    await updateDoc(quoteRef, { status: newStatus });
 
     return newStatus;
   } catch (error) {

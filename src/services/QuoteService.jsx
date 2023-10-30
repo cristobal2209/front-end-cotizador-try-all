@@ -18,9 +18,9 @@ export const createQuote = async (quoteData) => {
 
   const activeQuoteExists = await checkActiveQuotesExists();
   if (activeQuoteExists) {
-    quoteData.state = 2;
+    quoteData.status = 2;
   } else {
-    quoteData.state = 1;
+    quoteData.status = 1;
   }
   quoteData.responsibleName = user.displayName;
   quoteData.responsibleUUID = user.uid;
@@ -37,7 +37,7 @@ export const subscribeToActiveQuote = (callback) => {
 
   const unsubscribe = onSnapshot(quotesRef, (snapshot) => {
     const activeQuoteDoc = snapshot.docs.find(
-      (docRef) => docRef.data().state === 1
+      (docRef) => docRef.data().status === 1
     );
 
     if (activeQuoteDoc) {
@@ -59,7 +59,7 @@ export const checkActiveQuotesExists = async () => {
     }
 
     const quotesRef = collection(db, "usersQuotes", user.uid, "quotes");
-    const q = query(quotesRef, where("state", "==", 1));
+    const q = query(quotesRef, where("status", "==", 1));
     const querySnapshot = await getDocs(q);
 
     //Si querySnapshot.empty == true, es porque no existen cotizaciones activas
