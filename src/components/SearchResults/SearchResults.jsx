@@ -128,7 +128,10 @@ export default function SearchResults() {
   const getItemProps = (index) => ({
     variant: active === index ? "filled" : "text",
     color: active === index ? "blue" : "blue-gray",
-    onClick: () => setActive(index),
+    onClick: () => {
+      setActive(index);
+      navigate(index);
+    }
   });
 
  const itemsPerPage = 30;
