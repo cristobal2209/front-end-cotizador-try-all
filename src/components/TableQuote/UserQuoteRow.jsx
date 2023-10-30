@@ -14,7 +14,48 @@ import {
   DialogFooter,
 } from "@material-tailwind/react";
 import { changeQuoteStatus } from "../../services/TableQuoteService";
+import * as xlsx from "xlsx";
 
+function generarPlanillaExcel(quote) {
+  //hace la matriz de excel campo por campo
+  let ElementosCotizacion = [
+    ["NombreCotizacion"],
+    ["", quote.quoteName],
+    ["Productos"],
+  ];
+  console.log(quote.products);
+  //pone los articulos
+  ElementosCotizacion.push([
+    "",
+    "Producto",
+    "NumeroParte",
+    "Cantidad",
+    "Precio",
+  ]);
+
+  for (const product of quote.products) {
+    ElementosCotizacion.push([
+      "",
+      product.description,
+      product.manufacturerPartNo,
+      product.quantity,
+      product.price,
+    ]);
+  }
+
+  ElementosCotizacion.push(["Otras filas"]);
+  ElementosCotizacion.push([""]);
+  ElementosCotizacion.push(["Total"]);
+
+  const workbook = xlsx.utils.book_new();
+  const worksheet = xlsx.utils.aoa_to_sheet(ElementosCotizacion);
+
+  xlsx.utils.book_append_sheet(workbook, worksheet, "Cotización");
+
+  const nombrecotizacion = quote.quoteName + ".xlsx";
+  xlsx.writeFile(workbook, nombrecotizacion);
+  //console.log(ElementosCotizacion);
+}
 export default function UserQuoteRow({
   quote,
   classes,
@@ -177,7 +218,10 @@ export default function UserQuoteRow({
           </MenuHandler>
           <MenuList className="bg-dark text-light border-dark2">
             <MenuItem>Cambiar nombre</MenuItem>
-            <MenuItem>Ver versiones</MenuItem>
+            <MenuItem>Ver Versiones</MenuItem>
+            <MenuItem onClick={() => generarPlanillaExcel(quote)}>
+              Descargar Excel
+            </MenuItem>
             <MenuItem>Eliminar</MenuItem>
           </MenuList>
         </Menu>
