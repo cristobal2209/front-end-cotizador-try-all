@@ -7,9 +7,8 @@ import {
   query,
   where,
   onSnapshot,
+  deleteDoc,
 } from "firebase/firestore";
-
-//se busca que documento tiene el atributo "initialized" y se quita del arreglo
 
 export const changeQuoteStatus = async (quoteId, newStatus) => {
   try {
@@ -58,4 +57,18 @@ export const subscribeToCollection = (collectionName, callback) => {
     callback(newData);
   });
   return unsubscribe;
+};
+
+export const deleteQuote = async (quoteUID) => {
+  const user = auth.currentUser;
+  if (!user) {
+    throw new Error("Usuario no autenticado");
+  }
+  return await deleteDoc(doc(db, "usersQuotes", user.uid, "quotes", quoteUID))
+    .then(() => {
+      return "Cotización " + quoteUID + " eliminada.";
+    })
+    .catch((e) => {
+      throw new Error(e.message);
+    });
 };

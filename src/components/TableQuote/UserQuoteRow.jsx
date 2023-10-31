@@ -13,7 +13,10 @@ import {
   DialogBody,
   DialogFooter,
 } from "@material-tailwind/react";
-import { changeQuoteStatus } from "../../services/TableQuoteService";
+import {
+  changeQuoteStatus,
+  deleteQuote,
+} from "../../services/TableQuoteService";
 import * as xlsx from "xlsx";
 
 function generarPlanillaExcel(quote) {
@@ -63,6 +66,7 @@ export default function UserQuoteRow({
   handleFailedAlert,
 }) {
   const [openThreeDotsOptions, setOpenThreeDotsOptions] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [quoteStatus, setQuoteStatus] = useState(String(quote.status));
   const [newQuoteStatus, setNewQuoteStatus] = useState(quoteStatus);
   const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] =
@@ -87,6 +91,23 @@ export default function UserQuoteRow({
   const handleOpenThreeDotsOptions = () => {
     setOpenThreeDotsOptions(!openThreeDotsOptions);
   };
+
+  //Manejo borrado cotizacion
+
+  const handleDeleteQuote = async () => {
+    const response = await deleteQuote(quote.id);
+  };
+
+  const handleConfirmDelete = async () => {
+    await handleDeleteQuote();
+    handleOpenDeleteDialog();
+  };
+
+  const handleOpenDeleteDialog = () => {
+    setOpenDeleteDialog(!openDeleteDialog);
+  };
+
+  //Manejo de estados cotizacion
 
   const handleConfirmChangeStatus = async () => {
     const response = await changeQuoteStatus(
@@ -222,7 +243,7 @@ export default function UserQuoteRow({
             <MenuItem onClick={() => generarPlanillaExcel(quote)}>
               Descargar Excel
             </MenuItem>
-            <MenuItem>Eliminar</MenuItem>
+            <MenuItem onClick={handleOpenDeleteDialog}>Eliminar</MenuItem>
           </MenuList>
         </Menu>
       </td>
@@ -246,6 +267,34 @@ export default function UserQuoteRow({
             variant="gradient"
             color="green"
             onClick={handleConfirmChangeStatus}
+          >
+            <span>Confirmar</span>
+          </Button>
+        </DialogFooter>
+      </Dialog>
+      <Dialog open={openDeleteDialog} className="bg-dark">
+        <DialogHeader className="text-light">
+          Confirmar eliminación de cotización
+        </DialogHeader>
+        <DialogBody className="text-light opacity-70 flex flex-col">
+          <span className="text-center">
+            ¿Estás seguro en eliminar esta cotización?
+          </span>
+          <span className="font-bold text-center">{quote.quoteName}</span>
+        </DialogBody>
+        <DialogFooter>
+          <Button
+            variant="text"
+            color="red"
+            onClick={handleOpenDeleteDialog}
+            className="mr-1"
+          >
+            <span>Cancelar</span>
+          </Button>
+          <Button
+            variant="gradient"
+            color="green"
+            onClick={handleConfirmDelete}
           >
             <span>Confirmar</span>
           </Button>

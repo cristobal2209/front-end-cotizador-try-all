@@ -45,13 +45,6 @@ export default function TableQuote() {
     setContador(contador + 1);
   }, [userQuotesCollection]);
 
-  // const getAllUserQuotes = async () => {
-  //   setIsLoadingTable(true);
-  //   const userQuotes = await getUserQuotes();
-  //   setUserQuotesCollection(userQuotes);
-  //   setIsLoadingTable(false);
-  // };
-
   const handleOpenAlertSuccess = (boolean) => {
     setOpenAlertSuccess(boolean);
     setTimeout(() => {
@@ -218,6 +211,7 @@ export default function TableQuote() {
               </>
             )}
           </CardBody>
+          {/* ********************************************************************************************************************************************** */}
           <CardFooter
             className={`overflow-x-auto flex items-center justify-between border-t border-light-50 p-4 ${
               userQuotesCollection.length === 0 ? "hidden" : "block"
