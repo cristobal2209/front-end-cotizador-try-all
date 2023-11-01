@@ -7,6 +7,7 @@ import {
   updateDoc,
   query,
   where,
+  getDoc,
 } from "firebase/firestore";
 import { db, auth } from "../firebaseConfig";
 
@@ -65,7 +66,27 @@ export const checkActiveQuotesExists = async () => {
     //Si querySnapshot.empty == true, es porque no existen cotizaciones activas
     return !querySnapshot.empty;
   } catch (error) {
-    console.error("Error al actualizar el estado:", error);
+    console.error("Error al recuperar cotizacion activa:", error);
+    throw new Error(error);
+  }
+};
+
+export const getQuote = async (quoteUID) => {
+  try {
+    const user = auth.currentUser;
+    if (!user) {
+      throw new Error("Usuario no autenticado");
+    }
+    const docRef = doc(db, "usersQuotes", user.uid, "quotes", quoteUID);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      return docSnap.data();
+    } else {
+      throw new Error("No existe la cotizacion");
+    }
+  } catch (error) {
+    console.error("Error al obtener la cotizacion:", error);
     throw new Error(error);
   }
 };
