@@ -23,6 +23,7 @@ export default function QuoteDetails() {
   const [total, setTotal] = useState(0);
   const [quote, setQuote] = useState(null);
   const [quoteProducts, setQuoteProducts] = useState([]);
+  const [counter, setCounter] = useState(0);
 
   useEffect(() => {
     setIsLoading(true);
@@ -39,14 +40,24 @@ export default function QuoteDetails() {
 
   useEffect(() => {
     if (quote?.products.length != 0) setQuoteProducts(quote?.products);
+    console.log(quote?.products);
   }, [quote]);
 
   useEffect(() => {
     if (quoteProducts?.length != 0) {
       getTotal();
       updateProducts();
+      setCounter(counter + 1);
     }
   }, [quoteProducts]);
+
+  const deleteProduct = async (index) => {
+    let copyQuoteProducts = quoteProducts;
+    copyQuoteProducts.splice(index, 1);
+    setQuoteProducts(copyQuoteProducts);
+    updateProducts();
+    setCounter(counter + 1);
+  };
 
   const updateProducts = async () => {
     const response = await updateQuoteProducts(quoteId, quoteProducts);
@@ -129,6 +140,7 @@ export default function QuoteDetails() {
                         index={index}
                         classes={classes}
                         updateSubtotal={updateSubtotal}
+                        deleteProduct={deleteProduct}
                       />
                     );
                   })}
@@ -147,7 +159,13 @@ export default function QuoteDetails() {
   );
 }
 
-function ProductQuoteRow({ productData, classes, updateSubtotal, index }) {
+function ProductQuoteRow({
+  productData,
+  classes,
+  updateSubtotal,
+  index,
+  deleteProduct,
+}) {
   const [priceNumber, setPriceNumber] = useState(0);
   const [quantity, setQuantity] = useState(0);
   const [subtotal, setSubtotal] = useState(0);
@@ -247,7 +265,13 @@ function ProductQuoteRow({ productData, classes, updateSubtotal, index }) {
       </td>
       <td>
         <div className="p-4 flex">
-          <Button color="red" className="ml-auto px-3">
+          <Button
+            color="red"
+            className="ml-auto px-3"
+            onClick={async () => {
+              await deleteProduct(index);
+            }}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"

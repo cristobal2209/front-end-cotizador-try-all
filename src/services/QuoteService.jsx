@@ -155,7 +155,7 @@ export const updateQuoteProducts = async (quoteID, newProducts) => {
     const quoteRef = doc(db, "usersQuotes", user.uid, "quotes", quoteID);
     if (newProducts) {
       await updateDoc(quoteRef, { products: newProducts })
-        .then(console.log("productos de cotizacion actualizados"))
+        .then()
         .catch((e) => {
           console.log(e);
         });
