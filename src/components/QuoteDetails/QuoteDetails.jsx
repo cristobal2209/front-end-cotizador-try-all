@@ -40,7 +40,6 @@ export default function QuoteDetails() {
 
   useEffect(() => {
     if (quote?.products.length != 0) setQuoteProducts(quote?.products);
-    console.log(quote?.products);
   }, [quote]);
 
   useEffect(() => {
@@ -96,9 +95,15 @@ export default function QuoteDetails() {
           shadow={false}
           className="rounded-none bg-dark3"
         >
-          <Typography variant="h5" className="text-light">
-            {quote?.quoteName}
-          </Typography>
+          {quote ? (
+            <>
+              <Typography variant="h5" className="text-light">
+                {quote?.quoteName}
+              </Typography>
+            </>
+          ) : (
+            " "
+          )}
         </CardHeader>
         <CardBody className="p-4">
           <table className="w-full min-w-max table-auto text-left">
