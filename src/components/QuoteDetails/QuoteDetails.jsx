@@ -48,6 +48,7 @@ export default function QuoteDetails() {
       updateProducts();
       setCounter(counter + 1);
     }
+    console.log(quoteProducts);
   }, [quoteProducts]);
 
   const deleteProduct = async (index) => {

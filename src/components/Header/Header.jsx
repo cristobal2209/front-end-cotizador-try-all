@@ -48,6 +48,7 @@ export default function Header() {
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
       navigate(`/search/${userSearch}`);
+      window.location.reload();
     }
   };
 

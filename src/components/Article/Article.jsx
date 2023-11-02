@@ -19,6 +19,7 @@ import { addProductToActiveQuote } from "../../services/QuoteService";
 
 const TABLE_HEAD = [
   "Proveedor",
+  "Datos extra",
   "Precios por cantidad",
   "Stock",
   "Añadir a cotizacion",
@@ -128,17 +129,33 @@ export default function Article() {
               <table className="w-full min-w-max table-auto text-left">
                 <thead>
                   <tr>
-                    {TABLE_HEAD.map((head) => (
-                      <th key={head} className=" bg-two border-opacity-50 p-4">
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal leading-none  text-light"
+                    {TABLE_HEAD.map((head, index) => {
+                      const isLast = index === TABLE_HEAD.length - 1;
+                      const isSecond = index === 1;
+                      return (
+                        <th
+                          key={index}
+                          className={`bg-two p-4 ${
+                            (isLast ? "w-[200px]" : null,
+                            isSecond ? "w-[300px]" : null)
+                          }`}
                         >
-                          {head}
-                        </Typography>
-                      </th>
-                    ))}
+                          <div className="flex">
+                            <div
+                              className={`${isLast ? "ml-auto" : null} 
+                              }`}
+                            >
+                              <Typography
+                                variant="small"
+                                className="font-normal leading-none"
+                              >
+                                {head}
+                              </Typography>
+                            </div>
+                          </div>
+                        </th>
+                      );
+                    })}
                   </tr>
                 </thead>
                 <tbody className="mx-auto">
@@ -180,6 +197,24 @@ export default function Article() {
 }
 
 function SupplierRow({ supplier, classes, handleAddProductToQuote }) {
+  const [extraDataObj, setExtraDataObj] = useState({ ...supplier });
+  const [extraData, setExtraData] = useState([]);
+
+  useEffect(() => {
+    let copyExtraData = extraDataObj;
+    let extraDataArr = [];
+    delete copyExtraData.prices;
+    delete copyExtraData.productUrl;
+    delete copyExtraData.stock;
+    delete copyExtraData.supplier;
+
+    for (let field in copyExtraData) {
+      extraDataArr.push({ [field]: copyExtraData[field] });
+    }
+
+    setExtraData(extraDataArr);
+  }, []);
+
   return (
     <tr className="bg-two hover:bg-twoHover">
       <td className={classes}>
@@ -188,31 +223,63 @@ function SupplierRow({ supplier, classes, handleAddProductToQuote }) {
         </Typography>
       </td>
       <td className={classes}>
-        <Typography
-          variant="small"
-          className="font-normal text-light"
-        ></Typography>
+        <div className="flex flex-col">
+          {extraData?.map((data, index) => {
+            return (
+              <div key={index}>
+                {Object.keys(data).map((campo) => (
+                  <div className="flex justify-between" key={campo}>
+                    <Typography variant="small" className="opacity-70">
+                      {campo}: &nbsp;
+                    </Typography>
+                    <Typography variant="small">{data[campo]}</Typography>
+                  </div>
+                ))}
+              </div>
+            );
+          })}
+        </div>
       </td>
       <td className={classes}>
         <div className="flex flex-col">
-          {supplier.stock.map((currentStock, index) => {
+          {supplier.prices?.map((price, index) => {
             return (
               <div className="flex justify-between" key={index}>
                 <Typography variant="small">
-                  {currentStock.country === "us" ? "EE.UU" : "generico"}:
+                  <span className="opacity-70">Cantidad:</span>&nbsp;
+                  {price.quantity}
                 </Typography>
-                <Typography variant="small"> {currentStock.stock}</Typography>
+                <Typography variant="small">
+                  <span className="opacity-70"> Precio:</span>
+                  &nbsp;{price.price}
+                </Typography>
+              </div>
+            );
+          })}
+        </div>
+      </td>
+      <td className={classes}>
+        <div className="flex flex-col">
+          {supplier.stock?.map((currentStock, index) => {
+            return (
+              <div className="flex justify-between" key={index}>
+                <Typography variant="small" className="opacity-70">
+                  {currentStock.country === "us" ? "EE.UU" : "Reino Unido"}:
+                </Typography>
+                <Typography variant="small">
+                  {currentStock.stock} &nbsp; u.
+                </Typography>
               </div>
             );
           })}
         </div>
       </td>
       <td className={`${classes}`}>
-        <div className="flex justify-center">
+        <div className="flex justify-end">
           {/* Boton mas */}
           <Button
             variant="text"
-            className="hover:bg-threeHover bg-three"
+            className="hover:bg-threeHover bg-three px-3"
             onClick={() => {
               handleAddProductToQuote(supplier);
             }}
