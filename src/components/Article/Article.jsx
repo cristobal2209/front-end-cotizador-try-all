@@ -10,160 +10,108 @@ import {
   DialogHeader,
   DialogBody,
   DialogFooter,
+  Typography,
 } from "@material-tailwind/react";
-import { doc, collection, getDocs, getDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
+import { getProductData } from "../../services/ProductService";
 
-function ShowOtherPrices({ supplierCollection }) {
-  const [showConfirmation, setShowConfirmation] = useState(false);
+import { addProductToActiveQuote } from "../../services/QuoteService";
 
-  const handleAddToQuote = () => {
-    setShowConfirmation(!showConfirmation);
-  };
-
-  return (
-    <div className="flex w-full max-w-5xl flex-col justify-between">
-      <div className="flex flex-row items-center justify-between px-2">
-        <span className="w-1/5 font-bold">Proveedor</span>
-        <span className="w-1/5 font-bold">Precio</span>
-        <span className="w-1/5 font-bold">País de procedencia</span>
-        <span className="w-2/5"></span>
-      </div>
-      {supplierCollection.map((articleSupplier) => (
-        <div
-          className="mt-6 w-full rounded-md bg-two px-2 py-2"
-          key={articleSupplier.id}
-        >
-          <div className="flex flex-row items-center justify-between px-2">
-            <span className="w-1/4">{articleSupplier.id}</span>
-            <span className="w-1/4">
-              ${Number(articleSupplier.price).toLocaleString()}
-            </span>
-            <span className="w-1/4">{articleSupplier.country}</span>
-            <span className="w-1/4">
-              <a
-                href={articleSupplier.link}
-                className="text-gray-300 hover:text-blue-500"
-              >
-                Ir a página
-              </a>
-            </span>
-            {showConfirmation && (
-              <Dialog open={showConfirmation} handler={handleAddToQuote}>
-                <DialogHeader>Artículo Agregado</DialogHeader>
-                <DialogBody divider>
-                  El artículo ha sido añadido a la cotización.
-                </DialogBody>
-                <DialogFooter>
-                  <Button
-                    variant="gradient"
-                    color="green"
-                    onClick={handleAddToQuote}
-                  >
-                    <span>Ok</span>
-                  </Button>
-                </DialogFooter>
-              </Dialog>
-            )}
-            <Button className=" bg-fourry" onClick={handleAddToQuote}>
-              Agregar a cotizacion
-            </Button>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function ShowOtherImgs({ articleImgs }) {
-  return (
-    <div className="flex w-full flex-row px-8">
-      {articleImgs.map((articleImg) => (
-        <div className="" key={articleImg.id}>
-          <img
-            src={articleImg.imgUrl}
-            alt=""
-            className="h-28 max-w-[180px] object-contain px-5"
-          />
-        </div>
-      ))}
-    </div>
-  );
-}
-
-const initialValues = {
-  brand: "",
-  category: "",
-  details: "",
-  articleName: "",
-  imgUrl: "",
-};
+const TABLE_HEAD = [
+  "Proveedor",
+  "Precios por cantidad",
+  "Stock",
+  "Añadir a cotizacion",
+];
 
 export default function Article() {
   const [isLoading, setIsLoading] = useState(true);
-  const [articleData, setArticleData] = useState(initialValues);
+  const [productData, setProductData] = useState(null);
   const [supplierCollection, setSupplierCollection] = useState([]);
-  const { articleId } = useParams();
+  const { productId } = useParams();
 
   useEffect(() => {
-    getArticleData();
-    getSuppliersCollection();
+    getProduct();
   }, []);
 
-  const getArticleData = async () => {
+  // useEffect(() => {
+  //   console.log(productData);
+  // }, [productData]);
+
+  const getProduct = async () => {
     setIsLoading(true);
-    const newArticleData = await getDoc(doc(db, "prueba-articulos", articleId));
-    setArticleData(newArticleData.data());
+    const productDataFetch = await getProductData(productId);
+    setProductData(productDataFetch);
+    setSupplierCollection(productDataFetch.suppliers);
     setIsLoading(false);
   };
 
-  const getSuppliersCollection = async () => {
-    //recupera desde la coleccion "prueba-articulos, y segun el articulo, recupera su coleccion de proveedores"
-    const querySnapshot = await getDocs(
-      collection(db, "prueba-articulos", articleId, "suppliers")
-    );
-
-    const supplierCollection = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    setSupplierCollection(supplierCollection);
+  const handleAddProductToQuote = async (supplier) => {
+    await addProductToActiveQuote(productData, supplier)
+      .then(console.log("Producto agregado"))
+      .catch((e) => {
+        console.log(e);
+      });
   };
 
   return (
-    <div className="mx-auto grid h-full max-w-7xl grid-cols-4 pt-20">
+    <div className="mx-auto h-full max-w-5xl pt-20">
       {isLoading ? (
         <Spinner className="mx-auto mt-20 h-12 w-12" />
       ) : (
-        <section className="col-span-4 flex flex-col  lg:col-span-3">
+        <section className="flex flex-col">
           {/* inicio imagen y detalles*/}
           <div className="flex flex-row justify-start ">
             {/* imagen principal articulo */}
-            <div className="flex w-1/2 flex-row justify-start">
-              <div>
-                <img
-                  className="mx-auto w-full object-contain px-10 lg:max-w-[450px] xl:max-w-[520px]"
-                  src={articleData.imgUrl}
-                  alt="nature image"
-                />
-              </div>
+            <div className="w-1/2  flex justify-start">
+              <img
+                className="mx-auto max-w-lg object-contain px-10"
+                src={productData.imgSrc}
+              />
             </div>
             {/* detalles articulos */}
-            <div className="flex w-1/2 flex-col px-2">
-              <h1 className="mb-3 text-2xl font-bold">
-                {articleData.articleName}
-              </h1>
-              <div className="flex flex-col pl-5">
-                <div className="pb-3 text-xl font-bold">
-                  Detalles del articulo
-                  <div className="text-base font-normal">
-                    <p>Categoria: {articleData.category}</p>
-                    <p>Marca: {articleData.brand}</p>
+            <div className="flex w-1/2 flex-col p-2 bg-dark3 rounded-md shadow-md">
+              <div className="flex flex-col px-5">
+                <div className="pb-3">
+                  <Typography variant="h5">Detalles del producto</Typography>
+                  <div className="flex justify-between">
+                    <Typography variant="small" className="opacity-70">
+                      Categoria :
+                    </Typography>
+                    <Typography variant="small">
+                      {productData.productCategory}
+                    </Typography>
+                  </div>
+                  <div className="flex justify-between">
+                    <Typography variant="small" className="opacity-70">
+                      Fabricante :
+                    </Typography>
+                    <Typography variant="small">
+                      {productData.manufacturer}
+                    </Typography>
+                  </div>
+                  <div className="flex justify-between">
+                    <Typography variant="small" className="opacity-70">
+                      N° parte fabricante :
+                    </Typography>
+                    <Typography variant="small">
+                      {productData.manufacturerPartNo}
+                    </Typography>
+                  </div>
+                  <div className="flex justify-between">
+                    <Typography variant="small" className="opacity-70">
+                      En empaque :
+                    </Typography>
+                    <Typography variant="small">
+                      {productData.priceFor}
+                    </Typography>
                   </div>
                 </div>
-                <div className="pb-3 text-xl font-bold">
-                  Descripcion del articulo
-                  <p className="text-base font-normal	">{articleData.details}</p>
+                <div className="pb-3">
+                  <Typography variant="h5">Descripción</Typography>
+                  <Typography variant="small" className="opacity-70">
+                    {productData.description}
+                  </Typography>
                 </div>
               </div>
             </div>
@@ -172,30 +120,120 @@ export default function Article() {
             {/* <ShowOtherImgs articleImgs={articleImgs} /> */}
           </div>
           {/* llamada a ofertas de otras empresas*/}
-          <div className="mx-10 rounded-md bg-one p-5  shadow-md">
-            <h1 className="py-5 text-xl font-bold">Lista proveedores</h1>
-            <ShowOtherPrices supplierCollection={supplierCollection} />
+          <div className="rounded-md bg-dark3 p-5 shadow-md">
+            <Typography variant="h5" className="pb-5 font-bold">
+              Lista proveedores
+            </Typography>
+            <div>
+              <table className="w-full min-w-max table-auto text-left">
+                <thead>
+                  <tr>
+                    {TABLE_HEAD.map((head) => (
+                      <th key={head} className=" bg-two border-opacity-50 p-4">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal leading-none  text-light"
+                        >
+                          {head}
+                        </Typography>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="mx-auto">
+                  {isLoading ? (
+                    <tr>
+                      <td>
+                        <div>
+                          <Spinner className="h-12 w-12" />
+                        </div>
+                      </td>
+                    </tr>
+                  ) : (
+                    <>
+                      {supplierCollection.map((supplier, index) => {
+                        const isLast = index === supplierCollection.length - 1;
+                        const classes = isLast
+                          ? "p-4"
+                          : "p-4 border-b border-blue-gray-50";
+
+                        return (
+                          <SupplierRow
+                            supplier={supplier}
+                            classes={classes}
+                            handleAddProductToQuote={handleAddProductToQuote}
+                            key={index}
+                          />
+                        );
+                      })}
+                    </>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </section>
       )}
-
-      {/* mejor oferta escritorio */}
-      {!isLoading && (
-        <aside className="flex-start col-span-1 px-10">
-          <Card className="bg-two">
-            <CardBody>
-              <h1 className="text-lg font-bold text-white">
-                Aquí irá la mejor oferta.
-              </h1>
-            </CardBody>
-            <CardFooter>
-              <div>
-                <Button className="bg-fourry">Añadir a cotización</Button>
-              </div>
-            </CardFooter>
-          </Card>
-        </aside>
-      )}
     </div>
+  );
+}
+
+function SupplierRow({ supplier, classes, handleAddProductToQuote }) {
+  return (
+    <tr className="bg-two hover:bg-twoHover">
+      <td className={classes}>
+        <Typography variant="small" className="font-normal text-light">
+          {supplier.supplier}
+        </Typography>
+      </td>
+      <td className={classes}>
+        <Typography
+          variant="small"
+          className="font-normal text-light"
+        ></Typography>
+      </td>
+      <td className={classes}>
+        <div className="flex flex-col">
+          {supplier.stock.map((currentStock, index) => {
+            return (
+              <div className="flex justify-between" key={index}>
+                <Typography variant="small">
+                  {currentStock.country === "us" ? "EE.UU" : "generico"}:
+                </Typography>
+                <Typography variant="small"> {currentStock.stock}</Typography>
+              </div>
+            );
+          })}
+        </div>
+      </td>
+      <td className={`${classes}`}>
+        <div className="flex justify-center">
+          {/* Boton mas */}
+          <Button
+            variant="text"
+            className="hover:bg-threeHover bg-three"
+            onClick={() => {
+              handleAddProductToQuote(supplier);
+            }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-4 h-4 text-light"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 4.5v15m7.5-7.5h-15"
+              />
+            </svg>
+          </Button>
+        </div>
+      </td>
+    </tr>
   );
 }

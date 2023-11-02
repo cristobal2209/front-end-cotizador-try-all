@@ -23,6 +23,7 @@ import {
   Spinner,
   Typography,
 } from "@material-tailwind/react";
+import { useNavigate } from "react-router-dom";
 
 const SCHEMA_QUOTE = {
   quoteName: "",
@@ -54,6 +55,7 @@ export default function CreateQuote() {
   const [currentDate] = useState(new Date());
   const [activeQuote, setActiveQuote] = useState(null);
   const [contador, setContador] = useState(0);
+  const navigate = useNavigate();
   const inputRef = useRef(null);
 
   const quoteData = SCHEMA_QUOTE;
@@ -135,6 +137,10 @@ export default function CreateQuote() {
 
   const handleOpenQuoteNameAlert = () => {
     setOpenQuoteNameAlert(!openQuoteNameAlert);
+  };
+
+  const handleNavigateToQuote = () => {
+    navigate(`quoteDetails/${activeQuote.id}`);
   };
 
   return (
@@ -221,6 +227,7 @@ export default function CreateQuote() {
                     <Button
                       size="sm"
                       className="m-1 rounded bg-transparent shadow-none hover:shadow-lg hover:bg-fourHover"
+                      onClick={handleNavigateToQuote}
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
