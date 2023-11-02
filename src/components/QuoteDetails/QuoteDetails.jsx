@@ -9,7 +9,11 @@ import {
   Spinner,
 } from "@material-tailwind/react";
 import { useParams } from "react-router-dom";
-import { getQuote, updateQuoteProducts } from "../../services/QuoteService";
+import {
+  getQuote,
+  updateQuoteProducts,
+  subscribeToActiveQuote,
+} from "../../services/QuoteService";
 
 const TABLE_HEAD = ["Producto", "Proveedor", "Cantidad", "Subtotal", " "];
 
@@ -21,7 +25,16 @@ export default function QuoteDetails() {
   const [quoteProducts, setQuoteProducts] = useState([]);
 
   useEffect(() => {
-    getActiveQuote();
+    setIsLoading(true);
+    const unsubscribe = subscribeToActiveQuote((data) => {
+      setQuote(data);
+    });
+    setIsLoading(false);
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -37,11 +50,6 @@ export default function QuoteDetails() {
 
   const updateProducts = async () => {
     const response = await updateQuoteProducts(quoteId, quoteProducts);
-  };
-
-  const getActiveQuote = async () => {
-    const quoteFetch = await getQuote(quoteId);
-    setQuote(quoteFetch);
   };
 
   const updateSubtotal = (index, newQuantity) => {
