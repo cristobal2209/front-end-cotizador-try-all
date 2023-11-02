@@ -9,24 +9,64 @@ import {
   Spinner,
 } from "@material-tailwind/react";
 import { useParams } from "react-router-dom";
-import { getQuote } from "../../services/QuoteService";
+import { getQuote, updateQuoteProducts } from "../../services/QuoteService";
+
+const TABLE_HEAD = ["Producto", "Proveedor", "Cantidad", "Subtotal", " "];
 
 export default function QuoteDetails() {
   const { quoteId } = useParams();
   const [isLoadingTable, setIsLoading] = useState(null);
+  const [total, setTotal] = useState(0);
   const [quote, setQuote] = useState(null);
+  const [quoteProducts, setQuoteProducts] = useState([]);
 
   useEffect(() => {
     getActiveQuote();
   }, []);
 
-  // useEffect(() => {
-  //   console.log(quote);
-  // }, [quote]);
+  useEffect(() => {
+    if (quote?.products.length != 0) setQuoteProducts(quote?.products);
+  }, [quote]);
+
+  useEffect(() => {
+    if (quoteProducts?.length != 0) {
+      getTotal();
+      updateProducts();
+    }
+  }, [quoteProducts]);
+
+  const updateProducts = async () => {
+    const response = await updateQuoteProducts(quoteId, quoteProducts);
+  };
 
   const getActiveQuote = async () => {
     const quoteFetch = await getQuote(quoteId);
     setQuote(quoteFetch);
+  };
+
+  const updateSubtotal = (index, newQuantity) => {
+    setQuoteProducts((prevQuoteProducts) => {
+      // Clona el arreglo previo para mantener la inmutabilidad
+      const updatedQuoteProducts = [...prevQuoteProducts];
+      // Actualiza el elemento específico en el nuevo arreglo clonado
+      updatedQuoteProducts[index] = {
+        ...updatedQuoteProducts[index],
+        quantity: newQuantity,
+      };
+      return updatedQuoteProducts;
+    });
+  };
+
+  const getTotal = () => {
+    let total = 0;
+    quoteProducts?.forEach((productData) => {
+      const quantity = productData.quantity;
+      let price = parseFloat(
+        productData.supplier.prices[0].price.replace(/\$/g, "")
+      );
+      total += price * quantity;
+    });
+    setTotal(total.toFixed(2));
   };
 
   return (
@@ -43,19 +83,21 @@ export default function QuoteDetails() {
         </CardHeader>
         <CardBody className="p-4">
           <table className="w-full min-w-max table-auto text-left">
-            {/* <thead>
+            <thead>
               <tr>
-                <th className="border-y border-light bg-dark border-opacity-50 p-4">
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal leading-none  text-light opacity-70"
-                  >
-                    head1
-                  </Typography>
-                </th>
+                {TABLE_HEAD.map((head) => (
+                  <th key={head} className=" bg-dark3 border-opacity-50 p-4">
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal leading-none  text-light"
+                    >
+                      {head}
+                    </Typography>
+                  </th>
+                ))}
               </tr>
-            </thead> */}
+            </thead>
             <tbody className="mx-auto">
               {isLoadingTable ? (
                 <tr>
@@ -67,9 +109,19 @@ export default function QuoteDetails() {
                 </tr>
               ) : (
                 <>
-                  {quote?.products.map((product, index) => {
+                  {quoteProducts?.map((productData, index) => {
+                    const isLast = index === quote.products.length - 1;
+                    const classes = isLast
+                      ? "p-4"
+                      : "p-4 border-b border-blue-gray-50";
                     return (
-                      <ProductQuoteRow product={product} key={product.UID} />
+                      <ProductQuoteRow
+                        productData={productData}
+                        key={index}
+                        index={index}
+                        classes={classes}
+                        updateSubtotal={updateSubtotal}
+                      />
                     );
                   })}
                 </>
@@ -77,63 +129,73 @@ export default function QuoteDetails() {
             </tbody>
           </table>
         </CardBody>
-        <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
-          <>{/* paginador */}</>
+        <CardFooter className="flex items-center justify-between p-4">
+          <Typography variant="h5" className="text-light">
+            Total: {total}
+          </Typography>
         </CardFooter>
       </Card>
     </div>
   );
 }
 
-function ProductQuoteRow({ product }) {
+function ProductQuoteRow({ productData, classes, updateSubtotal, index }) {
   const [priceNumber, setPriceNumber] = useState(0);
   const [quantity, setQuantity] = useState(0);
   const [subtotal, setSubtotal] = useState(0);
 
   useEffect(() => {
-    let price = parseFloat(product.price.replace(/\$/g, ""));
+    let price = parseFloat(
+      productData.supplier.prices[0].price.replace(/\$/g, "")
+    );
     setPriceNumber(price);
-    setQuantity(product.quantity);
-    setSubtotal(priceNumber);
+    setQuantity(productData.quantity);
+    setSubtotal(priceNumber * quantity);
   }, []);
 
   useEffect(() => {
-    console.log(quantity);
-    updateSubtotal();
+    setSubtotal(priceNumber * quantity);
   }, [quantity]);
 
-  useEffect(() => {
-    console.log(subtotal);
-  }, [subtotal]);
-
   const increaseQuantity = () => {
+    // Actualizar la cantidad en el componente principal
     setQuantity(quantity + 1);
-  };
-  const decreaseQuantity = () => {
-    setQuantity(quantity - 1);
+    updateSubtotal(index, quantity + 1);
   };
 
-  const updateSubtotal = () => {
-    setSubtotal(quantity * priceNumber);
+  const decreaseQuantity = () => {
+    // Actualizar la cantidad en el componente principal
+    setQuantity(quantity - 1);
+    updateSubtotal(index, quantity - 1);
   };
 
   return (
-    <tr className="bg-two text-light flex items-center justify-between">
+    <tr className={`bg-two text-light items-center ${classes}`}>
       <td>
-        <div className="flex gap-4 m-4 max-w-md">
-          <div className="">{product.description}</div>
-          <img src={product.imgSrc}></img>
+        <div className="flex p-4">
+          <Typography
+            variant="small"
+            className="font-normal text-light mr-1 max-w-xs"
+          >
+            {productData.product.description}
+          </Typography>
+          <div className="ml-auto">
+            <img
+              src={productData.product.imgSrc}
+              className="ml-1 rounded-md"
+            ></img>
+          </div>
         </div>
       </td>
       <td>
-        <div className="flex gap-4 m-4 ">{product.supplierName}</div>
+        <div className="p-4">{productData.supplier.supplier}</div>
       </td>
       <td>
-        <div className="flex">
+        <div className="flex p-4">
           <Button
             onClick={decreaseQuantity}
-            disabled={quantity < 1}
-            className="bg-three hover:bg-threeHover"
+            disabled={quantity < 2}
+            className="bg-three hover:bg-threeHover px-3"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -153,7 +215,7 @@ function ProductQuoteRow({ product }) {
           <div className="self-center mx-5">{quantity}</div>
           <Button
             onClick={increaseQuantity}
-            className="bg-three hover:bg-threeHover"
+            className="bg-three hover:bg-threeHover px-3"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -176,22 +238,24 @@ function ProductQuoteRow({ product }) {
         <div className="mx-5">{subtotal.toFixed(2)}</div>
       </td>
       <td>
-        <Button color="red" className="mr-5">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="w-4 h-4"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </Button>
+        <div className="p-4 flex">
+          <Button color="red" className="ml-auto px-3">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              className="w-4 h-4"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </Button>
+        </div>
       </td>
     </tr>
   );

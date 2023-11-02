@@ -15,6 +15,8 @@ import {
 import { db } from "../../firebaseConfig";
 import { getProductData } from "../../services/ProductService";
 
+import { addProductToActiveQuote } from "../../services/QuoteService";
+
 const TABLE_HEAD = [
   "Proveedor",
   "Precios por cantidad",
@@ -42,6 +44,14 @@ export default function Article() {
     setProductData(productDataFetch);
     setSupplierCollection(productDataFetch.suppliers);
     setIsLoading(false);
+  };
+
+  const handleAddProductToQuote = async (supplier) => {
+    await addProductToActiveQuote(productData, supplier)
+      .then(console.log("Producto agregado"))
+      .catch((e) => {
+        console.log(e);
+      });
   };
 
   return (
@@ -74,7 +84,7 @@ export default function Article() {
                   </div>
                   <div className="flex justify-between">
                     <Typography variant="small" className="opacity-70">
-                      Marca :
+                      Fabricante :
                     </Typography>
                     <Typography variant="small">
                       {productData.manufacturer}
@@ -152,6 +162,7 @@ export default function Article() {
                           <SupplierRow
                             supplier={supplier}
                             classes={classes}
+                            handleAddProductToQuote={handleAddProductToQuote}
                             key={index}
                           />
                         );
@@ -168,8 +179,7 @@ export default function Article() {
   );
 }
 
-function SupplierRow({ supplier, classes }) {
-  console.log(supplier);
+function SupplierRow({ supplier, classes, handleAddProductToQuote }) {
   return (
     <tr className="bg-two hover:bg-twoHover">
       <td className={classes}>
@@ -199,7 +209,14 @@ function SupplierRow({ supplier, classes }) {
       </td>
       <td className={`${classes}`}>
         <div className="flex justify-center">
-          <Button variant="text" className="hover:bg-threeHover bg-three">
+          {/* Boton mas */}
+          <Button
+            variant="text"
+            className="hover:bg-threeHover bg-three"
+            onClick={() => {
+              handleAddProductToQuote(supplier);
+            }}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
