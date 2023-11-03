@@ -159,16 +159,39 @@ export default function CreateQuote() {
                 required
               />
               {formik.errors.quoteName ? (
-                <Alert className="absolute mt-[70px] bg-red-500 !w-auto animate-pulse">
-                  <div className="flex flex-row items-center">
-                    <ExclamationTriangleIcon className="mr-1 h-4 w-4" />
+                <Alert className="
+                  absolute 
+                  mt-[70px] 
+                  bg-red-500 
+                  !w-auto 
+                  animate-pulse"
+                >
+                  <div 
+                    className="
+                    flex 
+                    flex-row 
+                    items-center"
+                  >
+                    <ExclamationTriangleIcon 
+                      className="
+                      mr-1 
+                      h-4 
+                      w-4" 
+                    />
                     {formik.errors.quoteName}
                   </div>
                 </Alert>
               ) : null}
               <Button
                 size="sm"
-                className="rounded bg-three shadow-none hover:bg-threeHover mx-1 my-2 px-2"
+                className="
+                  rounded 
+                  bg-three 
+                  shadow-none 
+                  hover:bg-threeHover 
+                  mx-1 
+                  my-2 
+                  px-2"
                 onClick={() => formik.handleSubmit()}
               >
                 <svg
@@ -177,7 +200,9 @@ export default function CreateQuote() {
                   viewBox="0 0 24 24"
                   strokeWidth={1.5}
                   stroke="currentColor"
-                  className="w-4 h-4"
+                  className="
+                    w-4 
+                    h-4"
                 >
                   <path
                     strokeLinecap="round"
@@ -188,7 +213,14 @@ export default function CreateQuote() {
               </Button>
               <Button
                 size="sm"
-                className="rounded bg-red-600 shadow-none hover:bg-red-400 mx-1 my-2 px-2"
+                className="
+                  rounded 
+                  bg-red-600 
+                  shadow-none 
+                  hover:bg-red-400 
+                  mx-1 
+                  my-2 
+                  px-2"
                 onClick={() => handleEditing()}
               >
                 <svg
@@ -210,17 +242,35 @@ export default function CreateQuote() {
           ) : (
             <>
               {activeQuote ? (
-                <div className="bg-four pl-3 rounded-md border-whiteHover border-solid border-2 flex items-center">
+                <div className="
+                  bg-four 
+                  pl-3 
+                  rounded-md 
+                  border-whiteHover 
+                  border-solid 
+                  border-2 
+                  flex 
+                  items-center"
+                >
                   {/* <span className="border-dashed border-b-2 mb-1 ">
                       Cotización activa
                     </span> */}
-                  <Typography className="font-bold italic mr-2">
+                  <Typography 
+                    className="
+                      font-bold 
+                      italic mr-2"
+                    >
                     {activeQuote.quoteName}
                   </Typography>
                   <div>
                     <Button
                       size="sm"
-                      className="m-1 rounded bg-transparent shadow-none hover:shadow-lg hover:bg-fourHover"
+                      className="
+                        m-1 rounded 
+                        bg-transparent 
+                        shadow-none 
+                        hover:shadow-lg 
+                        hover:bg-fourHover"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -228,7 +278,9 @@ export default function CreateQuote() {
                         viewBox="0 0 24 24"
                         strokeWidth={1.5}
                         stroke="currentColor"
-                        className="w-6 h-6"
+                        className="
+                          w-6 
+                          h-6"
                       >
                         <path
                           strokeLinecap="round"
@@ -243,7 +295,11 @@ export default function CreateQuote() {
                 <>
                   <Button
                     size="sm"
-                    className="mx-1 rounded bg-three hover:bg-threeHover font-normal"
+                    className="
+                      mx-1 rounded 
+                      bg-three 
+                      hover:bg-threeHover
+                      font-normal"
                     onClick={handleNewQuoteButtonPress}
                   >
                     Nueva cotización
