@@ -12,12 +12,6 @@ import { getProductsFromInput } from "../../services/SearchService";
 import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 
 function GridSearchResults({ products }) {
-  const navigate = useNavigate();
-
-  const handleClick = (productDataId) => {
-    navigate(`/articles/${productDataId}`);
-  };
-
   const openNewWindow = (productDataId) => {
     // URL o contenido que deseas mostrar en la nueva pestaña
     const url = `http://localhost:4000/articles/${productDataId}`;
@@ -28,16 +22,15 @@ function GridSearchResults({ products }) {
 
   return (
     <div className="mx-auto grid max-w-6xl place-items-center gap-5 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {products.map((productResult, index) => (
+      {products?.map((productResult, index) => (
         <Card
-          className="h-full w-56 cursor-pointer text-center shadow-md"
+          className="h-full mx-2 w-48 cursor-pointer text-center shadow-md"
           key={index}
           onClick={(event) => openNewWindow(productResult.id)}
         >
           <CardBody className="h-32">
-            <img //src = campos usados desde coleccion firebase, product result y imgSrc
+            <img
               src={productResult.imgSrc}
-              alt=""
               className="h-28 w-64 object-contain"
             />
           </CardBody>
@@ -113,95 +106,84 @@ function RenderFilters() {
 }
 
 export default function SearchResults() {
-  const [active, setActive] = useState(1);
+  const [contador, setContador] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [productsSearchResultsCollection, setProductsSearchResultsCollection] =
-    useState([]);
+  const [searchResults, setSearchResults] = useState([]);
   const { productSearchParam } = useParams();
+  const [nextDocRef, setNextDocRef] = useState(null);
+  const [prevDocRef, setPrevDocRef] = useState(null);
 
   useEffect(() => {
-    document.title = `Resultado Busqueda ${productSearchParam}`;
-    getArticlesSearchCollection();
+    document.title = `Resultado búsqueda "${productSearchParam}"`;
+    getNextProducts();
   }, []);
 
-  const getArticlesSearchCollection = async () => {
+  useEffect(() => {
+    setContador(contador + 1);
+  }, [searchResults]);
+
+  const getNextProducts = async () => {
     setIsLoading(true);
-    const searchResults = await getProductsFromInput(productSearchParam);
-    setProductsSearchResultsCollection(searchResults);
+    const { data, firstVisible, lastVisible } = await getProductsFromInput(
+      productSearchParam,
+      nextDocRef
+    );
+    setSearchResults(data);
+    setNextDocRef(lastVisible);
+    setPrevDocRef(firstVisible);
     setIsLoading(false);
   };
 
-  const getItemProps = (index) => ({
-    variant: active === index ? "filled" : "text",
-    color: active === index ? "blue" : "blue-gray",
-    onClick: () => {
-      setActive(index);
-      navigate(index);
-    },
-  });
-
-  const itemsPerPage = 30;
-
-  const totalItems = 10;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const next = () => {
-    if (active < totalPages) {
-      setActive(active + 1);
-    }
-  };
-
-  const prev = () => {
-    if (active === 1) return;
-
-    setActive(active - 1);
+  const getPrevProducts = async () => {
+    const { data, firstVisible, lastVisible } = await getProductsFromInput(
+      productSearchParam,
+      prevDocRef
+    );
+    setSearchResults(data);
+    setNextDocRef(lastVisible);
+    setPrevDocRef(firstVisible);
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-5 pt-20">
+    <div className="mx-auto max-w-7xl px-5 pt-10">
       <div className="flex flex-row">
         <RenderFilters />
         <section className="grow">
-          {/*INICIO mosaico de articulos Resultados busqueda*/}
           <div className="pt-20">
             {isLoading ? (
               <Spinner className="mx-auto mt-20 h-12 w-12" />
             ) : (
-              <GridSearchResults products={productsSearchResultsCollection} />
+              <div className="pb-10">
+                <GridSearchResults products={searchResults} />
+                <div className="mx-auto flex pt-20">
+                  <Button
+                    variant="text"
+                    className="mx-auto flex items-center gap-2 bg-two hover:bg-twoHover text-light"
+                    onClick={getPrevProducts}
+                  >
+                    <ArrowLeftIcon
+                      strokeWidth={2}
+                      className="mx-auto h-4 w-4"
+                    />{" "}
+                    Anterior
+                  </Button>
+                  <Button
+                    variant="text"
+                    className="mx-auto flex items-center gap-2 bg-two hover:bg-twoHover text-light"
+                    onClick={getNextProducts}
+                  >
+                    Siguiente
+                    <ArrowRightIcon
+                      strokeWidth={2}
+                      className="mx-auto h-4 w-4"
+                    />
+                  </Button>
+                </div>
+              </div>
             )}
           </div>
-          {/*FIN mosaico de articulos Resultados busqueda*/}
         </section>
       </div>
-      {/*INICIO Paginador*/}
-      <div className="mx-auto flex flex-row pt-20">
-        <Button
-          variant="text"
-          color="blue-gray"
-          className="mx-auto flex items-center gap-2"
-          onClick={prev}
-          disabled={active === 1}
-        >
-          <ArrowLeftIcon strokeWidth={2} className="mx-auto h-4 w-4" /> Previous
-        </Button>
-        <div className="flex items-center justify-center gap-2">
-          {[...Array(totalPages)].map((_, index) => (
-            <IconButton key={index} {...getItemProps(index + 1)}>
-              {index + 1}
-            </IconButton>
-          ))}
-        </div>
-        <Button
-          variant="text"
-          color="blue-gray"
-          className="mx-auto flex items-center gap-2"
-          onClick={next}
-          disabled={active === 5}
-        >
-          Next
-          <ArrowRightIcon strokeWidth={2} className="mx-auto h-4 w-4" />
-        </Button>
-      </div>
-      {/*FIN Paginador*/}
     </div>
   );
 }

@@ -39,6 +39,10 @@ export default function Article() {
   //   console.log(productData);
   // }, [productData]);
 
+  useEffect(() => {
+    document.title = `${productData?.description}`;
+  }, [productData]);
+
   const getProduct = async () => {
     setIsLoading(true);
     const productDataFetch = await getProductData(productId);
@@ -56,7 +60,7 @@ export default function Article() {
   };
 
   return (
-    <div className="mx-auto h-full max-w-5xl pt-20">
+    <div className="mx-auto h-full max-w-5xl pt-24">
       {isLoading ? (
         <Spinner className="mx-auto mt-20 h-12 w-12" />
       ) : (

@@ -218,7 +218,7 @@ export default function TableQuote() {
                 variant="text"
                 className={`flex items-center gap-2 bg-two hover:bg-twoHover text-light `}
                 onClick={getPrevProducts}
-                disabled={showedProductsQuantity === 20}
+                disabled={showedProductsQuantity === itemsPerPage}
               >
                 <ArrowLeftIcon strokeWidth={2} className="h-4 w-4" />
                 <span className="hidden sm:block">Anterior</span>
