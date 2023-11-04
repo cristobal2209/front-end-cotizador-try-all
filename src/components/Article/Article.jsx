@@ -101,7 +101,7 @@ export default function Article() {
                   </div>
                   <div className="flex justify-between">
                     <Typography variant="small" className="opacity-70">
-                      En empaque :
+                      Precio por :
                     </Typography>
                     <Typography variant="small">
                       {productData.priceFor}
@@ -131,13 +131,15 @@ export default function Article() {
                   <tr>
                     {TABLE_HEAD.map((head, index) => {
                       const isLast = index === TABLE_HEAD.length - 1;
+                      const isFirst = index === 0;
                       const isSecond = index === 1;
                       return (
                         <th
                           key={index}
                           className={`bg-two p-4 ${
                             (isLast ? "w-[200px]" : null,
-                            isSecond ? "w-[300px]" : null)
+                            isSecond ? "w-[300px]" : null,
+                            isFirst ? "w-[100px]" : null)
                           }`}
                         >
                           <div className="flex">
@@ -188,6 +190,11 @@ export default function Article() {
                   )}
                 </tbody>
               </table>
+              <div className="p-4 bg-two">
+                <Typography variant="h5" className="font-normal leading-none">
+                  . . . Más proveedores a futuro
+                </Typography>
+              </div>
             </div>
           </div>
         </section>

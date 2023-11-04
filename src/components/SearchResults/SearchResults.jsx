@@ -18,17 +18,21 @@ function GridSearchResults({ products }) {
     navigate(`/articles/${productDataId}`);
   };
 
-  useEffect(() => {
-    document.title = "Resultado Busqueda";
-  }, []);
+  const openNewWindow = (productDataId) => {
+    // URL o contenido que deseas mostrar en la nueva pestaña
+    const url = `http://localhost:4000/articles/${productDataId}`;
+
+    // Abre una nueva pestaña o ventana con el contenido
+    window.open(url, "_blank");
+  };
 
   return (
     <div className="mx-auto grid max-w-6xl place-items-center gap-5 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {products.map((productResult) => (
+      {products.map((productResult, index) => (
         <Card
           className="h-full w-56 cursor-pointer text-center shadow-md"
-          key={productResult.id}
-          onClick={(event) => handleClick(productResult.id)}
+          key={index}
+          onClick={(event) => openNewWindow(productResult.id)}
         >
           <CardBody className="h-32">
             <img //src = campos usados desde coleccion firebase, product result y imgSrc

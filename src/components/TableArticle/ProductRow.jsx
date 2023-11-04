@@ -6,8 +6,6 @@ import {
   MenuHandler,
   MenuList,
   MenuItem,
-  Select,
-  Option,
   Dialog,
   DialogHeader,
   DialogBody,

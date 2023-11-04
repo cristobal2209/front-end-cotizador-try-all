@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
-import { subscribeToCollection } from "../../services/TableProductService";
+import {
+  getNextProductsCollection,
+  countProducts,
+} from "../../services/TableProductService";
 import ProductRow from "./ProductRow";
 import AlertFailed from "./AlertFailed";
 import AlertSuccess from "./AlertSuccess";
@@ -34,22 +37,43 @@ export default function TableQuote() {
   const [ProductsCollection, setProductsCollection] = useState([]);
   const [alertData, setAlertData] = useState();
   const [contador, setContador] = useState(0);
+  const [nextDocRef, setNextDocRef] = useState(null);
+  const [prevDocRef, setPrevDocRef] = useState(null);
+  const [showedProductsQuantity, setShowedProductsQuantity] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
+  const itemsPerPage = 10;
 
   useEffect(() => {
-    document.title = "Productos";
-    const unsubscribe = subscribeToCollection((data) => {
-      setProductsCollection(data);
-    });
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-    };
+    document.title = "Tabla gestión de productos";
+    getNextProducts();
+    getCountProducts();
   }, []);
 
   useEffect(() => {
     setContador(contador + 1);
   }, [ProductsCollection]);
+
+  const getCountProducts = async () => {
+    setTotalItems(await countProducts());
+  };
+
+  const getNextProducts = async () => {
+    const { data, firstVisible, lastVisible } =
+      await getNextProductsCollection(nextDocRef);
+    setProductsCollection(data);
+    setNextDocRef(lastVisible);
+    setPrevDocRef(firstVisible);
+    setShowedProductsQuantity(showedProductsQuantity + itemsPerPage);
+  };
+
+  const getPrevProducts = async () => {
+    const { data, firstVisible, lastVisible } =
+      await getNextProductsCollection(prevDocRef);
+    setProductsCollection(data);
+    setNextDocRef(lastVisible);
+    setPrevDocRef(firstVisible);
+    setShowedProductsQuantity(showedProductsQuantity - itemsPerPage);
+  };
 
   const handleOpenAlertSuccess = (boolean) => {
     setOpenAlertSuccess(boolean);
@@ -78,53 +102,25 @@ export default function TableQuote() {
     handleOpenAlertFailed(true);
   };
 
-  //pagination
-  const itemsPerPage = 20;
-  const [active, setActive] = useState(1);
-
-  const totalItems = ProductsCollection.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-  const getVisibleItems = () => {
-    const startIndex = (active - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    return ProductsCollection.slice(startIndex, endIndex);
-  };
-
-  const next = () => {
-    if (active < totalPages) {
-      setActive(active + 1);
-    }
-  };
-
-  const prev = () => {
-    if (active > 1) {
-      setActive(active - 1);
-    }
-  };
-
-  const getItemProps = (index) => ({
-    variant: active === index ? "filled" : "text",
-    color: "gray",
-    onClick: () => setActive(index),
-  });
-
   return (
     <>
       <div className="mx-[10px] pb-[10px]">
-        <Card className="h-full w-full mt-[100px] max-w-7xl mx-auto bg-dark3 shadow-2xl">
+        <Card className="h-full w-full mt-[100px] max-w-7xl mx-auto bg-dark3  shadow-2xl">
           <CardHeader
             floated={false}
             shadow={false}
-            className="rounded-none bg-dark3"
+            className="rounded-none bg-dark3 border-b border-light-50 mx-0"
           >
-            <div className="mb-4 flex flex-col justify-between gap-8 md:flex-row md:items-center">
+            <div className="mb-4 px-4 flex flex-col justify-between gap-8 md:flex-row md:items-center">
               <div>
                 <Typography variant="h5" className="text-light">
-                  Productos
+                  Tabla de productos
                 </Typography>
                 <Typography className="mt-1 font-normal text-light opacity-70">
                   Productos ingresados en sistema.
+                </Typography>
+                <Typography className="mt-1 font-normal text-light opacity-70">
+                  Mostrando {showedProductsQuantity} de {totalItems} productos.
                 </Typography>
               </div>
               <div className="flex w-full shrink-0 gap-2 md:w-max">
@@ -135,7 +131,6 @@ export default function TableQuote() {
                       <MagnifyingGlassIcon className="h-5 w-5 text-light" />
                     }
                     color="white"
-                    //containerProps={{ className: "bg-four rounded-md" }}
                   />
                   <AlertSuccess
                     open={openAlertSuccess}
@@ -153,7 +148,7 @@ export default function TableQuote() {
           </CardHeader>
           <CardBody
             className={`overflow-x-auto p-0 ${
-              ProductsCollection.length === 0 ? "h-20" : "h-[900px]"
+              ProductsCollection?.length === 0 ? "h-20" : "h-[600px]"
             }`}
           >
             {isLoadingTable ? (
@@ -166,7 +161,7 @@ export default function TableQuote() {
               </tr>
             ) : (
               <>
-                {ProductsCollection.length === 0 ? (
+                {ProductsCollection?.length === 0 ? (
                   <>
                     <Typography className="w-full text-center font-bold text-light">
                       No existen productos en el sistema.
@@ -193,16 +188,14 @@ export default function TableQuote() {
                         </tr>
                       </thead>
                       <tbody>
-                        {/*Dejo el argumento index por si se necesita a futuro*/}
-                        {getVisibleItems().map((product, index) => {
-                          //const isLast = index === ProductsCollection.length - 1;
+                        {ProductsCollection?.map((product, index) => {
                           const classes = "p-4 border-y border-blue-gray-100";
 
                           return (
                             <ProductRow
                               product={product}
                               classes={classes}
-                              key={product.id}
+                              key={index}
                               handleSuccessAlert={handleSuccessAlert}
                               handleFailedAlert={handleFailedAlert}
                             />
@@ -217,35 +210,23 @@ export default function TableQuote() {
           </CardBody>
           <CardFooter
             className={` flex items-center justify-between border-t border-light-50 p-4 ${
-              ProductsCollection.length === 0 ? "hidden" : "block"
+              ProductsCollection?.length === 0 ? "hidden" : "block"
             }`}
           >
             <div className="flex items-center gap-4">
               <Button
                 variant="text"
-                className="flex items-center gap-2 bg-one text-light"
-                onClick={prev}
-                disabled={active === 1}
+                className={`flex items-center gap-2 bg-two hover:bg-twoHover text-light `}
+                onClick={getPrevProducts}
+                disabled={showedProductsQuantity === 20}
               >
                 <ArrowLeftIcon strokeWidth={2} className="h-4 w-4" />
                 <span className="hidden sm:block">Anterior</span>
               </Button>
-              <div className="overflow-x-auto flex items-center gap-2">
-                {[...Array(totalPages)].map((_, index) => (
-                  <IconButton
-                    key={index}
-                    {...getItemProps(index + 1)}
-                    className="bg-one hover:bg-oneHover text-light"
-                  >
-                    {index + 1}
-                  </IconButton>
-                ))}
-              </div>
               <Button
                 variant="text"
-                className="flex items-center gap-2 bg-one text-light"
-                onClick={next}
-                disabled={active === totalPages}
+                className="flex items-center gap-2 bg-two hover:bg-twoHover text-light"
+                onClick={getNextProducts}
               >
                 <span className="hidden sm:block">Siguiente</span>
 

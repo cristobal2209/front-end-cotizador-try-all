@@ -28,7 +28,8 @@ import { useNavigate } from "react-router-dom";
 const SCHEMA_QUOTE = {
   quoteName: "",
   products: [],
-  date: "",
+  createDate: "",
+  lastUpdateDate: "",
   status: "",
   version: "",
   responsibleName: "",
