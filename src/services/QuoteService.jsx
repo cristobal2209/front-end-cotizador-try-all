@@ -26,7 +26,11 @@ export const createQuote = async (quoteData) => {
   }
   quoteData.responsibleName = user.displayName;
   quoteData.responsibleUUID = user.uid;
-  await addDoc(collection(db, "usersQuotes", user.uid, "quotes"), quoteData);
+  await addDoc(collection(db, "usersQuotes", user.uid, "quotes"), quoteData)
+    .then()
+    .catch((error) => {
+      console.log(error);
+    });
 };
 
 export const subscribeToActiveQuote = (callback) => {
@@ -147,6 +151,7 @@ export const addProductToActiveQuote = async (product, supplier) => {
 };
 
 export const updateQuoteProducts = async (quoteID, newProducts) => {
+  const currentDate = new Date();
   try {
     const user = auth.currentUser;
     if (!user) {
@@ -154,7 +159,10 @@ export const updateQuoteProducts = async (quoteID, newProducts) => {
     }
     const quoteRef = doc(db, "usersQuotes", user.uid, "quotes", quoteID);
     if (newProducts) {
-      await updateDoc(quoteRef, { products: newProducts })
+      await updateDoc(quoteRef, {
+        products: newProducts,
+        lastUpdateDate: currentDate.toDateString(),
+      })
         .then()
         .catch((e) => {
           console.log(e);

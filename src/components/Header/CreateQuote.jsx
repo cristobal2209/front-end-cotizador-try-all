@@ -76,6 +76,7 @@ export default function CreateQuote() {
 
   useEffect(() => {
     setContador(contador + 1);
+    console.log(activeQuote);
   }, [activeQuote]);
 
   useEffect(() => {
@@ -91,7 +92,7 @@ export default function CreateQuote() {
   const formik = useFormik({
     initialValues: {
       quoteName: "",
-      date: currentDate.toDateString(),
+      createDate: currentDate.toDateString(),
       version: "1.0",
     },
     validateOnMount: true,
@@ -100,7 +101,8 @@ export default function CreateQuote() {
     validationSchema: validationSchema,
     onSubmit: () => {
       quoteData.quoteName = formik.values.quoteName;
-      quoteData.date = formik.values.date;
+      quoteData.createDate = formik.values.createDate;
+      quoteData.lastUpdateDate = formik.values.createDate;
       quoteData.version = formik.values.version;
       handleOpenQuoteNameAlert();
     },

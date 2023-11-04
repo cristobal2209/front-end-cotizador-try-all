@@ -187,7 +187,7 @@ export default function UserQuoteRow({
           variant="small"
           className="font-normal text-light opacity-70"
         >
-          {quote.date}
+          {quote.createDate}
         </Typography>
       </td>
       <td className={classes}>
