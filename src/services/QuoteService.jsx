@@ -146,7 +146,7 @@ export const addProductToActiveQuote = async (product, supplier) => {
         throw new Error(e);
       });
   } catch (e) {
-    console.log(e);
+    throw new Error(e);
   }
 };
 
