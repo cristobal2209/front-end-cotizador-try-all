@@ -17,7 +17,15 @@ import {
   subscribeToActiveQuote,
 } from "../../services/QuoteService";
 
-const TABLE_HEAD = ["Producto", "Proveedor", "Cantidad", "Subtotal", " "];
+const TABLE_HEAD = [
+  "Producto",
+  "Proveedor",
+  "Stock",
+  "Cantidad",
+  "Precio",
+  "Subtotal",
+  " ",
+];
 
 export default function QuoteDetails() {
   const { quoteId } = useParams();
@@ -64,10 +72,10 @@ export default function QuoteDetails() {
   };
 
   const updateProducts = async () => {
-    const response = await updateQuoteProducts(quoteId, quoteProducts);
+    const response = await updateQuoteProducts(quoteId, quoteProducts, total);
   };
 
-  const updateSubtotal = (index, newQuantity) => {
+  const updateSubtotal = (index, newQuantity, price) => {
     setQuoteProducts((prevQuoteProducts) => {
       // Clona el arreglo previo para mantener la inmutabilidad
       const updatedQuoteProducts = [...prevQuoteProducts];
@@ -75,6 +83,7 @@ export default function QuoteDetails() {
       updatedQuoteProducts[index] = {
         ...updatedQuoteProducts[index],
         quantity: newQuantity,
+        price: price,
       };
       return updatedQuoteProducts;
     });
@@ -84,21 +93,9 @@ export default function QuoteDetails() {
     let total = 0;
     quoteProducts?.forEach((productData) => {
       const quantity = productData.quantity;
-      const priceMap = {}; // Objeto para mapear cantidades a precios
+      const price = productData.price;
 
-      //Crear el mapeo de cantidades a precios
-      productData.supplier.prices.forEach((priceEntry) => {
-        const minQuantity = parseInt(priceEntry.quantity.replace("+", ""));
-        const price = parseFloat(priceEntry.price.replace(/\$/g, ""));
-        priceMap[minQuantity] = price;
-      });
-      let nearestQuantity = quantity;
-      while (priceMap[nearestQuantity] === undefined && nearestQuantity >= 0) {
-        nearestQuantity--;
-      }
-
-      const newPrice = priceMap[nearestQuantity] || 0;
-      total += newPrice * quantity;
+      total += price * quantity;
     });
     setTotal(total.toFixed(2));
   };
@@ -203,15 +200,15 @@ function ProductQuoteRow({
   });
 
   useEffect(() => {
-    setQuantity(productData.quantity);
     updatePriceAndSubtotal(productData.quantity);
-  }, [productData]);
-
-  useEffect(() => {
     sumTotalStock();
   }, []);
 
-  const updatePriceAndSubtotal = (newQuantity) => {
+  useEffect(() => {
+    setSubtotal(priceNumber * quantity);
+  }, [quantity]);
+
+  const updatePriceAndSubtotal = async (newQuantity) => {
     // Buscar el precio más cercano en el mapeo
     let nearestQuantity = newQuantity;
     while (priceMap[nearestQuantity] === undefined && nearestQuantity >= 0) {
@@ -221,7 +218,9 @@ function ProductQuoteRow({
     const newPrice = priceMap[nearestQuantity] || 0;
     setQuantity(newQuantity);
     setPriceNumber(newPrice);
-    setSubtotal(newPrice * newQuantity);
+
+    // Llama a la función de actualización del subtotal en el componente padre
+    updateSubtotal(index, newQuantity, newPrice);
   };
 
   const sumTotalStock = () => {
@@ -238,16 +237,23 @@ function ProductQuoteRow({
   const increaseQuantity = () => {
     const newQuantity = quantity + 1;
     updatePriceAndSubtotal(newQuantity);
-    updateSubtotal(index, newQuantity);
   };
 
   const decreaseQuantity = () => {
     if (quantity > 1) {
       const newQuantity = quantity - 1;
+      setQuantity(newQuantity);
       updatePriceAndSubtotal(newQuantity);
-      updateSubtotal(index, newQuantity);
     }
   };
+
+  function capitalizeFirstLetter(inputString) {
+    if (typeof inputString !== "string") {
+      return inputString;
+    }
+
+    return inputString.charAt(0).toUpperCase() + inputString.slice(1);
+  }
 
   return (
     <tr
@@ -255,19 +261,34 @@ function ProductQuoteRow({
     >
       <td>
         <div className="flex p-4">
-          <Typography
-            variant="small"
-            className="font-normal text-light mr-1 max-w-xs"
+          <a
+            href={`http://localhost:4000/articles/${product.id}`}
+            className="hover:underline mr-1 max-w-xs"
           >
-            {product.description}
-          </Typography>
+            <Typography variant="small" className=" text-light">
+              {product.description}
+            </Typography>
+          </a>
           <div className="ml-auto">
             <img src={product.imgSrc} className="ml-1 rounded-md"></img>
           </div>
         </div>
       </td>
       <td>
-        <div className="p-4">{supplier.supplier}</div>
+        <div className="p-4">
+          <a href={`${supplier.productUrl}`} className="hover:underline">
+            <Typography variant="small" className=" text-light">
+              {capitalizeFirstLetter(supplier.supplier)}
+            </Typography>
+          </a>
+        </div>
+      </td>
+      <td>
+        <div className="flex p-4">
+          <Typography variant="small" className=" text-light">
+            {totalStock}&nbsp;u.
+          </Typography>
+        </div>
       </td>
       <td>
         <div className="flex p-4">
@@ -291,7 +312,12 @@ function ProductQuoteRow({
               />
             </svg>
           </Button>
-          <div className="self-center mx-5">{quantity}</div>
+          <div className="self-center mx-5">
+            <Typography variant="small" className=" text-light">
+              {" "}
+              {quantity}
+            </Typography>
+          </div>
           <Button
             onClick={increaseQuantity}
             disabled={quantity >= totalStock}
@@ -354,7 +380,18 @@ function ProductQuoteRow({
         </div>
       </td>
       <td>
-        <div className="mx-5">${subtotal.toFixed(2)}</div>
+        <div className="flex p-4">
+          <Typography variant="small" className="font-normal text-light ">
+            ${priceNumber}
+          </Typography>
+        </div>
+      </td>
+      <td>
+        <div className="mx-5">
+          <Typography variant="small" className="font-normal text-light">
+            ${subtotal.toFixed(2)}
+          </Typography>
+        </div>
       </td>
       <td>
         <div className="p-4 flex">

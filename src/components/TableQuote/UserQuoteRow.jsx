@@ -17,53 +17,14 @@ import {
   changeQuoteStatus,
   deleteQuote,
 } from "../../services/TableQuoteService";
-import * as xlsx from "xlsx";
 
-function generarPlanillaExcel(quote) {
-  //hace la matriz de excel campo por campo
-  let ElementosCotizacion = [
-    ["NombreCotizacion"],
-    ["", quote.quoteName],
-    ["Productos"],
-  ];
-  console.log(quote.products);
-  //pone los articulos
-  ElementosCotizacion.push([
-    "",
-    "Producto",
-    "NumeroParte",
-    "Cantidad",
-    "Precio",
-  ]);
-
-  for (const product of quote.products) {
-    ElementosCotizacion.push([
-      "",
-      product.description,
-      product.manufacturerPartNo,
-      product.quantity,
-      product.price,
-    ]);
-  }
-
-  ElementosCotizacion.push(["Otras filas"]);
-  ElementosCotizacion.push([""]);
-  ElementosCotizacion.push(["Total"]);
-
-  const workbook = xlsx.utils.book_new();
-  const worksheet = xlsx.utils.aoa_to_sheet(ElementosCotizacion);
-
-  xlsx.utils.book_append_sheet(workbook, worksheet, "Cotización");
-
-  const nombrecotizacion = quote.quoteName + ".xlsx";
-  xlsx.writeFile(workbook, nombrecotizacion);
-  //console.log(ElementosCotizacion);
-}
 export default function UserQuoteRow({
   quote,
   classes,
   handleSuccessAlert,
   handleFailedAlert,
+  handleGenerateExcel,
+  handleQuoteView,
 }) {
   const [openThreeDotsOptions, setOpenThreeDotsOptions] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -83,7 +44,7 @@ export default function UserQuoteRow({
     setContador(contador + 1);
   }, [quoteStatus]);
 
-  const handleChangeUserStatus = (newQuoteStatus) => {
+  const handleChangeQuoteStatus = (newQuoteStatus) => {
     setIsConfirmationDialogOpen(true);
     setNewQuoteStatus(newQuoteStatus);
   };
@@ -95,11 +56,23 @@ export default function UserQuoteRow({
   //Manejo borrado cotizacion
 
   const handleDeleteQuote = async () => {
-    const response = await deleteQuote(quote.id);
+    await deleteQuote(quote.id)
+      .then(() => {
+        return;
+      })
+      .catch((e) => {
+        throw e;
+      });
   };
 
   const handleConfirmDelete = async () => {
-    await handleDeleteQuote();
+    await handleDeleteQuote()
+      .then(() => {
+        handleSuccessAlert("Cotización eliminada correctamente");
+      })
+      .catch((e) => {
+        handleFailedAlert("Error al eliminar la cotización");
+      });
     handleOpenDeleteDialog();
   };
 
@@ -110,10 +83,13 @@ export default function UserQuoteRow({
   //Manejo de estados cotizacion
 
   const handleConfirmChangeStatus = async () => {
-    const response = await changeQuoteStatus(
-      quote.id,
-      parseInt(newQuoteStatus, 10)
-    );
+    await changeQuoteStatus(quote.id, parseInt(newQuoteStatus, 10))
+      .then(() => {
+        handleSuccessAlert("Estado cotización cambiado");
+      })
+      .catch(() => {
+        handleFailedAlert("Error al cambiar el estado");
+      });
     setIsConfirmationDialogOpen(false);
   };
 
@@ -156,7 +132,7 @@ export default function UserQuoteRow({
         <div className="max-w-[10rem]">
           <Select
             value={newQuoteStatus}
-            onChange={handleChangeUserStatus}
+            onChange={handleChangeQuoteStatus}
             variant="standard"
             className="text-light opacity-70"
             menuProps={{ className: "bg-dark text-light border-dark2" }}
@@ -191,7 +167,10 @@ export default function UserQuoteRow({
         </Typography>
       </td>
       <td className={classes}>
-        <Button className="px-3 bg-transparent shadow-none hover:bg-twoHover">
+        <Button
+          className="px-3 bg-transparent shadow-none hover:bg-twoHover"
+          onClick={() => handleQuoteView(quote)}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -219,7 +198,7 @@ export default function UserQuoteRow({
             <Button
               variant="text"
               className="px-3 bg-transparent shadow-none hover:shadow-md hover:bg-twoHover"
-              onClick={handleOpenThreeDotsOptions}
+              onClick={() => handleOpenThreeDotsOptions()}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -238,9 +217,9 @@ export default function UserQuoteRow({
             </Button>
           </MenuHandler>
           <MenuList className="bg-dark text-light border-dark2">
-            <MenuItem>Cambiar nombre</MenuItem>
-            <MenuItem>Ver Versiones</MenuItem>
-            <MenuItem onClick={() => generarPlanillaExcel(quote)}>
+            <MenuItem disabled={true}>Cambiar nombre</MenuItem>
+            <MenuItem disabled={true}>Ver Versiones</MenuItem>
+            <MenuItem onClick={() => handleGenerateExcel(quote)}>
               Descargar Excel
             </MenuItem>
             <MenuItem onClick={handleOpenDeleteDialog}>Eliminar</MenuItem>
