@@ -21,6 +21,72 @@ import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 
 const TABLE_HEAD = ["Nombre", "Estado", "Fecha Creación", "Ver", "Opciones"];
 
+import * as xlsx from "xlsx";
+
+function generateExcel(quoteData) {
+  //Encabezados de cotizacion
+  console.log(quoteData);
+  let excelQuoteElements = [
+    ["ID", quoteData.id],
+    ["Nombre Cotización", quoteData.quoteName],
+    ["Responsable", quoteData.responsibleName],
+    ["Fecha de creación", quoteData.createDate],
+    ["Fecha de actualización", quoteData.lastUpdateDate],
+    ["Productos"],
+  ];
+  //Encabezados de productos
+  excelQuoteElements.push([
+    "",
+    "Proveedor",
+    "N° parte proveedor",
+    "Producto",
+    "Fabricante",
+    "N° parte fabricante",
+    "Precio por",
+    "Precio",
+    "Cantidad",
+    "Subtotal",
+  ]);
+
+  //Datos de productos
+  for (const productQuoteData of quoteData.products) {
+    excelQuoteElements.push([
+      "",
+      productQuoteData.supplier.supplier,
+      productQuoteData.supplier.newarkPartNo,
+      productQuoteData.product.description,
+      productQuoteData.product.manufacturer,
+      productQuoteData.product.manufacturerPartNo,
+      productQuoteData.product.priceFor,
+      productQuoteData.price,
+      productQuoteData.quantity,
+      (productQuoteData.quantity * productQuoteData.price).toFixed(2),
+    ]);
+  }
+  //Total
+  excelQuoteElements.push([
+    "Total",
+    " ",
+    " ",
+    " ",
+    " ",
+    " ",
+    " ",
+    " ",
+    " ",
+    quoteData.total,
+  ]);
+
+  const workbook = xlsx.utils.book_new();
+  const worksheet = xlsx.utils.aoa_to_sheet(excelQuoteElements);
+  console.log(excelQuoteElements);
+
+  xlsx.utils.book_append_sheet(workbook, worksheet, "Cotización");
+
+  const nombrecotizacion = quoteData.quoteName + ".xlsx";
+  xlsx.writeFile(workbook, nombrecotizacion);
+}
+
 export default function TableQuote() {
   const [isLoadingTable, setIsLoadingTable] = useState(false);
   const [openAlertSuccess, setOpenAlertSuccess] = useState(false);
@@ -40,6 +106,10 @@ export default function TableQuote() {
       }
     };
   }, []);
+
+  const handleGenerateExcel = (quote) => {
+    generateExcel(quote);
+  };
 
   useEffect(() => {
     setContador(contador + 1);
@@ -201,6 +271,7 @@ export default function TableQuote() {
                               key={quote.id}
                               handleSuccessAlert={handleSuccessAlert}
                               handleFailedAlert={handleFailedAlert}
+                              handleGenerateExcel={handleGenerateExcel}
                             />
                           );
                         })}
@@ -211,7 +282,6 @@ export default function TableQuote() {
               </>
             )}
           </CardBody>
-          {/* ********************************************************************************************************************************************** */}
           <CardFooter
             className={`overflow-x-auto flex items-center justify-between border-t border-light-50 p-4 ${
               userQuotesCollection.length === 0 ? "hidden" : "block"

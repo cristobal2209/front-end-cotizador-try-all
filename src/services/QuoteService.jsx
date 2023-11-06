@@ -150,7 +150,7 @@ export const addProductToActiveQuote = async (product, supplier) => {
   }
 };
 
-export const updateQuoteProducts = async (quoteID, newProducts) => {
+export const updateQuoteProducts = async (quoteID, newProducts, total) => {
   const currentDate = new Date();
   try {
     const user = auth.currentUser;
@@ -162,6 +162,7 @@ export const updateQuoteProducts = async (quoteID, newProducts) => {
       await updateDoc(quoteRef, {
         products: newProducts,
         lastUpdateDate: currentDate.toDateString(),
+        total: total,
       })
         .then()
         .catch((e) => {

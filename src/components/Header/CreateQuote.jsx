@@ -76,7 +76,6 @@ export default function CreateQuote() {
 
   useEffect(() => {
     setContador(contador + 1);
-    console.log(activeQuote);
   }, [activeQuote]);
 
   useEffect(() => {

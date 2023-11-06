@@ -64,10 +64,10 @@ export default function QuoteDetails() {
   };
 
   const updateProducts = async () => {
-    const response = await updateQuoteProducts(quoteId, quoteProducts);
+    const response = await updateQuoteProducts(quoteId, quoteProducts, total);
   };
 
-  const updateSubtotal = (index, newQuantity) => {
+  const updateSubtotal = (index, newQuantity, price) => {
     setQuoteProducts((prevQuoteProducts) => {
       // Clona el arreglo previo para mantener la inmutabilidad
       const updatedQuoteProducts = [...prevQuoteProducts];
@@ -75,6 +75,7 @@ export default function QuoteDetails() {
       updatedQuoteProducts[index] = {
         ...updatedQuoteProducts[index],
         quantity: newQuantity,
+        price: price,
       };
       return updatedQuoteProducts;
     });
@@ -84,21 +85,9 @@ export default function QuoteDetails() {
     let total = 0;
     quoteProducts?.forEach((productData) => {
       const quantity = productData.quantity;
-      const priceMap = {}; // Objeto para mapear cantidades a precios
+      const price = productData.price;
 
-      //Crear el mapeo de cantidades a precios
-      productData.supplier.prices.forEach((priceEntry) => {
-        const minQuantity = parseInt(priceEntry.quantity.replace("+", ""));
-        const price = parseFloat(priceEntry.price.replace(/\$/g, ""));
-        priceMap[minQuantity] = price;
-      });
-      let nearestQuantity = quantity;
-      while (priceMap[nearestQuantity] === undefined && nearestQuantity >= 0) {
-        nearestQuantity--;
-      }
-
-      const newPrice = priceMap[nearestQuantity] || 0;
-      total += newPrice * quantity;
+      total += price * quantity;
     });
     setTotal(total.toFixed(2));
   };
@@ -203,15 +192,15 @@ function ProductQuoteRow({
   });
 
   useEffect(() => {
-    setQuantity(productData.quantity);
     updatePriceAndSubtotal(productData.quantity);
-  }, [productData]);
-
-  useEffect(() => {
     sumTotalStock();
   }, []);
 
-  const updatePriceAndSubtotal = (newQuantity) => {
+  useEffect(() => {
+    setSubtotal(priceNumber * quantity);
+  }, [quantity]);
+
+  const updatePriceAndSubtotal = async (newQuantity) => {
     // Buscar el precio más cercano en el mapeo
     let nearestQuantity = newQuantity;
     while (priceMap[nearestQuantity] === undefined && nearestQuantity >= 0) {
@@ -221,7 +210,9 @@ function ProductQuoteRow({
     const newPrice = priceMap[nearestQuantity] || 0;
     setQuantity(newQuantity);
     setPriceNumber(newPrice);
-    setSubtotal(newPrice * newQuantity);
+
+    // Llama a la función de actualización del subtotal en el componente padre
+    updateSubtotal(index, newQuantity, newPrice);
   };
 
   const sumTotalStock = () => {
@@ -238,14 +229,13 @@ function ProductQuoteRow({
   const increaseQuantity = () => {
     const newQuantity = quantity + 1;
     updatePriceAndSubtotal(newQuantity);
-    updateSubtotal(index, newQuantity);
   };
 
   const decreaseQuantity = () => {
     if (quantity > 1) {
       const newQuantity = quantity - 1;
+      setQuantity(newQuantity);
       updatePriceAndSubtotal(newQuantity);
-      updateSubtotal(index, newQuantity);
     }
   };
 
@@ -259,7 +249,7 @@ function ProductQuoteRow({
             variant="small"
             className="font-normal text-light mr-1 max-w-xs"
           >
-            {product.description}
+            <a href="">{product.description}</a>
           </Typography>
           <div className="ml-auto">
             <img src={product.imgSrc} className="ml-1 rounded-md"></img>
