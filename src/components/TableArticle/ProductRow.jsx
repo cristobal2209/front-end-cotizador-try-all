@@ -11,6 +11,7 @@ import {
   DialogBody,
   DialogFooter,
 } from "@material-tailwind/react";
+import { useNavigate } from "react-router-dom";
 
 export default function ProductRow({
   product,
@@ -21,7 +22,12 @@ export default function ProductRow({
   const [openThreeDotsOptions, setOpenThreeDotsOptions] = useState(false);
   const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] =
     useState(false);
-  const [contador, setContador] = useState(0);
+
+  // useEffect(() => {
+  //   console.log(product);
+  // }, [product]);
+
+  const navigate = useNavigate();
 
   const handleOpenThreeDotsOptions = () => {
     setOpenThreeDotsOptions(!openThreeDotsOptions);
@@ -114,9 +120,15 @@ export default function ProductRow({
             </Button>
           </MenuHandler>
           <MenuList className="bg-dark text-light border-dark2">
-            <MenuItem>Ir a página</MenuItem>
-            <MenuItem>Editar detalles</MenuItem>
-            <MenuItem>Eliminar</MenuItem>
+            <MenuItem
+              onClick={() => {
+                navigate(`/articles/${product.id}`);
+              }}
+            >
+              Ir a página
+            </MenuItem>
+            <MenuItem disabled={true}>Editar detalles</MenuItem>
+            <MenuItem disabled={true}>Eliminar</MenuItem>
           </MenuList>
         </Menu>
       </td>

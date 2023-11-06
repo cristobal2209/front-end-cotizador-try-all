@@ -18,7 +18,6 @@ import {
 } from "@material-tailwind/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
-
 //pagination
 import { IconButton } from "@material-tailwind/react";
 import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
@@ -131,7 +130,7 @@ export default function TableQuote() {
                     icon={
                       <MagnifyingGlassIcon className="h-5 w-5 text-light" />
                     }
-                    color="white"
+                    disabled={true}
                   />
                   <AlertSuccess
                     open={openAlertSuccess}
