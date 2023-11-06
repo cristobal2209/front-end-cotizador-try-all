@@ -25,7 +25,6 @@ import * as xlsx from "xlsx";
 
 function generateExcel(quoteData) {
   //Encabezados de cotizacion
-  console.log(quoteData);
   let excelQuoteElements = [
     ["ID", quoteData.id],
     ["Nombre Cotización", quoteData.quoteName],
@@ -79,7 +78,6 @@ function generateExcel(quoteData) {
 
   const workbook = xlsx.utils.book_new();
   const worksheet = xlsx.utils.aoa_to_sheet(excelQuoteElements);
-  console.log(excelQuoteElements);
 
   xlsx.utils.book_append_sheet(workbook, worksheet, "Cotización");
 
