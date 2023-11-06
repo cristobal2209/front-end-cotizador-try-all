@@ -17,7 +17,15 @@ import {
   subscribeToActiveQuote,
 } from "../../services/QuoteService";
 
-const TABLE_HEAD = ["Producto", "Proveedor", "Cantidad", "Subtotal", " "];
+const TABLE_HEAD = [
+  "Producto",
+  "Proveedor",
+  "Stock",
+  "Cantidad",
+  "Precio",
+  "Subtotal",
+  " ",
+];
 
 export default function QuoteDetails() {
   const { quoteId } = useParams();
@@ -194,6 +202,7 @@ function ProductQuoteRow({
   useEffect(() => {
     updatePriceAndSubtotal(productData.quantity);
     sumTotalStock();
+    console.log(supplier);
   }, []);
 
   useEffect(() => {
@@ -239,25 +248,48 @@ function ProductQuoteRow({
     }
   };
 
+  function capitalizeFirstLetter(inputString) {
+    if (typeof inputString !== "string") {
+      return inputString;
+    }
+
+    return inputString.charAt(0).toUpperCase() + inputString.slice(1);
+  }
+
   return (
     <tr
       className={`bg-two hover:bg-twoHover text-light items-center ${classes}`}
     >
       <td>
         <div className="flex p-4">
-          <Typography
-            variant="small"
-            className="font-normal text-light mr-1 max-w-xs"
+          <a
+            href={`http://localhost:4000/articles/${product.id}`}
+            className="hover:underline mr-1 max-w-xs"
           >
-            <a href="">{product.description}</a>
-          </Typography>
+            <Typography variant="small" className=" text-light">
+              {product.description}
+            </Typography>
+          </a>
           <div className="ml-auto">
             <img src={product.imgSrc} className="ml-1 rounded-md"></img>
           </div>
         </div>
       </td>
       <td>
-        <div className="p-4">{supplier.supplier}</div>
+        <div className="p-4">
+          <a href={`${supplier.productUrl}`} className="hover:underline">
+            <Typography variant="small" className=" text-light">
+              {capitalizeFirstLetter(supplier.supplier)}
+            </Typography>
+          </a>
+        </div>
+      </td>
+      <td>
+        <div className="flex p-4">
+          <Typography variant="small" className=" text-light">
+            {totalStock}&nbsp;u.
+          </Typography>
+        </div>
       </td>
       <td>
         <div className="flex p-4">
@@ -281,7 +313,12 @@ function ProductQuoteRow({
               />
             </svg>
           </Button>
-          <div className="self-center mx-5">{quantity}</div>
+          <div className="self-center mx-5">
+            <Typography variant="small" className=" text-light">
+              {" "}
+              {quantity}
+            </Typography>
+          </div>
           <Button
             onClick={increaseQuantity}
             disabled={quantity >= totalStock}
@@ -344,7 +381,18 @@ function ProductQuoteRow({
         </div>
       </td>
       <td>
-        <div className="mx-5">${subtotal.toFixed(2)}</div>
+        <div className="flex p-4">
+          <Typography variant="small" className="font-normal text-light ">
+            ${priceNumber}
+          </Typography>
+        </div>
+      </td>
+      <td>
+        <div className="mx-5">
+          <Typography variant="small" className="font-normal text-light">
+            ${subtotal.toFixed(2)}
+          </Typography>
+        </div>
       </td>
       <td>
         <div className="p-4 flex">

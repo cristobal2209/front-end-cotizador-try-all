@@ -43,7 +43,7 @@ export default function UserQuoteRow({
     setContador(contador + 1);
   }, [quoteStatus]);
 
-  const handleChangeUserStatus = (newQuoteStatus) => {
+  const handleChangeQuoteStatus = (newQuoteStatus) => {
     setIsConfirmationDialogOpen(true);
     setNewQuoteStatus(newQuoteStatus);
   };
@@ -55,11 +55,23 @@ export default function UserQuoteRow({
   //Manejo borrado cotizacion
 
   const handleDeleteQuote = async () => {
-    const response = await deleteQuote(quote.id);
+    await deleteQuote(quote.id)
+      .then(() => {
+        return;
+      })
+      .catch((e) => {
+        throw e;
+      });
   };
 
   const handleConfirmDelete = async () => {
-    await handleDeleteQuote();
+    await handleDeleteQuote()
+      .then(() => {
+        handleSuccessAlert("Cotización eliminada correctamente");
+      })
+      .catch((e) => {
+        handleFailedAlert("Error al eliminar la cotización");
+      });
     handleOpenDeleteDialog();
   };
 
@@ -70,10 +82,13 @@ export default function UserQuoteRow({
   //Manejo de estados cotizacion
 
   const handleConfirmChangeStatus = async () => {
-    const response = await changeQuoteStatus(
-      quote.id,
-      parseInt(newQuoteStatus, 10)
-    );
+    await changeQuoteStatus(quote.id, parseInt(newQuoteStatus, 10))
+      .then(() => {
+        handleSuccessAlert("Estado cotización cambiado");
+      })
+      .catch(() => {
+        handleFailedAlert("Error al cambiar el estado");
+      });
     setIsConfirmationDialogOpen(false);
   };
 
@@ -116,7 +131,7 @@ export default function UserQuoteRow({
         <div className="max-w-[10rem]">
           <Select
             value={newQuoteStatus}
-            onChange={handleChangeUserStatus}
+            onChange={handleChangeQuoteStatus}
             variant="standard"
             className="text-light opacity-70"
             menuProps={{ className: "bg-dark text-light border-dark2" }}
@@ -198,8 +213,8 @@ export default function UserQuoteRow({
             </Button>
           </MenuHandler>
           <MenuList className="bg-dark text-light border-dark2">
-            <MenuItem>Cambiar nombre</MenuItem>
-            <MenuItem>Ver Versiones</MenuItem>
+            <MenuItem disabled={true}>Cambiar nombre</MenuItem>
+            <MenuItem disabled={true}>Ver Versiones</MenuItem>
             <MenuItem onClick={() => handleGenerateExcel(quote)}>
               Descargar Excel
             </MenuItem>

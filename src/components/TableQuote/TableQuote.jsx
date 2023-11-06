@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { subscribeToCollection } from "../../services/TableQuoteService";
 import UserQuoteRow from "./UserQuoteRow";
-import AlertFailed from "./AlertFailed";
-import AlertSuccess from "./AlertSuccess";
 import {
   Button,
   Spinner,
@@ -12,6 +10,7 @@ import {
   CardBody,
   CardFooter,
   Input,
+  Alert,
 } from "@material-tailwind/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
@@ -22,6 +21,13 @@ import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 const TABLE_HEAD = ["Nombre", "Estado", "Fecha Creación", "Ver", "Opciones"];
 
 import * as xlsx from "xlsx";
+function capitalizeFirstLetter(inputString) {
+  if (typeof inputString !== "string") {
+    return inputString;
+  }
+
+  return inputString.charAt(0).toUpperCase() + inputString.slice(1);
+}
 
 function generateExcel(quoteData) {
   //Encabezados de cotizacion
@@ -36,30 +42,32 @@ function generateExcel(quoteData) {
   //Encabezados de productos
   excelQuoteElements.push([
     "",
-    "Proveedor",
-    "N° parte proveedor",
     "Producto",
     "Fabricante",
     "N° parte fabricante",
+    "Proveedor",
+    "N° parte proveedor",
     "Precio por",
     "Precio",
     "Cantidad",
     "Subtotal",
+    "Enlace",
   ]);
 
   //Datos de productos
   for (const productQuoteData of quoteData.products) {
     excelQuoteElements.push([
       "",
-      productQuoteData.supplier.supplier,
-      productQuoteData.supplier.newarkPartNo,
       productQuoteData.product.description,
       productQuoteData.product.manufacturer,
       productQuoteData.product.manufacturerPartNo,
+      capitalizeFirstLetter(productQuoteData.supplier.supplier),
+      productQuoteData.supplier.newarkPartNo,
       productQuoteData.product.priceFor,
       productQuoteData.price,
       productQuoteData.quantity,
       (productQuoteData.quantity * productQuoteData.price).toFixed(2),
+      productQuoteData.supplier.productUrl,
     ]);
   }
   //Total
@@ -113,31 +121,31 @@ export default function TableQuote() {
     setContador(contador + 1);
   }, [userQuotesCollection]);
 
-  const handleOpenAlertSuccess = (boolean) => {
-    setOpenAlertSuccess(boolean);
-    setTimeout(() => {
-      setOpenAlertSuccess(false);
-    }, 5000);
+  const handleOpenAlertSuccess = () => {
+    setOpenAlertSuccess(!openAlertSuccess);
   };
 
-  const handleOpenAlertFailed = (boolean) => {
-    setOpenAlertFailed(boolean);
-    setTimeout(() => {
-      setOpenAlertFailed(false);
-    }, 5000);
+  const handleOpenAlertFailed = () => {
+    setOpenAlertFailed(!openAlertFailed);
   };
 
   //message se ocupa para mostrar alertas personalizadas
   const handleSuccessAlert = (message) => {
     //getUserQuotes();
     setAlertData(message);
-    handleOpenAlertSuccess(true);
+    handleOpenAlertSuccess();
+    setTimeout(() => {
+      setOpenAlertSuccess(false);
+    }, 5000);
   };
 
   //error se ocupa para mostrar el error al usuario
   const handleFailedAlert = (error) => {
     setAlertData(error);
-    handleOpenAlertFailed(true);
+    handleOpenAlertFailed();
+    setTimeout(() => {
+      setOpenAlertFailed(false);
+    }, 5000);
   };
 
   //pagination
@@ -193,24 +201,23 @@ export default function TableQuote() {
                 <div className="w-full md:w-72">
                   <Input
                     label="Buscar cotización"
-                    icon={
-                      <MagnifyingGlassIcon className="h-5 w-5 text-light" />
-                    }
-                    color="white"
+                    icon={<MagnifyingGlassIcon className="h-5 w-5 text-dark" />}
+                    disabled={true}
+                    //labelProps={{ className: "bg-four rounded-md" }}
                     //containerProps={{ className: "bg-four rounded-md" }}
-                  />
-                  <AlertSuccess
-                    open={openAlertSuccess}
-                    handler={handleOpenAlertSuccess}
-                    data={alertData}
-                  />
-                  <AlertFailed
-                    open={openAlertFailed}
-                    handler={handleOpenAlertFailed}
-                    error={alertData}
                   />
                 </div>
               </div>
+              <AlertSuccess
+                open={openAlertSuccess}
+                handler={handleOpenAlertSuccess}
+                data={alertData}
+              />
+              <AlertFailed
+                open={openAlertFailed}
+                handler={handleOpenAlertFailed}
+                error={alertData}
+              />
             </div>
           </CardHeader>
           <CardBody
@@ -319,6 +326,80 @@ export default function TableQuote() {
             </div>
           </CardFooter>
         </Card>
+      </div>
+    </>
+  );
+}
+function AlertFailed({ open, handler, error }) {
+  function Icon() {
+    return (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        className="w-6 h-6"
+      >
+        <path
+          fillRule="evenodd"
+          d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z"
+          clipRule="evenodd"
+        />
+      </svg>
+    );
+  }
+
+  return (
+    <>
+      <div className="fixed w-auto right-[0px]">
+        <Alert
+          open={open}
+          onClose={() => handler()}
+          color="red"
+          icon={<Icon />}
+          animate={{
+            mount: { y: 0 },
+            unmount: { y: 100 },
+          }}
+        >
+          <Typography variant="small">{error}</Typography>
+        </Alert>
+      </div>
+    </>
+  );
+}
+function AlertSuccess({ open, handler, data }) {
+  function Icon() {
+    return (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        className="h-6 w-6"
+      >
+        <path
+          fillRule="evenodd"
+          d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z"
+          clipRule="evenodd"
+        />
+      </svg>
+    );
+  }
+
+  return (
+    <>
+      <div className="!absolute w-auto right-[0px]">
+        <Alert
+          open={open}
+          onClose={() => handler()}
+          color="green"
+          icon={<Icon />}
+          animate={{
+            mount: { y: 0 },
+            unmount: { y: 100 },
+          }}
+        >
+          <Typography variant="small">{data}</Typography>
+        </Alert>
       </div>
     </>
   );

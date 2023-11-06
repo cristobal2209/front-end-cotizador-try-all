@@ -25,9 +25,9 @@ export default function Article() {
     getProduct();
   }, []);
 
-  // useEffect(() => {
-  //   console.log(productData);
-  // }, [productData]);
+  useEffect(() => {
+    console.log(productData);
+  }, [productData]);
 
   useEffect(() => {
     document.title = `${productData?.description}`;
@@ -35,7 +35,10 @@ export default function Article() {
 
   const getProduct = async () => {
     setIsLoading(true);
-    const productDataFetch = await getProductData(productId);
+    const productDataFetch = {
+      id: productId,
+      ...(await getProductData(productId)),
+    };
     setProductData(productDataFetch);
     setSupplierCollection(productDataFetch.suppliers);
     setIsLoading(false);
