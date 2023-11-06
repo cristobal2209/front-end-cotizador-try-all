@@ -202,7 +202,6 @@ function ProductQuoteRow({
   useEffect(() => {
     updatePriceAndSubtotal(productData.quantity);
     sumTotalStock();
-    console.log(supplier);
   }, []);
 
   useEffect(() => {

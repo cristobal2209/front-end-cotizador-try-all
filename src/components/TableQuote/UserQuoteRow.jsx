@@ -24,6 +24,7 @@ export default function UserQuoteRow({
   handleSuccessAlert,
   handleFailedAlert,
   handleGenerateExcel,
+  handleQuoteView,
 }) {
   const [openThreeDotsOptions, setOpenThreeDotsOptions] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -166,7 +167,10 @@ export default function UserQuoteRow({
         </Typography>
       </td>
       <td className={classes}>
-        <Button className="px-3 bg-transparent shadow-none hover:bg-twoHover">
+        <Button
+          className="px-3 bg-transparent shadow-none hover:bg-twoHover"
+          onClick={() => handleQuoteView(quote)}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -194,7 +198,7 @@ export default function UserQuoteRow({
             <Button
               variant="text"
               className="px-3 bg-transparent shadow-none hover:shadow-md hover:bg-twoHover"
-              onClick={handleOpenThreeDotsOptions}
+              onClick={() => handleOpenThreeDotsOptions()}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

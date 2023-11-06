@@ -84,10 +84,6 @@ export default function CreateQuote() {
     }
   }, [isEditing]);
 
-  setTimeout(() => {
-    setOpenQuoteCreatedAlert(false);
-  }, 3000);
-
   const formik = useFormik({
     initialValues: {
       quoteName: "",
@@ -119,6 +115,9 @@ export default function CreateQuote() {
     setIsQuoteCreated(true);
     setOpenQuoteCreatedAlert(true);
     setIsLoading(false);
+    setTimeout(() => {
+      setOpenQuoteCreatedAlert(false);
+    }, 3000);
   };
 
   const handleKeyPress = (event) => {
@@ -354,9 +353,11 @@ export default function CreateQuote() {
             unmount: { y: 100 },
           }}
         >
-          <span>¡Cotización</span>
-          <span className="font-bold"> {formik.values.quoteName} </span>
-          <span>creada!</span>
+          <Typography variant="small">
+            ¡Cotización
+            <span className="font-bold"> {formik.values.quoteName} </span>
+            creada!
+          </Typography>
         </Alert>
       )}
     </>

@@ -60,14 +60,14 @@ export default function Article() {
     setOpenAlertSuccess(!openAlertSuccess);
     setTimeout(() => {
       setOpenAlertSuccess(false);
-    }, 5000);
+    }, 3000);
   };
 
   const handleOpenAlertFailed = () => {
     setOpenAlertFailed(!openAlertFailed);
     setTimeout(() => {
       setOpenAlertFailed(false);
-    }, 5000);
+    }, 3000);
   };
 
   return (
