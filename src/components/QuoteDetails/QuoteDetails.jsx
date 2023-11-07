@@ -168,9 +168,14 @@ export default function QuoteDetails() {
           </table>
         </CardBody>
         <CardFooter className="flex items-center justify-between p-4">
-          <Typography variant="h5" className="text-light">
-            Total: ${total}
-          </Typography>
+          <div className="!justify-self-start w-full justify-between flex flex-row">
+            <Typography variant="h5" className="text-light">
+              Total:
+            </Typography>
+            <Typography variant="h5" className="text-light">
+              ${total}
+            </Typography>
+          </div>
         </CardFooter>
       </Card>
     </div>

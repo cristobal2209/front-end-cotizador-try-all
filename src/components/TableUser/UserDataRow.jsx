@@ -8,6 +8,7 @@ import {
   DialogBody,
   DialogFooter,
 } from "@material-tailwind/react";
+import PropTypes from "prop-types";
 
 import { changeUserStatus } from "../../services/tableUserService";
 
@@ -17,13 +18,13 @@ export default function UserDataRow({
   handleSuccessAlert,
   handleFailedAlert,
 }) {
-  const [userIsDisabled, setUserIsDisabled] = useState(user.disabled);
+  const [userIsDisabled, setUserIsDisabled] = useState(user?.disabled);
   const [isOpenChangeUserStateDialog, setIsOpenChangeUserStateDialog] =
     useState(false);
 
   const handleConfirmChangeUserStatus = () => {
     setUserIsDisabled(!userIsDisabled);
-    changeUserStatus(!userIsDisabled, user.uid)
+    changeUserStatus(!userIsDisabled, user?.uid)
       .then((data) => {
         handleSuccessAlert(data);
       })
@@ -41,17 +42,17 @@ export default function UserDataRow({
     <tr className="hover:bg-two">
       <td className={classes}>
         <Typography variant="small" className="font-normal text-light">
-          {user.displayName}
+          {user?.displayName}
         </Typography>
       </td>
       <td className={classes}>
         <Typography variant="small" className="font-normal text-light">
-          {user.email}
+          {user?.email}
         </Typography>
       </td>
       <td className={classes}>
         <Typography variant="small" className="font-normal text-light">
-          {user.customClaims?.admin ? "Admin" : "Usuario"}
+          {user?.customClaims?.admin ? "Admin" : "Usuario"}
         </Typography>
       </td>
       <td className={classes}>
@@ -83,6 +84,7 @@ export default function UserDataRow({
         open={isOpenChangeUserStateDialog}
         handler={handleChangeUserStatusDialog}
         size="md"
+        className="bg-dark "
       >
         <DialogHeader>
           <svg
@@ -91,7 +93,7 @@ export default function UserDataRow({
             viewBox="0 0 24 24"
             strokeWidth="1.5"
             stroke="currentColor"
-            className="w-6 h-6 mr-2"
+            className="w-6 h-6 mr-2 text-light"
           >
             <path
               strokeLinecap="round"
@@ -99,14 +101,18 @@ export default function UserDataRow({
               d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
             />
           </svg>
-          Confirmar {userIsDisabled ? "habilitar" : "deshabilitar"} usuario
+          <Typography variant="h5" className="text-light">
+            Confirmar {userIsDisabled ? "habilitar" : "deshabilitar"} usuario
+          </Typography>
         </DialogHeader>
         <DialogBody divider>
-          ¿Está seguro en{" "}
-          <span className="font-bold">
-            {userIsDisabled ? "habilitar" : "deshabilitar"}
-          </span>{" "}
-          el usuario <span className="font-bold">{user.email}</span>?
+          <Typography variant="small" className="text-light">
+            ¿Está seguro en
+            <span className="font-bold">
+              &nbsp;{userIsDisabled ? "habilitar" : "deshabilitar"}&nbsp;
+            </span>
+            el usuario <span className="font-bold">{user?.email}</span>?
+          </Typography>
         </DialogBody>
         <DialogFooter>
           <Button
@@ -115,17 +121,31 @@ export default function UserDataRow({
             onClick={handleChangeUserStatusDialog}
             className="mr-1"
           >
-            <span>Cancelar</span>
+            Cancelar
           </Button>
           <Button
             variant="gradient"
             color="green"
             onClick={handleConfirmChangeUserStatus}
           >
-            <span>Confirmar</span>
+            Confirmar
           </Button>
         </DialogFooter>
       </Dialog>
     </tr>
   );
 }
+UserDataRow.propTypes = {
+  user: PropTypes.shape({
+    uid: PropTypes.string,
+    displayName: PropTypes.string,
+    email: PropTypes.string,
+    customClaims: PropTypes.shape({
+      admin: PropTypes.bool,
+    }),
+    disabled: PropTypes.bool,
+  }),
+  classes: PropTypes.string,
+  handleSuccessAlert: PropTypes.func,
+  handleFailedAlert: PropTypes.func,
+};

@@ -18,7 +18,6 @@ import {
 } from "@material-tailwind/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
-
 //pagination
 import { IconButton } from "@material-tailwind/react";
 import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
@@ -103,6 +102,8 @@ export default function TableQuote() {
     handleOpenAlertFailed(true);
   };
 
+  const handleCreateProduct = () => {};
+
   return (
     <>
       <div className="mx-[10px] pb-[10px]">
@@ -125,14 +126,26 @@ export default function TableQuote() {
                 </Typography>
               </div>
               <div className="flex w-full shrink-0 gap-2 md:w-max">
-                <div className="w-full md:w-72">
-                  <Input
-                    label="Buscar producto"
-                    icon={
-                      <MagnifyingGlassIcon className="h-5 w-5 text-light" />
-                    }
-                    color="white"
-                  />
+                <div className="w-full">
+                  <div className="flex flex-row">
+                    <Input
+                      label="Buscar producto"
+                      icon={
+                        <MagnifyingGlassIcon className="h-5 w-5 text-dark" />
+                      }
+                      disabled={true}
+                    />
+                    <Button
+                      className=" bg-three hover:bg-threeHover ml-2 !w-max"
+                      size="sm"
+                      onClick={() => {
+                        handleCreateProduct();
+                      }}
+                    >
+                      Crear producto
+                    </Button>
+                  </div>
+
                   <AlertSuccess
                     open={openAlertSuccess}
                     handler={handleOpenAlertSuccess}
