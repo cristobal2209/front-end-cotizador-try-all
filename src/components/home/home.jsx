@@ -1,4 +1,5 @@
 import { Card, CardHeader } from "@material-tailwind/react";
+import { useEffect } from "react";
 
 const enterprises = [
   {
@@ -46,6 +47,10 @@ const enterprises = [
 ];
 
 function GridEnterprises({ enterprises }) {
+  useEffect(() => {
+    document.title = "Página principal";
+  }, []);
+
   return (
     <div className="mx-auto grid max-w-6xl place-items-center gap-5 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {enterprises.map((enterprise) => (
@@ -54,6 +59,7 @@ function GridEnterprises({ enterprises }) {
           className="h-full w-60 text-center shadow-sm "
           key={enterprise.id}
           target="_blank"
+          rel="noreferrer"
         >
           <Card className="h-full w-full">
             <CardHeader floated={false} className="mt-0 h-32 py-1">
@@ -83,7 +89,7 @@ export default function Home() {
           </p>
         </div>
         <div className="py-10 text-center">
-          <button className="rounded-md bg-secondary px-10 py-2 font-bold shadow-md hover:bg-secondaryHover">
+          <button className="rounded-md bg-two px-10 py-2 font-bold shadow-md hover:bg-twoHover">
             ¡Comencemos a aprender!
           </button>
         </div>
@@ -92,7 +98,7 @@ export default function Home() {
         <h1 className="mb-20 text-center text-2xl">Nuestros proveedores</h1>
         <GridEnterprises enterprises={enterprises} />
         <div className="pt-10 text-center">
-          <button className="rounded-md bg-secondary px-10 py-2 font-bold shadow-md hover:bg-secondaryHover">
+          <button className="rounded-md bg-two px-10 py-2 font-bold shadow-md hover:bg-twoHover">
             Ver catálogo completo
           </button>
         </div>

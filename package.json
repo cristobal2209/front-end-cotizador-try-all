@@ -10,28 +10,34 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@material-tailwind/react": "^2.0.4",
-    "firebase": "^9.23.0",
-    "npm": "^9.7.2",
+    "@heroicons/react": "^2.0.18",
+    "@material-tailwind/react": "^2.1.0",
+    "axios": "^1.5.0",
+    "firebase": "^10.3.0",
+    "formik": "^2.4.3",
+    "npm": "^9.8.1",
     "react": "^18.2.0",
     "react-data-table-component": "^7.5.3",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.13.0",
-    "styled-components": "^5.3.11"
+    "react-router-dom": "^6.15.0",
+    "styled-components": "^6.0.7",
+    "uuid": "^9.0.0",
+    "xlsx": "^0.18.5",
+    "yup": "^1.2.0"
   },
   "devDependencies": {
-    "@types/react": "^18.2.13",
-    "@types/react-dom": "^18.2.6",
-    "@vitejs/plugin-react": "^4.0.1",
-    "autoprefixer": "^10.4.14",
-    "eslint": "^8.43.0",
-    "eslint-plugin-react": "^7.32.2",
+    "@types/react": "^18.2.21",
+    "@types/react-dom": "^18.2.7",
+    "@vitejs/plugin-react": "^4.0.4",
+    "autoprefixer": "^10.4.15",
+    "eslint": "^8.47.0",
+    "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.1",
-    "postcss": "^8.4.24",
-    "prettier": "^2.8.8",
-    "prettier-plugin-tailwindcss": "^0.3.0",
-    "tailwindcss": "^3.3.2",
-    "vite": "^4.3.9"
+    "eslint-plugin-react-refresh": "^0.4.3",
+    "postcss": "^8.4.28",
+    "prettier": "^3.0.2",
+    "prettier-plugin-tailwindcss": "^0.5.3",
+    "tailwindcss": "^3.3.3",
+    "vite": "^4.4.9"
   }
 }

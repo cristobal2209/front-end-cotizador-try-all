@@ -1,65 +1,44 @@
-import { useState } from "react";
-
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
+import { useEffect, useState } from "react";
 
 export default function CategoryList() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isMobileCategoriesOpen, setIsMobileCategoriesOpen] = useState(false);
+  const [newCategories, setNewCategories] = useState([]);
 
-  const handleToggle = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const categories = [
-    "Categoría1",
-    "Categoría2",
-    "Categoría3",
-    "Categoría4",
-    "Categoría5",
-    "Categoría6",
-    "Categoría7",
-    "Categoría8",
-    "Categoría8",
-  ];
-
-  const renderCategories = categories.map((category, index) => (
-    <a
-      href={`#${category}`}
-      key={index}
-      className="rounded-md p-2 text-white hover:bg-primaryHover hover:shadow-md "
-    >
-      <div className="flex items-center gap-3 rounded-lg">
-        {/* icono categoria */}
-        <div className={`rounded-lg bg-white p-5`}></div>
-        {/* titulo categoria */}
-        <div className="text-center">{category}</div>
-      </div>
-    </a>
-  ));
+  async function getCategories() {
+    const querySnapshot = await getDocs(collection(db, "categories"));
+    let Categories = [];
+    querySnapshot.forEach((doc) => {
+      Categories.push({ ...doc.data() });
+    });
+    setNewCategories(Categories);
+  }
+  useEffect(() => {
+    getCategories();
+  }, []);
 
   return (
-    <div className="relative">
-      <button
-        className="mx-2 flex items-center rounded-md bg-transparent px-4 py-2 font-semibold text-white hover:bg-primaryHover hover:shadow-md"
-        onClick={handleToggle}
-      >
-        Categorías
-        <div className="pl-1">
-          <ChevronDownIcon
-            strokeWidth={2}
-            className={`block h-3 w-3 transition-transform ${
-              isOpen || isMobileCategoriesOpen ? "rotate-180" : ""
-            }`}
-          />
-        </div>
-      </button>
-      {isOpen && (
-        <div className="fixed left-0 top-20 flex min-h-[220px] w-full items-center justify-center rounded-md bg-primary shadow-lg ">
-          <div className="grid w-2/3 grid-cols-4 gap-2 px-5 duration-300 ease-in-out">
-            {renderCategories}
-          </div>
-        </div>
-      )}
+    <div className=" flex h-full w-full items-center justify-center">
+      <div className="grid w-3/4  grid-cols-4 gap-2 ">
+        {newCategories.map((category, index) => {
+          return (
+            <a
+              href={`${category.href}`}
+              key={index}
+              className="rounded-md text-light font-semibold hover:bg-transparent hover:shadow-lg "
+            >
+              <div className="flex items-center gap-3 rounded-lg">
+                {/* icono categoria */}
+                <div className={`rounded-lg bg-white p-3 shadow-md`}>
+                  <img src={category.image} alt="" />
+                </div>
+                {/* titulo categoria */}
+                <div className="text-left">{category.categoryName}</div>
+              </div>
+            </a>
+          );
+        })}
+      </div>
     </div>
   );
 }
