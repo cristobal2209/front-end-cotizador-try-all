@@ -108,7 +108,7 @@ export default function Header() {
             </IconButton>
           </div>
           {/* logo */}
-          <div className="flex-shrink-0 justify-center mx-10">
+          <div className="flex-shrink-0 mx-5 justify-center">
             <Link to={"/"}>
               <img
                 className=""
@@ -117,7 +117,7 @@ export default function Header() {
             </Link>
           </div>
           {/* barra de busqueda */}
-          <div className="relative hidden w-full lg:flex lg:flex-row lg:items-center lg:justify-center">
+          <div className="ml-10 relative hidden w-full lg:flex lg:flex-row lg:items-center lg:justify-center">
             <Input
               type="search"
               name="navbarSearch"
