@@ -3,7 +3,6 @@ import { Button } from "@material-tailwind/react";
 import {
   ChartPieIcon,
   UsersIcon,
-  BanknotesIcon,
   ClipboardDocumentCheckIcon,
   ArrowRightOnRectangleIcon,
   UserCircleIcon,
@@ -40,7 +39,7 @@ export default function Sidebar({ setIsSidebarOpen }) {
     auth
       .signOut()
       .then(<Navigate to="/login" />)
-      .catch();
+      .catch(console.error);
   };
 
   return (

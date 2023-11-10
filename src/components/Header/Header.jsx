@@ -1,9 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import CategoryList from "./CategoryList";
 import Sidebar from "./Sidebar";
 import CreateQuote from "./CreateQuote";
 import { useNavigate, Link } from "react-router-dom";
-import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../firebaseConfig";
 import {
   Navbar,
@@ -27,28 +26,9 @@ export default function Header() {
   const menuRef = useRef(null);
   const categoriesRef = useRef(null);
 
-  useEffect(() => {
-    setUser(auth.currentUser);
-  }, []);
-
-  useEffect(() => {
-    document.addEventListener("mousedown", handleCategoriesClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleCategoriesClickOutside);
-    };
-  }, []);
-
-  useEffect(() => {
-    document.addEventListener("mousedown", handleMenuClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleMenuClickOutside);
-    };
-  }, []);
-
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
       navigate(`/search/${userSearch}`);
-      window.location.reload();
     }
   };
 
@@ -67,14 +47,42 @@ export default function Header() {
     }
   };
 
-  const handleclickSearchButton = async () => {
+  useEffect(() => {
+    setUser(auth.currentUser);
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener(
+      "mousedown",
+      memoizedHandleCategoriesClickOutside
+    );
+    document.addEventListener("mousedown", memoizedHandleMenuClickOutside);
+
+    return () => {
+      document.removeEventListener(
+        "mousedown",
+        memoizedHandleCategoriesClickOutside
+      );
+      document.removeEventListener("mousedown", memoizedHandleMenuClickOutside);
+    };
+  }, []);
+
+  const handleclickSearchButton = () => {
     navigate(`/search/${userSearch}`);
-    window.location.reload();
   };
 
   const onChangeUserSearch = (event) => {
     setUserSearch(event.target.value);
   };
+
+  const memoizedHandleCategoriesClickOutside = useMemo(
+    () => handleCategoriesClickOutside,
+    []
+  );
+  const memoizedHandleMenuClickOutside = useMemo(
+    () => handleMenuClickOutside,
+    []
+  );
 
   return (
     <>
