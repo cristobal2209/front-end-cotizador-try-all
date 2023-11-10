@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { Button, Spinner, Typography, Alert } from "@material-tailwind/react";
 import { getProductData } from "../../services/ProductService";
 import { addProductToActiveQuote } from "../../services/QuoteService";
+import PropTypes from "prop-types";
 
 const TABLE_HEAD = [
   "Proveedor",
@@ -22,52 +23,45 @@ export default function Article() {
   const { productId } = useParams();
 
   useEffect(() => {
-    getProduct();
-  }, []);
+    const fetchData = async () => {
+      setIsLoading(true);
+      const productDataFetch = {
+        id: productId,
+        ...(await getProductData(productId)),
+      };
+      setProductData(productDataFetch);
+      setSupplierCollection(productDataFetch.suppliers);
+      setIsLoading(false);
+    };
 
-  useEffect(() => {
-    console.log(productData);
-  }, [productData]);
+    fetchData();
+  }, [productId]);
 
   useEffect(() => {
     document.title = `${productData?.description}`;
   }, [productData]);
 
-  const getProduct = async () => {
-    setIsLoading(true);
-    const productDataFetch = {
-      id: productId,
-      ...(await getProductData(productId)),
-    };
-    setProductData(productDataFetch);
-    setSupplierCollection(productDataFetch.suppliers);
-    setIsLoading(false);
-  };
-
   const handleAddProductToQuote = async (supplier) => {
     await addProductToActiveQuote(productData, supplier)
       .then(() => {
         setAlertData("Producto agregado a cotización");
-        handleOpenAlertSuccess();
+        handleOpenAlert(true);
       })
-      .catch((e) => {
+      .catch(() => {
         setAlertData("Error al agregar el producto");
-        handleOpenAlertFailed();
+        handleOpenAlert(false);
       });
   };
 
-  const handleOpenAlertSuccess = () => {
-    setOpenAlertSuccess(!openAlertSuccess);
+  const handleOpenAlert = (success) => {
+    success ? setOpenAlertSuccess(true) : setOpenAlertFailed(true);
     setTimeout(() => {
-      setOpenAlertSuccess(false);
+      success ? setOpenAlertSuccess(false) : setOpenAlertFailed(false);
     }, 3000);
   };
 
-  const handleOpenAlertFailed = () => {
-    setOpenAlertFailed(!openAlertFailed);
-    setTimeout(() => {
-      setOpenAlertFailed(false);
-    }, 3000);
+  Article.propTypes = {
+    productId: PropTypes.string.isRequired,
   };
 
   return (
@@ -77,29 +71,18 @@ export default function Article() {
       ) : (
         <section className="flex flex-col">
           {openAlertSuccess && (
-            <AlertSuccess
-              open={openAlertSuccess}
-              handler={handleOpenAlertSuccess}
-              data={alertData}
-            />
+            <AlertSuccess open={openAlertSuccess} data={alertData} />
           )}
           {openAlertFailed && (
-            <AlertFailed
-              open={openAlertFailed}
-              handler={handleOpenAlertFailed}
-              error={alertData}
-            />
+            <AlertFailed open={openAlertFailed} error={alertData} />
           )}
-          {/* inicio imagen y detalles*/}
           <div className="flex flex-row justify-start ">
-            {/* imagen principal articulo */}
             <div className="w-1/2  flex justify-start">
               <img
                 className="mx-auto max-w-lg object-contain px-10"
                 src={productData.imgSrc}
               />
             </div>
-            {/* detalles articulos */}
             <div className="flex w-1/2 flex-col p-2 bg-dark3 rounded-md shadow-md">
               <div className="flex flex-col px-5">
                 <div className="pb-3">
@@ -146,10 +129,7 @@ export default function Article() {
               </div>
             </div>
           </div>
-          <div className="  px-2 py-5">
-            {/* <ShowOtherImgs articleImgs={articleImgs} /> */}
-          </div>
-          {/* llamada a ofertas de otras empresas*/}
+          <div className="  px-2 py-5"></div>
           <div className="rounded-md bg-dark3 p-5 shadow-md">
             <Typography variant="h5" className="pb-5 font-bold">
               Lista proveedores
@@ -158,35 +138,35 @@ export default function Article() {
               <table className="w-full min-w-max table-auto text-left">
                 <thead>
                   <tr>
-                    {TABLE_HEAD.map((head, index) => {
-                      const isLast = index === TABLE_HEAD.length - 1;
-                      const isFirst = index === 0;
-                      const isSecond = index === 1;
-                      return (
-                        <th
-                          key={index}
-                          className={`bg-two p-4 ${
-                            (isLast ? "w-[200px]" : null,
-                            isSecond ? "w-[300px]" : null,
-                            isFirst ? "w-[100px]" : null)
-                          }`}
-                        >
-                          <div className="flex">
-                            <div
-                              className={`${isLast ? "ml-auto" : null} 
-                              }`}
+                    {TABLE_HEAD.map((head, index) => (
+                      <th
+                        key={index}
+                        className={`bg-two p-4 ${
+                          index === TABLE_HEAD.length - 1
+                            ? "w-[200px]"
+                            : index === 1
+                            ? "w-[300px]"
+                            : index === 0
+                            ? "w-[100px]"
+                            : ""
+                        }`}
+                      >
+                        <div className="flex">
+                          <div
+                            className={
+                              index === TABLE_HEAD.length - 1 ? "ml-auto" : ""
+                            }
+                          >
+                            <Typography
+                              variant="small"
+                              className="font-normal leading-none"
                             >
-                              <Typography
-                                variant="small"
-                                className="font-normal leading-none"
-                              >
-                                {head}
-                              </Typography>
-                            </div>
+                              {head}
+                            </Typography>
                           </div>
-                        </th>
-                      );
-                    })}
+                        </div>
+                      </th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody className="mx-auto">
@@ -251,6 +231,12 @@ function SupplierRow({ supplier, classes, handleAddProductToQuote }) {
     setExtraData(extraDataArr);
   }, []);
 
+  SupplierRow.propTypes = {
+    supplier: PropTypes.object.isRequired,
+    classes: PropTypes.string.isRequired,
+    handleAddProductToQuote: PropTypes.func.isRequired,
+  };
+
   return (
     <tr className="bg-two hover:bg-twoHover">
       <td className={classes}>
@@ -312,7 +298,6 @@ function SupplierRow({ supplier, classes, handleAddProductToQuote }) {
       </td>
       <td className={`${classes}`}>
         <div className="flex justify-end">
-          {/* Boton mas */}
           <Button
             variant="text"
             className="hover:bg-threeHover bg-three px-3"
@@ -341,7 +326,13 @@ function SupplierRow({ supplier, classes, handleAddProductToQuote }) {
   );
 }
 
-function AlertFailed({ open, handler, error }) {
+function AlertFailed({ open, error }) {
+  AlertFailed.propTypes = {
+    open: PropTypes.bool.isRequired,
+    handler: PropTypes.func.isRequired,
+    error: PropTypes.string.isRequired,
+  };
+
   function Icon() {
     return (
       <svg
@@ -364,7 +355,6 @@ function AlertFailed({ open, handler, error }) {
       <div className="fixed w-auto right-[8px]">
         <Alert
           open={open}
-          onClose={() => handler()}
           color="red"
           icon={<Icon />}
           animate={{
@@ -378,7 +368,13 @@ function AlertFailed({ open, handler, error }) {
     </>
   );
 }
-function AlertSuccess({ open, handler, data }) {
+function AlertSuccess({ open, data }) {
+  AlertSuccess.propTypes = {
+    open: PropTypes.bool.isRequired,
+    handler: PropTypes.func.isRequired,
+    data: PropTypes.string.isRequired,
+  };
+
   function Icon() {
     return (
       <svg
@@ -401,7 +397,6 @@ function AlertSuccess({ open, handler, data }) {
       <div className="!absolute w-auto right-[8px]">
         <Alert
           open={open}
-          onClose={() => handler()}
           color="green"
           icon={<Icon />}
           animate={{

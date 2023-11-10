@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { subscribeToCollection } from "../../services/TableQuoteService";
 import UserQuoteRow from "./UserQuoteRow";
 import {
@@ -15,103 +16,39 @@ import {
   DialogHeader,
   DialogBody,
   DialogFooter,
+  IconButton,
 } from "@material-tailwind/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-
-//pagination
-import { IconButton } from "@material-tailwind/react";
 import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
+import * as xlsx from "xlsx";
 
 const TABLE_HEAD = ["Nombre", "Estado", "Fecha Creación", "Ver", "Opciones"];
 
-import * as xlsx from "xlsx";
-function capitalizeFirstLetter(inputString) {
-  if (typeof inputString !== "string") {
-    return inputString;
-  }
-
-  return inputString.charAt(0).toUpperCase() + inputString.slice(1);
-}
-
-function generateExcel(quoteData) {
-  //Encabezados de cotizacion
-  let excelQuoteElements = [
-    ["ID", quoteData.id],
-    ["Nombre Cotización", quoteData.quoteName],
-    ["Responsable", quoteData.responsibleName],
-    ["Fecha de creación", quoteData.createDate],
-    ["Fecha de actualización", quoteData.lastUpdateDate],
-    ["Productos"],
-  ];
-  //Encabezados de productos
-  excelQuoteElements.push([
-    "",
-    "Producto",
-    "Fabricante",
-    "N° parte fabricante",
-    "Proveedor",
-    "N° parte proveedor",
-    "Precio por",
-    "Precio",
-    "Cantidad",
-    "Subtotal",
-    "Enlace",
-  ]);
-
-  //Datos de productos
-  for (const productQuoteData of quoteData.products) {
-    excelQuoteElements.push([
-      "",
-      productQuoteData.product.description,
-      productQuoteData.product.manufacturer,
-      productQuoteData.product.manufacturerPartNo,
-      capitalizeFirstLetter(productQuoteData.supplier.supplier),
-      productQuoteData.supplier.newarkPartNo,
-      productQuoteData.product.priceFor,
-      productQuoteData.price,
-      productQuoteData.quantity,
-      (productQuoteData.quantity * productQuoteData.price).toFixed(2),
-      productQuoteData.supplier.productUrl,
-    ]);
-  }
-  //Total
-  excelQuoteElements.push([
-    "Total",
-    " ",
-    " ",
-    " ",
-    " ",
-    " ",
-    " ",
-    " ",
-    " ",
-    quoteData.total,
-  ]);
-
-  const workbook = xlsx.utils.book_new();
-  const worksheet = xlsx.utils.aoa_to_sheet(excelQuoteElements);
-
-  xlsx.utils.book_append_sheet(workbook, worksheet, "Cotización");
-
-  const nombrecotizacion = quoteData.quoteName + ".xlsx";
-  xlsx.writeFile(workbook, nombrecotizacion);
-}
-
 export default function TableQuote() {
   const [isLoadingTable, setIsLoadingTable] = useState(false);
+  const [userQuotesCollection, setUserQuotesCollection] = useState([]);
+  const [quoteData, setQuoteData] = useState(null);
+  const [alertData, setAlertData] = useState("");
   const [openAlertSuccess, setOpenAlertSuccess] = useState(false);
   const [openAlertFailed, setOpenAlertFailed] = useState(false);
-  const [userQuotesCollection, setUserQuotesCollection] = useState([]);
-  const [alertData, setAlertData] = useState();
-  const [contador, setContador] = useState(0);
   const [openQuoteView, setOpenQuoteView] = useState(false);
-  const [quoteData, setQuoteData] = useState(null);
+  const [contador, setContador] = useState(0);
+  const [active, setActive] = useState(1);
+
+  const itemsPerPage = 10;
+  const totalItems = userQuotesCollection.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (active - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+
+  const visibleItems = userQuotesCollection.slice(startIndex, endIndex);
 
   useEffect(() => {
     document.title = "Mis cotizaciones";
     const unsubscribe = subscribeToCollection("quotes", (data) => {
       setUserQuotesCollection(data);
     });
+
     return () => {
       if (unsubscribe) {
         unsubscribe();
@@ -132,40 +69,12 @@ export default function TableQuote() {
 
   const handleGenerateExcel = (quote) => generateExcel(quote);
 
-  const handleOpenAlertSuccess = () => setOpenAlertSuccess(!openAlertSuccess);
-
-  const handleOpenAlertFailed = () => setOpenAlertFailed(!openAlertFailed);
-
-  //message se ocupa para mostrar alertas personalizadas
-  const handleSuccessAlert = (message) => {
-    //getUserQuotes();
+  const handleAlert = (success, message) => {
     setAlertData(message);
-    handleOpenAlertSuccess();
+    success ? setOpenAlertSuccess(true) : setOpenAlertFailed(true);
     setTimeout(() => {
-      setOpenAlertSuccess(false);
+      success ? setOpenAlertSuccess(false) : setOpenAlertFailed(false);
     }, 3000);
-  };
-
-  //error se ocupa para mostrar el error al usuario
-  const handleFailedAlert = (error) => {
-    setAlertData(error);
-    handleOpenAlertFailed();
-    setTimeout(() => {
-      setOpenAlertFailed(false);
-    }, 3000);
-  };
-
-  //pagination
-  const itemsPerPage = 10;
-  const [active, setActive] = useState(1);
-
-  const totalItems = userQuotesCollection.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-  const getVisibleItems = () => {
-    const startIndex = (active - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    return userQuotesCollection.slice(startIndex, endIndex);
   };
 
   const next = () => {
@@ -185,6 +94,26 @@ export default function TableQuote() {
     color: "gray",
     onClick: () => setActive(index),
   });
+
+  const TableHeader = (
+    <thead>
+      <tr>
+        {TABLE_HEAD.map((head) => (
+          <th
+            key={head}
+            className="border-y border-light bg-dark p-4 border-opacity-50"
+          >
+            <Typography
+              variant="small"
+              className="font-normal leading-none opacity-70 text-light"
+            >
+              {head}
+            </Typography>
+          </th>
+        ))}
+      </tr>
+    </thead>
+  );
 
   return (
     <div className="mx-[10px] pb-[10px]">
@@ -209,21 +138,11 @@ export default function TableQuote() {
                   label="Buscar cotización"
                   icon={<MagnifyingGlassIcon className="h-5 w-5 text-dark" />}
                   disabled={true}
-                  //labelProps={{ className: "bg-four rounded-md" }}
-                  //containerProps={{ className: "bg-four rounded-md" }}
                 />
               </div>
             </div>
-            <AlertSuccess
-              open={openAlertSuccess}
-              handler={handleOpenAlertSuccess}
-              data={alertData}
-            />
-            <AlertFailed
-              open={openAlertFailed}
-              handler={handleOpenAlertFailed}
-              error={alertData}
-            />
+            <AlertSuccess open={openAlertSuccess} data={alertData} />
+            <AlertFailed open={openAlertFailed} error={alertData} />
           </div>
         </CardHeader>
         <CardBody
@@ -242,54 +161,27 @@ export default function TableQuote() {
           ) : (
             <>
               {userQuotesCollection.length === 0 ? (
-                <>
-                  <Typography className="w-full text-center font-bold text-light">
-                    Usted no tiene tiene cotizaciones guardadas. Para crear una
-                    cotización, presione el botón "Nueva cotización" en la barra
-                    de navegación.
-                  </Typography>
-                </>
+                <Typography className="w-full text-center font-bold text-light">
+                  Usted no tiene tiene cotizaciones guardadas. Para crear una
+                  cotización, presione el botón &quote;Nueva cotización&quote;
+                  en la barra de navegación.
+                </Typography>
               ) : (
-                <>
-                  <table className="w-full min-w-max table-auto text-left">
-                    <thead>
-                      <tr>
-                        {TABLE_HEAD.map((head) => (
-                          <th
-                            key={head}
-                            className="border-y border-light bg-dark p-4 border-opacity-50"
-                          >
-                            <Typography
-                              variant="small"
-                              className="font-normal leading-none opacity-70 text-light"
-                            >
-                              {head}
-                            </Typography>
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {/*Dejo el argumento index por si se necesita a futuro*/}
-                      {getVisibleItems().map((quote, index) => {
-                        //const isLast = index === userQuotesCollection.length - 1;
-                        const classes = "p-4 border-y border-blue-gray-100";
-
-                        return (
-                          <UserQuoteRow
-                            quote={quote}
-                            classes={classes}
-                            key={quote.id}
-                            handleSuccessAlert={handleSuccessAlert}
-                            handleFailedAlert={handleFailedAlert}
-                            handleGenerateExcel={handleGenerateExcel}
-                            handleQuoteView={handleQuoteView}
-                          />
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </>
+                <table className="w-full min-w-max table-auto text-left">
+                  {TableHeader}
+                  <tbody>
+                    {visibleItems.map((quote, index) => (
+                      <UserQuoteRow
+                        quote={quote}
+                        classes="p-4 border-y border-blue-gray-100"
+                        key={index}
+                        handleAlert={handleAlert}
+                        handleGenerateExcel={handleGenerateExcel}
+                        handleQuoteView={handleQuoteView}
+                      />
+                    ))}
+                  </tbody>
+                </table>
               )}
             </>
           )}
@@ -327,7 +219,6 @@ export default function TableQuote() {
               disabled={active === totalPages}
             >
               <span className="hidden sm:block">Siguiente</span>
-
               <ArrowRightIcon strokeWidth={2} className="h-4 w-4" />
             </Button>
           </div>
@@ -341,7 +232,7 @@ export default function TableQuote() {
     </div>
   );
 }
-function AlertFailed({ open, handler, error }) {
+function AlertFailed({ open, error }) {
   function Icon() {
     return (
       <svg
@@ -358,13 +249,16 @@ function AlertFailed({ open, handler, error }) {
       </svg>
     );
   }
-
+  AlertFailed.propTypes = {
+    open: PropTypes.bool.isRequired,
+    handler: PropTypes.func.isRequired,
+    error: PropTypes.string,
+  };
   return (
     <>
       <div className="fixed w-auto right-[0px]">
         <Alert
           open={open}
-          onClose={() => handler()}
           color="red"
           icon={<Icon />}
           animate={{
@@ -378,7 +272,7 @@ function AlertFailed({ open, handler, error }) {
     </>
   );
 }
-function AlertSuccess({ open, handler, data }) {
+function AlertSuccess({ open, data }) {
   function Icon() {
     return (
       <svg
@@ -395,13 +289,16 @@ function AlertSuccess({ open, handler, data }) {
       </svg>
     );
   }
-
+  AlertSuccess.propTypes = {
+    open: PropTypes.bool.isRequired,
+    handler: PropTypes.func.isRequired,
+    data: PropTypes.string,
+  };
   return (
     <>
       <div className="!absolute w-auto right-[0px]">
         <Alert
           open={open}
-          onClose={() => handler()}
           color="green"
           icon={<Icon />}
           animate={{
@@ -429,7 +326,11 @@ export function QuoteView({ open, handler, quoteData }) {
     "Subtotal",
     "Página proveedor",
   ];
-
+  QuoteView.propTypes = {
+    open: PropTypes.bool.isRequired,
+    handler: PropTypes.func.isRequired,
+    quoteData: PropTypes.object,
+  };
   return (
     <Dialog open={open} size="xl" className="bg-dark">
       <DialogHeader className="justify-between text-light">
@@ -477,7 +378,6 @@ export function QuoteView({ open, handler, quoteData }) {
           </thead>
           <tbody>
             {quoteData?.products.map((productQuoteData, index) => {
-              //const isLast = index === userQuotesCollection.length - 1;
               const classes = "px-4 border-b border-blue-gray-100";
 
               return (
@@ -558,16 +458,73 @@ export function QuoteView({ open, handler, quoteData }) {
             ${quoteData?.total}
           </Typography>
         </div>
-        {/* <Button
-          variant="text"
-          color="white"
-          onClick={() => {
-            handler();
-          }}
-        >
-          Cerrar
-        </Button> */}
       </DialogFooter>
     </Dialog>
   );
+}
+function capitalizeFirstLetter(inputString) {
+  if (typeof inputString !== "string") {
+    return inputString;
+  }
+
+  return inputString.charAt(0).toUpperCase() + inputString.slice(1);
+}
+function generateExcel(quoteData) {
+  let excelQuoteElements = [
+    ["ID", quoteData.id],
+    ["Nombre Cotización", quoteData.quoteName],
+    ["Responsable", quoteData.responsibleName],
+    ["Fecha de creación", quoteData.createDate],
+    ["Fecha de actualización", quoteData.lastUpdateDate],
+    ["Productos"],
+  ];
+  excelQuoteElements.push([
+    "",
+    "Producto",
+    "Fabricante",
+    "N° parte fabricante",
+    "Proveedor",
+    "N° parte proveedor",
+    "Precio por",
+    "Precio",
+    "Cantidad",
+    "Subtotal",
+    "Enlace",
+  ]);
+
+  for (const productQuoteData of quoteData.products) {
+    excelQuoteElements.push([
+      "",
+      productQuoteData.product.description,
+      productQuoteData.product.manufacturer,
+      productQuoteData.product.manufacturerPartNo,
+      capitalizeFirstLetter(productQuoteData.supplier.supplier),
+      productQuoteData.supplier.newarkPartNo,
+      productQuoteData.product.priceFor,
+      productQuoteData.price,
+      productQuoteData.quantity,
+      (productQuoteData.quantity * productQuoteData.price).toFixed(2),
+      productQuoteData.supplier.productUrl,
+    ]);
+  }
+  excelQuoteElements.push([
+    "Total",
+    " ",
+    " ",
+    " ",
+    " ",
+    " ",
+    " ",
+    " ",
+    " ",
+    quoteData.total,
+  ]);
+
+  const workbook = xlsx.utils.book_new();
+  const worksheet = xlsx.utils.aoa_to_sheet(excelQuoteElements);
+
+  xlsx.utils.book_append_sheet(workbook, worksheet, "Cotización");
+
+  const nombrecotizacion = quoteData.quoteName + ".xlsx";
+  xlsx.writeFile(workbook, nombrecotizacion);
 }

@@ -8,11 +8,9 @@ import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { useState, useEffect } from "react";
 
 const validationSchema = Yup.object().shape({
-  //validacion de campos del formulario Formik
   email: Yup.string()
-    .email("El correo ingresado no es válido") //.email , valida una serie de instrucciones standar
+    .email("El correo ingresado no es válido")
     .required("El correo es un campo obligatorio"),
-  //en correos electronicos en una sola validacion
   password: Yup.string()
     .min(6, "La contraseña debe contener al menos 6 caracteres")
     .max(20, "La contraseña debe contener a lo mas 20 caracteres")
@@ -58,10 +56,8 @@ export default function Login() {
         email,
         password
       );
-      // Successfully signed in, you can navigate to the intended route.
       navigate(from, { replace: true });
     } catch (error) {
-      console.error("Sign-in error:", error.message);
       if (error.message.includes("auth/user-not-found")) {
         setError(
           "El usuario con el correo electrónico proporcionado no existe."

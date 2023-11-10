@@ -3,7 +3,6 @@ import { Button } from "@material-tailwind/react";
 import {
   ChartPieIcon,
   UsersIcon,
-  BanknotesIcon,
   ClipboardDocumentCheckIcon,
   ArrowRightOnRectangleIcon,
   UserCircleIcon,
@@ -25,9 +24,7 @@ export default function Sidebar({ setIsSidebarOpen }) {
           .then((idTokenResult) => {
             setToken(idTokenResult);
           })
-          .catch((error) => {
-            console.log(error);
-          });
+          .catch((error) => {});
       }
     });
 

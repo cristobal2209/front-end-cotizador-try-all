@@ -1,10 +1,8 @@
 import {
-  addDoc,
   collection,
   getDocs,
   query,
   or,
-  and,
   where,
   limit,
   startAfter,
@@ -73,7 +71,6 @@ export const getProductsFromInput = async (productSearchParam, docRef) => {
         );
     const documentSnapshots = await getDocs(queryOptions);
 
-    // Get the last visible document
     const lastVisible =
       documentSnapshots.docs[documentSnapshots.docs.length - 1];
 
@@ -85,7 +82,6 @@ export const getProductsFromInput = async (productSearchParam, docRef) => {
 
     return { data, firstVisible, lastVisible };
   } catch (error) {
-    console.error("Error fetching products:", error);
     throw new Error(error);
   }
 };

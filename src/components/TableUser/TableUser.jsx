@@ -13,7 +13,6 @@ import {
   CardBody,
   CardFooter,
   Input,
-  Alert,
 } from "@material-tailwind/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
@@ -36,7 +35,6 @@ export default function TableUser() {
   const getUserData = async () => {
     setIsLoadingTable(true);
     const userData = await fetchUserData();
-    //const newUserData = await addNewUserData(userData);
     setUserDataCollection(userData);
     setIsLoadingTable(false);
   };
@@ -59,14 +57,12 @@ export default function TableUser() {
     }, 5000);
   };
 
-  //message se ocupa para mostrar alertas personalizadas
   const handleSuccessAlert = (message) => {
     getUserData();
     setAlertData(message);
     handleOpenAlertSuccess(true);
   };
 
-  //error se ocupa para mostrar el error al usuario
   const handleFailedAlert = (error) => {
     setAlertData(error);
     handleOpenAlertFailed(true);
@@ -95,7 +91,6 @@ export default function TableUser() {
                 <div className="w-full md:w-72">
                   <Input
                     label="Buscar usuario"
-                    // color="white"
                     disabled={true}
                     icon={<MagnifyingGlassIcon className="h-5 w-5" />}
                   />
@@ -180,9 +175,7 @@ export default function TableUser() {
               </tbody>
             </table>
           </CardBody>
-          <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
-            <>{/* paginador */}</>
-          </CardFooter>
+          <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4"></CardFooter>
         </Card>
         {openCreateUserModal && (
           <CreateUser

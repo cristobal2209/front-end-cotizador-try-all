@@ -50,7 +50,6 @@ export default function QuoteDetails() {
 
   useEffect(() => {
     if (quote?.products.length != 0) setQuoteProducts(quote?.products);
-    //console.log(quote);
   }, [quote]);
 
   useEffect(() => {
@@ -77,9 +76,7 @@ export default function QuoteDetails() {
 
   const updateSubtotal = (index, newQuantity, price) => {
     setQuoteProducts((prevQuoteProducts) => {
-      // Clona el arreglo previo para mantener la inmutabilidad
       const updatedQuoteProducts = [...prevQuoteProducts];
-      // Actualiza el elemento específico en el nuevo arreglo clonado
       updatedQuoteProducts[index] = {
         ...updatedQuoteProducts[index],
         quantity: newQuantity,
@@ -195,9 +192,8 @@ function ProductQuoteRow({
   const [totalStock, setTotalStock] = useState(0);
   const { product, supplier } = productData;
 
-  const priceMap = {}; // Objeto para mapear cantidades a precios
+  const priceMap = {};
 
-  // Crear el mapeo de cantidades a precios
   supplier.prices.forEach((priceEntry) => {
     const minQuantity = parseInt(priceEntry.quantity.replace("+", ""));
     const price = parseFloat(priceEntry.price.replace(/\$/g, ""));
@@ -214,7 +210,6 @@ function ProductQuoteRow({
   }, [quantity]);
 
   const updatePriceAndSubtotal = async (newQuantity) => {
-    // Buscar el precio más cercano en el mapeo
     let nearestQuantity = newQuantity;
     while (priceMap[nearestQuantity] === undefined && nearestQuantity >= 0) {
       nearestQuantity--;
@@ -224,7 +219,6 @@ function ProductQuoteRow({
     setQuantity(newQuantity);
     setPriceNumber(newPrice);
 
-    // Llama a la función de actualización del subtotal en el componente padre
     updateSubtotal(index, newQuantity, newPrice);
   };
 
