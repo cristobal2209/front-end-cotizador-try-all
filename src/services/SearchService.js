@@ -1,10 +1,8 @@
 import {
-  addDoc,
   collection,
   getDocs,
   query,
   or,
-  and,
   where,
   limit,
   startAfter,
