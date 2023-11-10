@@ -68,7 +68,6 @@ export const checkActiveQuotesExists = async () => {
     const q = query(quotesRef, where("status", "==", 1), limit(1));
     const querySnapshot = await getDocs(q);
 
-    //Si querySnapshot.empty == true, es porque no existen cotizaciones activas
     return !querySnapshot.empty;
   } catch (error) {
     console.error("Error al recuperar cotizacion activa:", error);
@@ -111,7 +110,6 @@ export const getActiveQuote = async () => {
       throw new Error("No existe cotizacion activa");
     }
     for (const doc of querySnapshot.docs) {
-      // console.log(doc.data());
       return { id: doc.id, ...doc.data() };
     }
   } catch (error) {

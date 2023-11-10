@@ -27,7 +27,6 @@ export const getNextProductsCollection = async (docRef) => {
 
     const documentSnapshots = await getDocs(queryOptions);
 
-    // Get the last visible document
     const lastVisible =
       documentSnapshots.docs[documentSnapshots.docs.length - 1];
 
