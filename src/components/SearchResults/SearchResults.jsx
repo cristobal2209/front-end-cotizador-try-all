@@ -76,7 +76,7 @@ export default function SearchResults() {
   };
 
   const openNewWindow = (productDataId) => {
-    const url = `http://localhost:4000/articles/${productDataId}`;
+    const url = `http://162.212.155.221:4000/articles/${productDataId}`;
     window.open(url, "_blank");
   };
 
