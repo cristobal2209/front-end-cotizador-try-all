@@ -27,9 +27,7 @@ export default function Router() {
           .then((idTokenResult) => {
             setToken(idTokenResult);
           })
-          .catch((error) => {
-            console.log(error);
-          });
+          .catch((error) => {});
       }
 
       setIsLoading(false); // Set loading to false once the auth state is determined.

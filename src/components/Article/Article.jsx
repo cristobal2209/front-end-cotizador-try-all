@@ -76,16 +76,13 @@ export default function Article() {
           {openAlertFailed && (
             <AlertFailed open={openAlertFailed} error={alertData} />
           )}
-          {/* inicio imagen y detalles*/}
           <div className="flex flex-row justify-start ">
-            {/* imagen principal articulo */}
             <div className="w-1/2  flex justify-start">
               <img
                 className="mx-auto max-w-lg object-contain px-10"
                 src={productData.imgSrc}
               />
             </div>
-            {/* detalles articulos */}
             <div className="flex w-1/2 flex-col p-2 bg-dark3 rounded-md shadow-md">
               <div className="flex flex-col px-5">
                 <div className="pb-3">
@@ -132,10 +129,7 @@ export default function Article() {
               </div>
             </div>
           </div>
-          <div className="  px-2 py-5">
-            {/* <ShowOtherImgs articleImgs={articleImgs} /> */}
-          </div>
-          {/* llamada a ofertas de otras empresas*/}
+          <div className="  px-2 py-5"></div>
           <div className="rounded-md bg-dark3 p-5 shadow-md">
             <Typography variant="h5" className="pb-5 font-bold">
               Lista proveedores
@@ -304,7 +298,6 @@ function SupplierRow({ supplier, classes, handleAddProductToQuote }) {
       </td>
       <td className={`${classes}`}>
         <div className="flex justify-end">
-          {/* Boton mas */}
           <Button
             variant="text"
             className="hover:bg-threeHover bg-three px-3"

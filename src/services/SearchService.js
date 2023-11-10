@@ -82,7 +82,6 @@ export const getProductsFromInput = async (productSearchParam, docRef) => {
 
     return { data, firstVisible, lastVisible };
   } catch (error) {
-    console.error("Error fetching products:", error);
     throw new Error(error);
   }
 };

@@ -32,7 +32,6 @@ export const changeQuoteStatus = async (quoteId, newStatus) => {
 
     return newStatus;
   } catch (error) {
-    console.error("Error al actualizar el estado:", error);
     throw new Error(error);
   }
 };

@@ -50,7 +50,6 @@ export default function QuoteDetails() {
 
   useEffect(() => {
     if (quote?.products.length != 0) setQuoteProducts(quote?.products);
-    //console.log(quote);
   }, [quote]);
 
   useEffect(() => {

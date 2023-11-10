@@ -57,7 +57,6 @@ export default function Login() {
       // Successfully signed in, you can navigate to the intended route.
       navigate(from, { replace: true });
     } catch (error) {
-      console.error("Sign-in error:", error.message);
       if (error.message.includes("auth/user-not-found")) {
         setError(
           "El usuario con el correo electrónico proporcionado no existe."

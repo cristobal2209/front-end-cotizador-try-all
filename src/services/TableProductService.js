@@ -38,7 +38,6 @@ export const getNextProductsCollection = async (docRef) => {
 
     return { data, firstVisible, lastVisible };
   } catch (error) {
-    console.error("Error fetching products:", error);
     throw new Error(error);
   }
 };

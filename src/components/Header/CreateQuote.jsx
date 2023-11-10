@@ -111,9 +111,7 @@ export default function CreateQuote() {
           setOpenQuoteCreatedAlert(false);
         }, 3000);
       })
-      .catch((e) => {
-        console.log(e);
-      });
+      .catch((e) => {});
   };
 
   const handleKeyPress = (event) => {

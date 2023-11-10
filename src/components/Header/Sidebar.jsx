@@ -24,9 +24,7 @@ export default function Sidebar({ setIsSidebarOpen }) {
           .then((idTokenResult) => {
             setToken(idTokenResult);
           })
-          .catch((error) => {
-            console.log(error);
-          });
+          .catch((error) => {});
       }
     });
 
@@ -39,7 +37,7 @@ export default function Sidebar({ setIsSidebarOpen }) {
     auth
       .signOut()
       .then(<Navigate to="/login" />)
-      .catch(console.error);
+      .catch();
   };
 
   return (

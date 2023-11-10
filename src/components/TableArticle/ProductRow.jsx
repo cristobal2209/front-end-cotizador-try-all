@@ -23,10 +23,6 @@ export default function ProductRow({
   const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] =
     useState(false);
 
-  // useEffect(() => {
-  //   console.log(product);
-  // }, [product]);
-
   const navigate = useNavigate();
 
   const handleOpenThreeDotsOptions = () => {

@@ -28,9 +28,7 @@ export const createQuote = async (quoteData) => {
   quoteData.responsibleUUID = user.uid;
   await addDoc(collection(db, "usersQuotes", user.uid, "quotes"), quoteData)
     .then()
-    .catch((error) => {
-      console.log(error);
-    });
+    .catch((error) => {});
 };
 
 export const subscribeToActiveQuote = (callback) => {
@@ -70,7 +68,6 @@ export const checkActiveQuotesExists = async () => {
 
     return !querySnapshot.empty;
   } catch (error) {
-    console.error("Error al recuperar cotizacion activa:", error);
     throw new Error(error);
   }
 };
@@ -90,7 +87,6 @@ export const getQuote = async (quoteUID) => {
       throw new Error("No existe la cotizacion");
     }
   } catch (error) {
-    console.error("Error al obtener la cotizacion:", error);
     throw new Error(error);
   }
 };
@@ -113,7 +109,6 @@ export const getActiveQuote = async () => {
       return { id: doc.id, ...doc.data() };
     }
   } catch (error) {
-    console.error("Error al recuperar cotizacion activa:", error);
     throw new Error(error);
   }
 };
@@ -163,9 +158,7 @@ export const updateQuoteProducts = async (quoteID, newProducts, total) => {
         total: total,
       })
         .then()
-        .catch((e) => {
-          console.log(e);
-        });
+        .catch((e) => {});
     }
   } catch (e) {
     throw new Error(e);
