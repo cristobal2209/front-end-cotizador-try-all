@@ -64,9 +64,7 @@ export default function Login() {
         );
       }
       if (error.message.includes("auth/wrong-password")) {
-        setError(
-          "La contraseña ingresada es incorrecta."
-        );
+        setError("La contraseña ingresada es incorrecta.");
       } else {
         setError("Ocurrió un error durante el inicio de sesión.");
       }
@@ -215,7 +213,6 @@ export default function Login() {
                   </Button>
                 </div>
               </div>
-              
             </form>
             <p
               className="
