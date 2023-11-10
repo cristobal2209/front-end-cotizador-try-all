@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import {
   Button,
   Typography,
@@ -21,8 +22,7 @@ import {
 export default function UserQuoteRow({
   quote,
   classes,
-  handleSuccessAlert,
-  handleFailedAlert,
+  handleAlert,
   handleGenerateExcel,
   handleQuoteView,
 }) {
@@ -32,80 +32,54 @@ export default function UserQuoteRow({
   const [newQuoteStatus, setNewQuoteStatus] = useState(quoteStatus);
   const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] =
     useState(false);
-  const [contador, setContador] = useState(0);
-
-  useEffect(() => {
-    setQuoteStatus(String(quote.status));
-    //setContador(contador + 1);
-  }, [quote]);
-
-  useEffect(() => {
-    setNewQuoteStatus(quoteStatus);
-    setContador(contador + 1);
-  }, [quoteStatus]);
 
   const handleChangeQuoteStatus = (newQuoteStatus) => {
     setIsConfirmationDialogOpen(true);
     setNewQuoteStatus(newQuoteStatus);
   };
 
-  const handleOpenThreeDotsOptions = () => {
-    setOpenThreeDotsOptions(!openThreeDotsOptions);
-  };
-
-  //Manejo borrado cotizacion
-
-  const handleDeleteQuote = async () => {
-    await deleteQuote(quote.id)
-      .then(() => {
-        return;
-      })
-      .catch((e) => {
-        throw e;
-      });
-  };
-
-  const handleConfirmDelete = async () => {
-    await handleDeleteQuote()
-      .then(() => {
-        handleSuccessAlert("Cotización eliminada correctamente");
-      })
-      .catch((e) => {
-        handleFailedAlert("Error al eliminar la cotización");
-      });
-    handleOpenDeleteDialog();
-  };
-
   const handleOpenDeleteDialog = () => {
     setOpenDeleteDialog(!openDeleteDialog);
   };
 
-  //Manejo de estados cotizacion
-
   const handleConfirmChangeStatus = async () => {
-    await changeQuoteStatus(quote.id, parseInt(newQuoteStatus, 10))
-      .then(() => {
-        handleSuccessAlert("Estado cotización cambiado");
-      })
-      .catch(() => {
-        handleFailedAlert("Error al cambiar el estado");
-      });
-    setIsConfirmationDialogOpen(false);
+    try {
+      await changeQuoteStatus(quote.id, parseInt(newQuoteStatus, 10));
+      handleAlert(true, "Estado cotización cambiado");
+    } catch (error) {
+      handleAlert(false, "Error al cambiar el estado");
+    } finally {
+      setIsConfirmationDialogOpen(false);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      await deleteQuote(quote.id);
+      handleAlert(true, "Cotización eliminada correctamente");
+    } catch (error) {
+      handleAlert(false, "Error al eliminar la cotización");
+    } finally {
+      handleOpenDeleteDialog();
+    }
   };
 
   const handleCancelChangeStatus = () => {
-    setNewQuoteStatus(quoteStatus);
     setIsConfirmationDialogOpen(false);
   };
 
+  useEffect(() => {
+    setQuoteStatus(String(quote.status));
+  }, [quote]);
+
   return (
     <tr className="hover:bg-two">
-      <td className={`${classes}`}>
+      <td className={classes}>
         <div className="flex items-center">
           <Typography variant="small" className="font-normal text-light mr-1">
             {quote.quoteName}
           </Typography>
-          <Button className="hover:bg-twoHover  bg-transparent shadow-none !px-2">
+          <Button className="hover:bg-twoHover bg-transparent shadow-none !px-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -123,11 +97,6 @@ export default function UserQuoteRow({
           </Button>
         </div>
       </td>
-      {/* <td className={classes}>
-          <Typography variant="small" color="blue-gray" className="font-normal">
-            {quote.version}
-          </Typography>
-        </td> */}
       <td className={classes}>
         <div className="max-w-[10rem]">
           <Select
@@ -137,22 +106,13 @@ export default function UserQuoteRow({
             className="text-light opacity-70"
             menuProps={{ className: "bg-dark text-light border-dark2" }}
           >
-            <Option
-              className={` ${quoteStatus === "1" ? "hidden" : ""}`}
-              value={"1"}
-            >
+            <Option className={quoteStatus !== "1" ? "" : "hidden"} value="1">
               Activa
             </Option>
-            <Option
-              className={`${quoteStatus === "2" ? "hidden" : ""}`}
-              value={"2"}
-            >
+            <Option className={quoteStatus !== "2" ? "" : "hidden"} value="2">
               En curso
             </Option>
-            <Option
-              className={` ${quoteStatus === "3" ? "hidden" : ""}`}
-              value={"3"}
-            >
+            <Option className={quoteStatus !== "3" ? "" : "hidden"} value="3">
               Finalizada
             </Option>
           </Select>
@@ -198,7 +158,7 @@ export default function UserQuoteRow({
             <Button
               variant="text"
               className="px-3 bg-transparent shadow-none hover:shadow-md hover:bg-twoHover"
-              onClick={() => handleOpenThreeDotsOptions()}
+              onClick={() => setOpenThreeDotsOptions(!openThreeDotsOptions)}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -217,8 +177,8 @@ export default function UserQuoteRow({
             </Button>
           </MenuHandler>
           <MenuList className="bg-dark text-light border-dark2">
-            <MenuItem disabled={true}>Cambiar nombre</MenuItem>
-            <MenuItem disabled={true}>Ver Versiones</MenuItem>
+            <MenuItem disabled>Cambiar nombre</MenuItem>
+            <MenuItem disabled>Ver Versiones</MenuItem>
             <MenuItem onClick={() => handleGenerateExcel(quote)}>
               Descargar Excel
             </MenuItem>
@@ -282,3 +242,11 @@ export default function UserQuoteRow({
     </tr>
   );
 }
+
+UserQuoteRow.propTypes = {
+  quote: PropTypes.object.isRequired,
+  classes: PropTypes.string.isRequired,
+  handleAlert: PropTypes.func.isRequired,
+  handleGenerateExcel: PropTypes.func.isRequired,
+  handleQuoteView: PropTypes.func.isRequired,
+};

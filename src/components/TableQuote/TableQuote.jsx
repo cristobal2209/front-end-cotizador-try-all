@@ -77,23 +77,12 @@ export default function TableQuote() {
 
   const handleGenerateExcel = (quote) => generateExcel(quote);
 
-  const handleOpenAlertSuccess = () => {
-    setOpenAlertSuccess(!openAlertSuccess);
-    setTimeout(() => {
-      setOpenAlertSuccess(false);
-    }, 3000);
-  };
-
-  const handleOpenAlertFailed = () => {
-    setOpenAlertFailed(!openAlertFailed);
-    setTimeout(() => {
-      setOpenAlertFailed(false);
-    }, 3000);
-  };
-
-  const handleAlert = (message) => {
+  const handleAlert = (success, message) => {
     setAlertData(message);
-    handleOpenAlertSuccess();
+    success ? setOpenAlertSuccess(true) : setOpenAlertFailed(true);
+    setTimeout(() => {
+      success ? setOpenAlertSuccess(false) : setOpenAlertFailed(false);
+    }, 3000);
   };
 
   const next = () => {
@@ -162,16 +151,8 @@ export default function TableQuote() {
                 />
               </div>
             </div>
-            <AlertSuccess
-              open={openAlertSuccess}
-              handler={handleOpenAlertSuccess}
-              data={alertData}
-            />
-            <AlertFailed
-              open={openAlertFailed}
-              handler={handleOpenAlertFailed}
-              error={alertData}
-            />
+            <AlertSuccess open={openAlertSuccess} data={alertData} />
+            <AlertFailed open={openAlertFailed} error={alertData} />
           </div>
         </CardHeader>
         <CardBody
@@ -261,7 +242,7 @@ export default function TableQuote() {
     </div>
   );
 }
-function AlertFailed({ open, handler, error }) {
+function AlertFailed({ open, error }) {
   function Icon() {
     return (
       <svg
@@ -288,7 +269,6 @@ function AlertFailed({ open, handler, error }) {
       <div className="fixed w-auto right-[0px]">
         <Alert
           open={open}
-          onClose={() => handler()}
           color="red"
           icon={<Icon />}
           animate={{
@@ -302,7 +282,7 @@ function AlertFailed({ open, handler, error }) {
     </>
   );
 }
-function AlertSuccess({ open, handler, data }) {
+function AlertSuccess({ open, data }) {
   function Icon() {
     return (
       <svg
@@ -329,7 +309,6 @@ function AlertSuccess({ open, handler, data }) {
       <div className="!absolute w-auto right-[0px]">
         <Alert
           open={open}
-          onClose={() => handler()}
           color="green"
           icon={<Icon />}
           animate={{
