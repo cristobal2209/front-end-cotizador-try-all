@@ -1,6 +1,6 @@
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { createUser } from "../../services/tableUserService";
+import { createUser } from "../../services/TableUserService";
 import {
   Button,
   Input,
@@ -13,7 +13,6 @@ import {
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
 const validationSchema = Yup.object().shape({
-  //validacion de campos del formulario Formik
   firstname: Yup.string()
     .min(3, "El nombre debe contener al menos 3 caracteres")
     .max(20, "El nombre debe contener a lo mas 20 caracteres")
@@ -27,9 +26,8 @@ const validationSchema = Yup.object().shape({
     .matches(/^[A-Za-z\s]*$/, "El campo solo puede contener letras y espacios"),
 
   email: Yup.string()
-    .email("El correo ingresado no es válido") //.email , valida una serie de instrucciones standar
+    .email("El correo ingresado no es válido")
     .required("El correo es un campo obligatorio"),
-  //en correos electronicos en una sola validacion
   password: Yup.string()
     .min(6, "La contraseña debe contener al menos 6 caracteres")
     .max(20, "La contraseña debe contener a lo mas 20 caracteres")
@@ -76,14 +74,13 @@ export default function CreateUser({
   };
 
   const formik = useFormik({
-    //Creacion de un estandar de formularios
     initialValues: {
       email: "",
       password: "",
       firstname: "",
       lastname: "",
-      disabled: true, //  se inicializa en true para su posterior desactivacion manual luego de la correcta creacion
-      admin: true, // al no poseer un input por parte del usuario, estos campos no se reflejan o validan con la libreria YUP
+      disabled: true,
+      admin: true,
     },
     validateOnMount: true,
     validateOnChange: true,

@@ -25,8 +25,6 @@ import * as xlsx from "xlsx";
 const TABLE_HEAD = ["Nombre", "Estado", "Fecha Creación", "Ver", "Opciones"];
 
 export default function TableQuote() {
-  // State variables
-
   const [isLoadingTable, setIsLoadingTable] = useState(false);
   const [userQuotesCollection, setUserQuotesCollection] = useState([]);
   const [quoteData, setQuoteData] = useState(null);
@@ -37,8 +35,6 @@ export default function TableQuote() {
   const [contador, setContador] = useState(0);
   const [active, setActive] = useState(1);
 
-  // Constants
-
   const itemsPerPage = 10;
   const totalItems = userQuotesCollection.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -46,8 +42,6 @@ export default function TableQuote() {
   const endIndex = startIndex + itemsPerPage;
 
   const visibleItems = userQuotesCollection.slice(startIndex, endIndex);
-
-  // useEffect functions
 
   useEffect(() => {
     document.title = "Mis cotizaciones";
@@ -65,8 +59,6 @@ export default function TableQuote() {
   useEffect(() => {
     setContador(contador + 1);
   }, [userQuotesCollection]);
-
-  // Event handlers
 
   const handleOpenQuoteView = () => setOpenQuoteView(!openQuoteView);
 
@@ -102,8 +94,6 @@ export default function TableQuote() {
     color: "gray",
     onClick: () => setActive(index),
   });
-
-  // Rendered components
 
   const TableHeader = (
     <thead>
@@ -388,7 +378,6 @@ export function QuoteView({ open, handler, quoteData }) {
           </thead>
           <tbody>
             {quoteData?.products.map((productQuoteData, index) => {
-              //const isLast = index === userQuotesCollection.length - 1;
               const classes = "px-4 border-b border-blue-gray-100";
 
               return (
@@ -469,31 +458,18 @@ export function QuoteView({ open, handler, quoteData }) {
             ${quoteData?.total}
           </Typography>
         </div>
-        {/* <Button
-          variant="text"
-          color="white"
-          onClick={() => {
-            handler();
-          }}
-        >
-          Cerrar
-        </Button> */}
       </DialogFooter>
     </Dialog>
   );
 }
-// capitalize first letter
 function capitalizeFirstLetter(inputString) {
-  // check input type
   if (typeof inputString !== "string") {
     return inputString;
   }
 
-  // capitalize first letter and append the rest
   return inputString.charAt(0).toUpperCase() + inputString.slice(1);
 }
 function generateExcel(quoteData) {
-  //Encabezados de cotizacion
   let excelQuoteElements = [
     ["ID", quoteData.id],
     ["Nombre Cotización", quoteData.quoteName],
@@ -502,7 +478,6 @@ function generateExcel(quoteData) {
     ["Fecha de actualización", quoteData.lastUpdateDate],
     ["Productos"],
   ];
-  //Encabezados de productos
   excelQuoteElements.push([
     "",
     "Producto",
@@ -517,7 +492,6 @@ function generateExcel(quoteData) {
     "Enlace",
   ]);
 
-  //Datos de productos
   for (const productQuoteData of quoteData.products) {
     excelQuoteElements.push([
       "",
@@ -533,7 +507,6 @@ function generateExcel(quoteData) {
       productQuoteData.supplier.productUrl,
     ]);
   }
-  //Total
   excelQuoteElements.push([
     "Total",
     " ",
