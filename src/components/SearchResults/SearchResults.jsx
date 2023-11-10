@@ -120,6 +120,7 @@ function RenderFilters() {
               className="w-full rounded border border-gray-300 px-4 py-2"
               type="text"
               placeholder="Min"
+              disabled={true}
             />
           </div>
           -
@@ -128,6 +129,7 @@ function RenderFilters() {
               className="w-full rounded border border-gray-300 px-4 py-2"
               type="text"
               placeholder="Max"
+              disabled={true}
             />
           </div>
         </div>
@@ -138,6 +140,7 @@ function RenderFilters() {
               className="w-full rounded border border-gray-300 px-4 py-2"
               type="text"
               placeholder="Min"
+              disabled={true}
             />
           </div>
           -
@@ -146,6 +149,7 @@ function RenderFilters() {
               className="w-full rounded border border-gray-300 px-4 py-2"
               type="text"
               placeholder="Max"
+              disabled={true}
             />
           </div>
         </div>
@@ -158,6 +162,7 @@ function RenderFilters() {
             <select
               id="selectOption"
               className="w-full rounded border border-gray-300 bg-one px-4 py-2 text-gray-400"
+              disabled={true}
             >
               <option value="">Marcas</option>
               <option value="option1">Bauker</option>
