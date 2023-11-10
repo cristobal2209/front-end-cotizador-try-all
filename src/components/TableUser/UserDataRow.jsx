@@ -10,7 +10,7 @@ import {
 } from "@material-tailwind/react";
 import PropTypes from "prop-types";
 
-import { changeUserStatus } from "../../services/tableUserService";
+import { changeUserStatus } from "../../services/TableUserService.js";
 
 export default function UserDataRow({
   user,
