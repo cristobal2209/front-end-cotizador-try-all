@@ -4,6 +4,9 @@ import react from "@vitejs/plugin-react";
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
+    server: {
+      port: 4000, // Puedes cambiar el número de puerto según tus preferencias
+    },
     proxy: {
       //"/api": "http://162.212.155.221:5000",
       "/api": "http://localhost:5000",
