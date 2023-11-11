@@ -1,15 +1,23 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-// https://vitejs.dev/config/
+// export default defineConfig({
+//   server: {
+//     port: import.meta.env.VITE_APP_PORT,
+//     proxy: {
+//       "/api": `${import.meta.env.VITE_BACKEND_HOST}:${
+//         import.meta.env.VITE_BACKEND_PORT
+//       }`,
+//     },
+//   },
+//   plugins: [react()],
+// });
 export default defineConfig({
   server: {
-    server: {
-      port: 4000, // Puedes cambiar el número de puerto según tus preferencias
-    },
+    host: "0.0.0.0",
+    port: 4000,
     proxy: {
-      //"/api": "http://162.212.155.221:5000",
-      "/api": "http://localhost:5000",
+      "/api": `http://localhost:5000`,
     },
   },
   plugins: [react()],
