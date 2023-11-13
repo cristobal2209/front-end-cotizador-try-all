@@ -40,7 +40,7 @@ const TABLE_HEAD = [
   "Opciones",
 ];
 
-export default function TableQuote() {
+export default function TableProduct() {
   const [isLoadingTable, setIsLoadingTable] = useState(false);
   const [openAlertSuccess, setOpenAlertSuccess] = useState(false);
   const [openAlertFailed, setOpenAlertFailed] = useState(false);
@@ -77,12 +77,12 @@ export default function TableQuote() {
   };
 
   const getNextProducts = async () => {
-    const { data, firstVisible, lastVisible } =
-      await getNextProductsCollection(nextDocRef);
-    setProductsCollection(data);
-    setNextDocRef(lastVisible);
-    setPrevDocRef(firstVisible);
-    setShowedProductsQuantity(showedProductsQuantity + itemsPerPage);
+    // const { data, firstVisible, lastVisible } =
+    //   await getNextProductsCollection(nextDocRef);
+    // setProductsCollection(data);
+    // setNextDocRef(lastVisible);
+    // setPrevDocRef(firstVisible);
+    // setShowedProductsQuantity(showedProductsQuantity + itemsPerPage);
   };
 
   const getPrevProducts = async () => {
@@ -221,7 +221,6 @@ export default function TableQuote() {
                       <tbody>
                         {ProductsCollection?.map((product, index) => {
                           const classes = "p-4 border-y border-blue-gray-100";
-
                           return (
                             <ProductRow
                               product={product}
@@ -306,6 +305,7 @@ const validationSchema = Yup.object().shape({
 export function CreateProductDialog({ open, handler }) {
   const [imageUpload, setImageUpload] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [suppliers, setSuppliers] = useState([]);
 
   useEffect(() => {
     if (imageUpload) {
@@ -314,6 +314,22 @@ export function CreateProductDialog({ open, handler }) {
       productDataFormik.setFieldValue("imgSrc", imageUpload);
     }
   }, [imageUpload]);
+
+  // useEffect(() => {
+  //   console.log(suppliers);
+  // }, [suppliers]);
+
+  const addNewSupplier = () => {
+    const suppliersCopy = suppliers;
+    suppliersCopy.push({
+      supplier: "",
+      productUrl: "",
+      supplierPartNo: "",
+    });
+    setSuppliers([...suppliersCopy]);
+  };
+
+  const removeSupplier = (index) => {};
 
   const submitRegister = (formValues) => {
     console.log(formValues);
@@ -376,7 +392,7 @@ export function CreateProductDialog({ open, handler }) {
         <div className="grid grid-cols-2 border-b border-light pb-5 gap-5">
           <Typography
             variant="lead"
-            className="font-bold text-light pb-5 col-span-2"
+            className="font-bold text-light col-span-2"
           >
             Datos producto
           </Typography>
@@ -507,11 +523,32 @@ export function CreateProductDialog({ open, handler }) {
                   productDataFormik.setFieldValue("priceFor", selectedValue);
                 }}
               >
-                <Option value={"each"}>Unidad</Option>
-                <Option value={"packageOf"}>Paquete de</Option>
-                <Option value={"spoolOf"}>Carrete de</Option>
+                <Option
+                  value={"each"}
+                  onClick={() => {
+                    productDataFormik.values.priceForQuantity = "1";
+                  }}
+                >
+                  Unidad
+                </Option>
+                <Option
+                  value={"packOf"}
+                  onClick={() => {
+                    productDataFormik.values.priceForQuantity = "";
+                  }}
+                >
+                  Paquete de
+                </Option>
+                <Option
+                  value={"spoolOf"}
+                  onClick={() => {
+                    productDataFormik.values.priceForQuantity = "";
+                  }}
+                >
+                  Carrete de
+                </Option>
               </Select>
-              {productDataFormik.values.priceFor === "packageOf" ? (
+              {productDataFormik.values.priceFor === "packOf" ? (
                 <div className="mx-2 flex">
                   <Input
                     type="text"
@@ -549,13 +586,16 @@ export function CreateProductDialog({ open, handler }) {
                     </Typography>
                   </div>
                 </div>
-              ) : null}
+              ) : (
+                <></>
+              )}
             </div>
-            {productDataFormik.errors.priceFor &&
+            {productDataFormik.errors.priceFor ||
             productDataFormik.errors.priceForQuantity ? (
               <Alert className="block mt-[10px] bg-red-500 !w-auto animate-pulse">
                 <div className="flex flex-row items-center">
-                  {productDataFormik.errors.priceFor}
+                  {productDataFormik.errors.priceFor ||
+                    productDataFormik.errors.priceForQuantity}
                 </div>
               </Alert>
             ) : null}
@@ -607,9 +647,36 @@ export function CreateProductDialog({ open, handler }) {
           </div>
         </div>
         <div className="my-3">
-          <Typography variant="lead" className="font-bold text-light">
+          <Typography variant="lead" className="font-bold text-light pb-5">
             Proveedores
           </Typography>
+          <div className="flex flex-col">
+            {suppliers?.map((supplier, index) => {
+              return <NewSupplierRow supplier={supplier} key={index} />;
+            })}
+            <Button
+              className="bg-two flex items-center gap-3 w-[150px] my-2"
+              onClick={() => {
+                addNewSupplier();
+              }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-6 h-6 mr-auto"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 4.5v15m7.5-7.5h-15"
+                />
+              </svg>
+              Añadir
+            </Button>
+          </div>
         </div>
       </DialogBody>
       <DialogFooter className="space-x-2 border-dark2 border-t-2 bg-dark3">
@@ -626,4 +693,386 @@ export function CreateProductDialog({ open, handler }) {
       </DialogFooter>
     </Dialog>
   );
+}
+
+function NewSupplierRow({ supplier }) {
+  const [isEditing, setIsEditing] = useState(true);
+  const [prices, setPrices] = useState([{ quantity: "", price: "" }]);
+  const [stock, setStock] = useState([{ country: "", stock: "" }]);
+  const [extraData, setExtraData] = useState([{}]);
+
+  useEffect(() => {
+    console.log("precios en estado", prices);
+  }, [prices]);
+
+  const supplierValidationSchema = Yup.object().shape({
+    //validacion de campos del formulario productDataFormik
+    supplier: Yup.string()
+      .min(1, "La supplier debe contener al menos 3 caracteres")
+      .max(50, "La supplier debe contener a lo mas 50 caracteres")
+      .required("La supplier es obligatoria"),
+    supplierPartNo: Yup.string()
+      .min(1, "La descripcion debe contener al menos 3 caracteres")
+      .max(50, "La descripcion debe contener a lo mas 50 caracteres")
+      .required("La descripcion es obligatoria"),
+    productUrl: Yup.string().required("La descripcion es obligatoria"),
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      supplier: "",
+      productUrl: "",
+      supplierPartNo: "",
+    },
+    validateOnMount: true,
+    validateOnChange: true,
+    validateOnBlur: true,
+    validationSchema: supplierValidationSchema,
+    onSubmit: () => {
+      console.log(formik.values);
+    },
+  });
+
+  const handleIsEditing = () => {
+    setIsEditing(!isEditing);
+  };
+
+  const addPrices = () => {
+    let newPrices = prices;
+    newPrices.push({ quantity: "", price: "" });
+    setPrices([...newPrices]);
+  };
+
+  const addStock = () => {
+    let newStock = stock;
+    newStock.push({ country: "", stock: "" });
+    setStock([...newStock]);
+  };
+
+  const addExtraData = () => {
+    let newExtraData = extraData;
+    newExtraData.push({});
+    setExtraData([...newExtraData]);
+  };
+
+  const updatePrice = (index, newPrice) => {
+    console.log("actualizando en index... ", index);
+    console.log("precios actuales...", prices);
+    let newPrices = [...prices];
+    newPrices[index] = newPrice;
+    setPrices([...newPrices]);
+  };
+
+  const removePrices = (index) => {
+    console.log("borrando en index... ", index);
+    console.log("precios actuales...", prices);
+    let newPrices = [...prices];
+    newPrices.splice(index, 1);
+    setPrices(newPrices);
+  };
+
+  return (
+    <>
+      <div className="flex bg-one rounded-md p-4 my-2">
+        <div className="grid grid-cols-3 gap-4 w-full">
+          <div>
+            <Input
+              type="text"
+              name="supplier"
+              color="white"
+              label="Nombre proveedor"
+              labelProps={{ className: "text-light opacity-50" }}
+              value={formik.values.supplier}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+            />
+          </div>
+          <div>
+            <Input
+              type="text"
+              name="supplierPartNo"
+              color="white"
+              label="N° parte proveedor"
+              labelProps={{ className: "text-light opacity-50" }}
+              value={formik.values.supplierPartNo}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+            />
+          </div>
+          <div>
+            <Input
+              type="text"
+              name="productUrl"
+              color="white"
+              label="Enlace producto"
+              labelProps={{ className: "text-light opacity-50" }}
+              value={formik.values.productUrl}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+            />
+          </div>
+          <div className="flex flex-col">
+            <Typography variant="small" className="text-light">
+              Ingresar precios
+            </Typography>
+            {prices?.map((price, index) => {
+              return (
+                <PricesRow
+                  key={index}
+                  removePrices={removePrices}
+                  index={index}
+                  updatePrice={updatePrice}
+                  price={price}
+                />
+              );
+            })}
+            <div>
+              <Button
+                size="sm"
+                className="rounded bg-three shadow-none hover:bg-threeHover "
+                onClick={() => {
+                  addPrices();
+                }}
+              >
+                <Typography variant="small" className="text-light my-auto">
+                  Agregar precio
+                </Typography>
+              </Button>
+            </div>
+          </div>
+          <div className="flex flex-col">
+            <Typography variant="small" className="text-light">
+              Ingresar stock
+            </Typography>
+            {stock?.map((stock, index) => {
+              return <StockRow key={index} />;
+            })}
+            <div>
+              <Button
+                size="sm"
+                className="rounded bg-three shadow-none hover:bg-threeHover w-[32px] h-[32px] px-2 my-auto"
+                onClick={() => {
+                  addStock();
+                }}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-4 h-4 mr-auto"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 4.5v15m7.5-7.5h-15"
+                  />
+                </svg>
+              </Button>
+            </div>
+          </div>
+          <div className="flex flex-col">
+            <Typography variant="small" className="text-light">
+              Ingresar datos adicionales
+            </Typography>
+            {extraData?.map((data, index) => {
+              return <ExtraDataRow key={index} />;
+            })}
+            <div className="">
+              <Button
+                size="sm"
+                className="rounded bg-three shadow-none hover:bg-threeHover w-[32px] h-[32px] px-2"
+                onClick={() => {
+                  addExtraData();
+                }}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-4 h-4 mr-auto"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 4.5v15m7.5-7.5h-15"
+                  />
+                </svg>
+              </Button>
+            </div>
+          </div>
+        </div>
+        <div className="m-auto flex justify-between">
+          <Button
+            size="sm"
+            color="green"
+            className="rounded w-[32px] h-[32px] px-2 mx-1"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-4 h-4"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4.5 12.75l6 6 9-13.5"
+              />
+            </svg>
+          </Button>
+          <Button
+            size="sm"
+            color="red"
+            className="rounded w-[32px] h-[32px] px-2 mx-1"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-4 h-4"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </Button>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function PricesRow({ removePrices, index, updatePrice, price }) {
+  useEffect(() => {
+    console.log(formik.errors);
+  });
+
+  const pricesValidationSchema = Yup.object().shape({
+    quantity: Yup.number()
+      // .typeError("La cantidad debe ser un número")
+      .required("La cantidad es obligatoria")
+      .positive("La cantidad debe ser un número positivo"),
+    // .integer("La cantidad debe ser un número entero"),
+    price: Yup.number()
+      // .typeError("El precio debe ser un número")
+      .required("El precio es obligatorio")
+      .positive("El precio debe ser un número positivo"),
+  });
+
+  const handleQuantityInputChange = (e) => {
+    const validatedValue = e.target.value.replace(/[^0-9]/g, "");
+
+    formik.setFieldValue("quantity", validatedValue);
+  };
+
+  const handlePriceInputChange = (e) => {
+    const validatedValue = e.target.value.replace(/[^0-9.]/g, "");
+
+    formik.setFieldValue("price", validatedValue);
+  };
+
+  const formik = useFormik({
+    initialValues: {
+      quantity: price.quantity,
+      price: price.price,
+    },
+    validationSchema: pricesValidationSchema,
+    onSubmit: () => {
+      updatePrice(index, formik.values);
+    },
+  });
+
+  return (
+    <div className="flex justify-between my-2">
+      <div className="mx-1">
+        <Input
+          type="text"
+          name="quantity"
+          color="white"
+          variant="standard"
+          label="Cantidad"
+          containerProps={{ className: "!min-w-[80px]" }}
+          labelProps={{ className: "text-light opacity-50" }}
+          value={formik.values.quantity}
+          onChange={handleQuantityInputChange}
+          onBlur={formik.handleBlur}
+        />
+      </div>
+      <div className="mx-1">
+        <Input
+          type="text"
+          name="price"
+          color="white"
+          variant="standard"
+          label="Precio"
+          containerProps={{ className: "!min-w-[80px]" }}
+          labelProps={{ className: "text-light opacity-50" }}
+          value={formik.values.price}
+          onChange={handlePriceInputChange}
+          onBlur={formik.handleBlur}
+        />
+      </div>
+      <Button
+        size="sm"
+        className="rounded bg-three shadow-none hover:bg-threeHover w-[32px] h-[32px] px-2 my-auto mr-1"
+        disabled={Object.keys(formik.errors).length > 0}
+        onClick={() => formik.handleSubmit()}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={2}
+          stroke="currentColor"
+          className="w-4 h-4 mr-auto"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M4.5 12.75l6 6 9-13.5"
+          />
+        </svg>
+      </Button>
+      <Button
+        size="sm"
+        className="rounded bg-three shadow-none hover:bg-threeHover w-[32px] h-[32px] px-2 my-auto ml-1"
+        onClick={() => {
+          removePrices(index);
+        }}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={2}
+          stroke="currentColor"
+          className="w-4 h-4 mr-auto"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </Button>
+    </div>
+  );
+}
+
+function StockRow() {
+  return <div className="flex">stock</div>;
+}
+
+function ExtraDataRow() {
+  return <div className="flex">data</div>;
 }
