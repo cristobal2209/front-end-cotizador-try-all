@@ -696,7 +696,6 @@ export function CreateProductDialog({ open, handler }) {
 }
 
 function NewSupplierRow({ supplier }) {
-  const [isEditing, setIsEditing] = useState(true);
   const [prices, setPrices] = useState([{ quantity: "", price: "" }]);
   const [stock, setStock] = useState([{ country: "", stock: "" }]);
   const [extraData, setExtraData] = useState([{}]);
@@ -733,10 +732,6 @@ function NewSupplierRow({ supplier }) {
     },
   });
 
-  const handleIsEditing = () => {
-    setIsEditing(!isEditing);
-  };
-
   const addPrices = () => {
     let newPrices = prices;
     newPrices.push({ quantity: "", price: "" });
@@ -755,7 +750,7 @@ function NewSupplierRow({ supplier }) {
     setExtraData([...newExtraData]);
   };
 
-  const updatePrice = (index, newPrice) => {
+  const onUpdatePrice = (index, newPrice) => {
     console.log("actualizando en index... ", index);
     console.log("precios actuales...", prices);
     let newPrices = [...prices];
@@ -763,7 +758,7 @@ function NewSupplierRow({ supplier }) {
     setPrices([...newPrices]);
   };
 
-  const removePrices = (index) => {
+  const onPriceRowRemove = (index) => {
     console.log("borrando en index... ", index);
     console.log("precios actuales...", prices);
     let newPrices = [...prices];
@@ -780,6 +775,7 @@ function NewSupplierRow({ supplier }) {
               type="text"
               name="supplier"
               color="white"
+              variant="standard"
               label="Nombre proveedor"
               labelProps={{ className: "text-light opacity-50" }}
               value={formik.values.supplier}
@@ -792,6 +788,7 @@ function NewSupplierRow({ supplier }) {
               type="text"
               name="supplierPartNo"
               color="white"
+              variant="standard"
               label="N° parte proveedor"
               labelProps={{ className: "text-light opacity-50" }}
               value={formik.values.supplierPartNo}
@@ -804,6 +801,7 @@ function NewSupplierRow({ supplier }) {
               type="text"
               name="productUrl"
               color="white"
+              variant="standard"
               label="Enlace producto"
               labelProps={{ className: "text-light opacity-50" }}
               value={formik.values.productUrl}
@@ -819,10 +817,9 @@ function NewSupplierRow({ supplier }) {
               return (
                 <PricesRow
                   key={index}
-                  removePrices={removePrices}
+                  onPriceRowRemove={onPriceRowRemove}
                   index={index}
-                  updatePrice={updatePrice}
-                  price={price}
+                  onUpdatePrice={onUpdatePrice}
                 />
               );
             })}
@@ -834,9 +831,20 @@ function NewSupplierRow({ supplier }) {
                   addPrices();
                 }}
               >
-                <Typography variant="small" className="text-light my-auto">
-                  Agregar precio
-                </Typography>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-4 h-4 mr-auto"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 4.5v15m7.5-7.5h-15"
+                  />
+                </svg>
               </Button>
             </div>
           </div>
@@ -952,102 +960,107 @@ function NewSupplierRow({ supplier }) {
   );
 }
 
-function PricesRow({ removePrices, index, updatePrice, price }) {
-  useEffect(() => {
-    console.log(formik.errors);
-  });
+function PricesRow({ index, onPriceRowRemove, onUpdatePrice }) {
+  const [isPriceHovered, setIsPriceHovered] = useState(false);
+  const [isQuantityHovered, setIsQuantityHovered] = useState(false);
+  const [inputsEditedCounter, setInputsEditedCounter] = useState(0);
 
-  const pricesValidationSchema = Yup.object().shape({
+  const supplierValidationSchema = Yup.object().shape({
     quantity: Yup.number()
-      // .typeError("La cantidad debe ser un número")
+      .typeError("La cantidad debe ser un número")
       .required("La cantidad es obligatoria")
-      .positive("La cantidad debe ser un número positivo"),
-    // .integer("La cantidad debe ser un número entero"),
+      .positive("La cantidad debe ser un número positivo")
+      .integer("La cantidad debe ser un número entero"),
     price: Yup.number()
-      // .typeError("El precio debe ser un número")
+      .typeError("El precio debe ser un número")
       .required("El precio es obligatorio")
       .positive("El precio debe ser un número positivo"),
   });
 
-  const handleQuantityInputChange = (e) => {
-    const validatedValue = e.target.value.replace(/[^0-9]/g, "");
-
-    formik.setFieldValue("quantity", validatedValue);
-  };
-
-  const handlePriceInputChange = (e) => {
-    const validatedValue = e.target.value.replace(/[^0-9.]/g, "");
-
-    formik.setFieldValue("price", validatedValue);
-  };
-
-  const formik = useFormik({
+  const priceRowFormik = useFormik({
     initialValues: {
-      quantity: price.quantity,
-      price: price.price,
+      quantity: "",
+      price: "",
     },
-    validationSchema: pricesValidationSchema,
+    validateOnMount: true,
+    validateOnChange: true,
+    validateOnBlur: true,
+    validationSchema: supplierValidationSchema,
     onSubmit: () => {
-      updatePrice(index, formik.values);
+      onUpdatePrice(index, priceRowFormik.values);
+      console.log(priceRowFormik.values);
     },
   });
 
+  useEffect(() => {
+    priceRowFormik.handleSubmit();
+  }, [inputsEditedCounter]);
+
+  const handlePriceInputChange = (e) => {
+    const validatedValue = e.target.value.replace(/[^0-9.,]/g, "");
+
+    priceRowFormik.setFieldValue("price", validatedValue);
+  };
+
+  const handleQuantityInputChange = (e) => {
+    const validatedValue = e.target.value.replace(/[^0-9]/g, "");
+
+    priceRowFormik.setFieldValue("quantity", validatedValue);
+  };
+
   return (
-    <div className="flex justify-between my-2">
-      <div className="mx-1">
-        <Input
-          type="text"
-          name="quantity"
-          color="white"
-          variant="standard"
-          label="Cantidad"
-          containerProps={{ className: "!min-w-[80px]" }}
-          labelProps={{ className: "text-light opacity-50" }}
-          value={formik.values.quantity}
-          onChange={handleQuantityInputChange}
-          onBlur={formik.handleBlur}
-        />
-      </div>
-      <div className="mx-1">
-        <Input
-          type="text"
-          name="price"
-          color="white"
-          variant="standard"
-          label="Precio"
-          containerProps={{ className: "!min-w-[80px]" }}
-          labelProps={{ className: "text-light opacity-50" }}
-          value={formik.values.price}
-          onChange={handlePriceInputChange}
-          onBlur={formik.handleBlur}
-        />
-      </div>
-      <Button
-        size="sm"
-        className="rounded bg-three shadow-none hover:bg-threeHover w-[32px] h-[32px] px-2 my-auto mr-1"
-        disabled={Object.keys(formik.errors).length > 0}
-        onClick={() => formik.handleSubmit()}
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={2}
-          stroke="currentColor"
-          className="w-4 h-4 mr-auto"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M4.5 12.75l6 6 9-13.5"
-          />
-        </svg>
-      </Button>
+    <div className="flex my-2">
+      <input
+        type="text"
+        name="quantity"
+        placeholder="Cantidad"
+        label="Cantidad"
+        value={priceRowFormik.values.quantity}
+        onChange={(e) => {
+          handleQuantityInputChange(e);
+          setInputsEditedCounter(inputsEditedCounter + 1);
+        }}
+        onMouseEnter={() => setIsQuantityHovered(true)}
+        onMouseLeave={() => setIsQuantityHovered(false)}
+        className={`mr-1 rounded-md px-1 w-1/2 text-dark font-sans text-[14px] ${
+          priceRowFormik.errors.quantity
+            ? "border-2 border-red-500 animate-pulse"
+            : null
+        }`}
+      />
+      {priceRowFormik.errors.quantity && isQuantityHovered && (
+        <Alert className="absolute mt-[40px] bg-red-500 max-w-xs z-50">
+          {priceRowFormik.errors.quantity}
+        </Alert>
+      )}
+      <input
+        type="text"
+        name="price"
+        placeholder="Precio"
+        label="Precio"
+        value={priceRowFormik.values.price}
+        onChange={(e) => {
+          handlePriceInputChange(e);
+          setInputsEditedCounter(inputsEditedCounter + 1);
+        }}
+        onMouseEnter={() => setIsPriceHovered(true)}
+        onMouseLeave={() => setIsPriceHovered(false)}
+        className={`mr-1 rounded-md px-1 w-1/2 text-dark font-sans text-[14px] ${
+          priceRowFormik.errors.price
+            ? "border-2 border-red-500 animate-pulse"
+            : null
+        }`}
+      />
+      {priceRowFormik.errors.price && isPriceHovered && (
+        <Alert className="absolute mt-[40px] bg-red-500 max-w-xs z-50">
+          {priceRowFormik.errors.price}
+        </Alert>
+      )}
       <Button
         size="sm"
         className="rounded bg-three shadow-none hover:bg-threeHover w-[32px] h-[32px] px-2 my-auto ml-1"
         onClick={() => {
-          removePrices(index);
+          onPriceRowRemove(index);
         }}
       >
         <svg
