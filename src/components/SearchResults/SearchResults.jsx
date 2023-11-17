@@ -43,72 +43,6 @@ function GridSearchResults({ products }) {
   );
 }
 
-export default function SearchResults() {
-  const { productSearchParam } = useParams();
-  const [state, setState] = useState({ ...INITIAL_STATE });
-
-  useEffect(() => {
-    document.title = `Resultado búsqueda "${productSearchParam}"`;
-    getNextProducts();
-  }, []);
-
-  const getProducts = async (docRef) => {
-    const { data, firstVisible, lastVisible } = await getProductsFromInput(
-      productSearchParam,
-      docRef
-    );
-    setState({
-      isLoading: false,
-      searchResults: data,
-      nextDocRef: lastVisible,
-      prevDocRef: firstVisible,
-    });
-  };
-
-  const getNextProducts = () => {
-    setState((prevState) => ({ ...prevState, isLoading: true }));
-    getProducts(state.nextDocRef);
-  };
-
-  const getPrevProducts = () => {
-    setState((prevState) => ({ ...prevState, isLoading: true }));
-    getProducts(state.prevDocRef);
-  };
-
-  const openNewWindow = (productDataId) => {
-    const url = `https://quotemaster.homedns.org/articles/${productDataId}`;
-    window.open(url, "_blank");
-  };
-
-  return (
-    <div className="mx-auto max-w-7xl px-5 pt-10">
-      <div className="flex flex-row">
-        <RenderFilters />
-        <section className="grow">
-          <div className="pt-20">
-            {state.isLoading ? (
-              <Spinner className="mx-auto mt-20 h-12 w-12" />
-            ) : (
-              <div className="pb-10">
-                <GridSearchResults
-                  products={state.searchResults}
-                  openNewWindow={openNewWindow}
-                />
-                <div className="mx-auto flex pt-20">
-                  <PaginationButtons
-                    onPrevClick={getPrevProducts}
-                    onNextClick={getNextProducts}
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-        </section>
-      </div>
-    </div>
-  );
-}
-
 function RenderFilters() {
   return (
     <aside className="flex-start col-span-1 flex flex-col pr-10 pt-20">
@@ -178,17 +112,17 @@ export default function SearchResults() {
   const { productSearchParam } = useParams();
   const [nextDocRef, setNextDocRef] = useState(null);
   const [prevDocRef, setPrevDocRef] = useState(null);
-  
+
   useEffect(() => {
     result();
   }, []);
   useEffect(() => {
-      console.log(searchResults);
-   }, [searchResults]);
-  async function result(){
+    console.log(searchResults);
+  }, [searchResults]);
+  async function result() {
     let productos = await getProductsFromInput(productSearchParam);
     console.log(productos);
-   setSearchResults(productos);
+    setSearchResults(productos);
   }
 
   return (
