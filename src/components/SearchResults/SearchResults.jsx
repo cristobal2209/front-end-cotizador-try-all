@@ -1,37 +1,37 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   Card,
   CardBody,
   CardFooter,
   Button,
+  IconButton,
   Spinner,
 } from "@material-tailwind/react";
 import { getProductsFromInput } from "../../services/SearchService";
 import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
-import PropTypes from "prop-types";
 
-const INITIAL_STATE = {
-  isLoading: true,
-  searchResults: [],
-  nextDocRef: null,
-  prevDocRef: null,
-};
+function GridSearchResults({ products }) {
+  const openNewWindow = (productDataId) => {
+    // URL o contenido que deseas mostrar en la nueva pestaña
+    const url = `http://localhost:4000/articles/${productDataId}`;
 
-function GridSearchResults({ products, openNewWindow }) {
+    // Abre una nueva pestaña o ventana con el contenido
+    window.open(url, "_blank");
+  };
+
   return (
     <div className="mx-auto grid max-w-6xl place-items-center gap-5 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {products?.map((productResult, index) => (
         <Card
           className="h-full mx-2 w-48 cursor-pointer text-center shadow-md"
           key={index}
-          onClick={() => openNewWindow(productResult.id)}
+          onClick={(event) => openNewWindow(productResult.idt)}
         >
           <CardBody className="h-32">
             <img
               src={productResult.imgSrc}
               className="h-28 w-64 object-contain"
-              alt={productResult.description}
             />
           </CardBody>
           <CardFooter>
@@ -112,7 +112,7 @@ export default function SearchResults() {
 function RenderFilters() {
   return (
     <aside className="flex-start col-span-1 flex flex-col pr-10 pt-20">
-      <div className="max-w-[300px] rounded-lg bg-two p-4 shadow-lg">
+      <div className=" max-w-[300px] rounded-lg bg-two p-4 shadow-lg">
         Precio (CLP)
         <div className="mb-5 flex">
           <div className="w-1/2 pr-2">
@@ -120,7 +120,6 @@ function RenderFilters() {
               className="w-full rounded border border-gray-300 px-4 py-2"
               type="text"
               placeholder="Min"
-              disabled={true}
             />
           </div>
           -
@@ -129,7 +128,6 @@ function RenderFilters() {
               className="w-full rounded border border-gray-300 px-4 py-2"
               type="text"
               placeholder="Max"
-              disabled={true}
             />
           </div>
         </div>
@@ -140,7 +138,6 @@ function RenderFilters() {
               className="w-full rounded border border-gray-300 px-4 py-2"
               type="text"
               placeholder="Min"
-              disabled={true}
             />
           </div>
           -
@@ -149,7 +146,6 @@ function RenderFilters() {
               className="w-full rounded border border-gray-300 px-4 py-2"
               type="text"
               placeholder="Max"
-              disabled={true}
             />
           </div>
         </div>
@@ -162,7 +158,6 @@ function RenderFilters() {
             <select
               id="selectOption"
               className="w-full rounded border border-gray-300 bg-one px-4 py-2 text-gray-400"
-              disabled={true}
             >
               <option value="">Marcas</option>
               <option value="option1">Bauker</option>
@@ -176,32 +171,119 @@ function RenderFilters() {
   );
 }
 
-function PaginationButtons({ onPrevClick, onNextClick }) {
+export default function SearchResults() {
+  const [contador, setContador] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  const { productSearchParam } = useParams();
+  const [nextDocRef, setNextDocRef] = useState(null);
+  const [prevDocRef, setPrevDocRef] = useState(null);
+  
+  useEffect(() => {
+    result();
+  }, []);
+  useEffect(() => {
+      console.log(searchResults);
+   }, [searchResults]);
+  async function result(){
+    let productos = await getProductsFromInput(productSearchParam);
+    console.log(productos);
+   setSearchResults(productos);
+  }
+  // useEffect(() => {
+  //   document.title = `Resultado búsqueda "${productSearchParam}"`;
+  //   getNextProducts();
+  // }, []);
+
+  // useEffect(() => {
+  //   setContador(contador + 1);
+  // }, [searchResults]);
+
+  // const getNextProducts = async () => {
+  //   setIsLoading(true);
+  //   const { data, firstVisible, lastVisible } = await getProductsFromInput(
+  //     productSearchParam,
+  //     nextDocRef
+  //   );
+  //   setSearchResults(data);
+  //   setNextDocRef(lastVisible);
+  //   setPrevDocRef(firstVisible);
+  //   setIsLoading(false);
+  // };
+
+  // const getPrevProducts = async () => {
+  //   const { data, firstVisible, lastVisible } = await getProductsFromInput(
+  //     productSearchParam,
+  //     prevDocRef
+  //   );
+  //   setSearchResults(data);
+  //   setNextDocRef(lastVisible);
+  //   setPrevDocRef(firstVisible);
+  // };
+ // const [productSearchParam, setProductSearchParam] = useState('');
+  // // const [currentPage, setCurrentPage] = useState(1);
+  // // const [productsData, setProductsData] = useState(null);
+
+  // // const handleSearch = async () => {
+  // //   try {
+  // //     const result = await getProductsFromInput(productSearchParam);
+  // //     setProductsData(result);
+  // //   } catch (error) {
+  // //     console.error('Error searching for products:', error);
+  // //   }
+  // // };
+
+  // // useEffect(() => {
+  // //   // Realizar la búsqueda inicial al cargar la página o cuando cambie la página actual
+  // //   handleSearch();
+  // // }, [currentPage]);
+
+  // // const handlePageChange = (newPage) => {
+  // //   // Actualizar la página actual cuando cambie la paginación
+  // //   setCurrentPage(newPage);
+  // // }
+
   return (
-    <>
-      <Button
-        variant="text"
-        className="mx-auto flex items-center gap-2 bg-two hover:bg-twoHover text-light"
-        onClick={onPrevClick}
-      >
-        <ArrowLeftIcon strokeWidth={2} className="mx-auto h-4 w-4" /> Anterior
-      </Button>
-      <Button
-        variant="text"
-        className="mx-auto flex items-center gap-2 bg-two hover:bg-twoHover text-light"
-        onClick={onNextClick}
-      >
-        Siguiente <ArrowRightIcon strokeWidth={2} className="mx-auto h-4 w-4" />
-      </Button>
-    </>
+    <div className="mx-auto max-w-7xl px-5 pt-10">
+      <div className="flex flex-row">
+        <RenderFilters />
+        <section className="grow">
+          <div className="pt-20">
+            {isLoading ? (
+              <Spinner className="mx-auto mt-20 h-12 w-12" />
+            ) : (
+              <div className="pb-10">
+                <GridSearchResults products={searchResults} />
+                {/* <GridSearchResults products={searchResults} /> */}
+                <div className="mx-auto flex pt-20">
+                  <Button
+                    variant="text"
+                    className="mx-auto flex items-center gap-2 bg-two hover:bg-twoHover text-light"
+                    // onClick={getPrevProducts}
+                  >
+                    <ArrowLeftIcon
+                      strokeWidth={2}
+                      className="mx-auto h-4 w-4"
+                    />{" "}
+                    Anterior
+                  </Button>
+                  <Button
+                    variant="text"
+                    className="mx-auto flex items-center gap-2 bg-two hover:bg-twoHover text-light"
+                    // onClick={getNextProducts}
+                  >
+                    Siguiente
+                    <ArrowRightIcon
+                      strokeWidth={2}
+                      className="mx-auto h-4 w-4"
+                    />
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      </div>
+    </div>
   );
 }
-GridSearchResults.propTypes = {
-  products: PropTypes.array.isRequired,
-  openNewWindow: PropTypes.func.isRequired,
-};
-
-PaginationButtons.propTypes = {
-  onPrevClick: PropTypes.func.isRequired,
-  onNextClick: PropTypes.func.isRequired,
-};
