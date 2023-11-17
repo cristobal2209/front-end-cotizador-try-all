@@ -17,7 +17,7 @@ export default defineConfig({
     host: "0.0.0.0",
     port: 4000,
     proxy: {
-      "/api": `http://localhost:5000`,
+      "/api": `https://quotemaster.homedns.org:5000`,
     },
   },
   plugins: [react()],
