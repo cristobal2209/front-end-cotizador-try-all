@@ -76,7 +76,7 @@ export default function SearchResults() {
   };
 
   const openNewWindow = (productDataId) => {
-    const url = `http://162.212.155.221:4000/articles/${productDataId}`;
+    const url = `https://quotemaster.homedns.org/articles/${productDataId}`;
     window.open(url, "_blank");
   };
 
@@ -190,58 +190,6 @@ export default function SearchResults() {
     console.log(productos);
    setSearchResults(productos);
   }
-  // useEffect(() => {
-  //   document.title = `Resultado búsqueda "${productSearchParam}"`;
-  //   getNextProducts();
-  // }, []);
-
-  // useEffect(() => {
-  //   setContador(contador + 1);
-  // }, [searchResults]);
-
-  // const getNextProducts = async () => {
-  //   setIsLoading(true);
-  //   const { data, firstVisible, lastVisible } = await getProductsFromInput(
-  //     productSearchParam,
-  //     nextDocRef
-  //   );
-  //   setSearchResults(data);
-  //   setNextDocRef(lastVisible);
-  //   setPrevDocRef(firstVisible);
-  //   setIsLoading(false);
-  // };
-
-  // const getPrevProducts = async () => {
-  //   const { data, firstVisible, lastVisible } = await getProductsFromInput(
-  //     productSearchParam,
-  //     prevDocRef
-  //   );
-  //   setSearchResults(data);
-  //   setNextDocRef(lastVisible);
-  //   setPrevDocRef(firstVisible);
-  // };
- // const [productSearchParam, setProductSearchParam] = useState('');
-  // // const [currentPage, setCurrentPage] = useState(1);
-  // // const [productsData, setProductsData] = useState(null);
-
-  // // const handleSearch = async () => {
-  // //   try {
-  // //     const result = await getProductsFromInput(productSearchParam);
-  // //     setProductsData(result);
-  // //   } catch (error) {
-  // //     console.error('Error searching for products:', error);
-  // //   }
-  // // };
-
-  // // useEffect(() => {
-  // //   // Realizar la búsqueda inicial al cargar la página o cuando cambie la página actual
-  // //   handleSearch();
-  // // }, [currentPage]);
-
-  // // const handlePageChange = (newPage) => {
-  // //   // Actualizar la página actual cuando cambie la paginación
-  // //   setCurrentPage(newPage);
-  // // }
 
   return (
     <div className="mx-auto max-w-7xl px-5 pt-10">
