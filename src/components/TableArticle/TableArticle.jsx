@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { uuidv4 } from "@firebase/util";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import {
@@ -274,38 +275,38 @@ export default function TableProduct() {
   );
 }
 
-const validationSchema = Yup.object().shape({
-  //validacion de campos del formulario productDataFormik
-  description: Yup.string()
-    .min(3, "La descripcion debe contener al menos 3 caracteres")
-    .max(50, "La descripcion debe contener a lo mas 50 caracteres")
-    .required("La descripcion es obligatoria"),
-
-  manufacturer: Yup.string()
-    .min(2, "El fabricante debe contener al menos 3 caracteres")
-    .max(20, "El fabricante debe contener a lo mas 20 caracteres")
-    .required("El fabricante es obligatorio"),
-
-  manufacturerPartNo: Yup.string()
-    .min(2, "El n° parte fabricante debe contener al menos 3 caracteres")
-    .max(20, "El n° parte fabricante debe contener a lo mas 20 caracteres")
-    .required("El n° parte fabricante es un campo obligatorio"),
-
-  priceFor: Yup.string().required("Este campo es obligatorio"),
-
-  productCategory: Yup.string()
-    .required("Este campo es obligatorio")
-    .min(1, "Este campo es obligatorio"),
-
-  priceForQuantity: Yup.string()
-    .required("Este campo es obligatorio")
-    .min(1, "Este campo es obligatorio"),
-});
-
 export function CreateProductDialog({ open, handler }) {
   const [imageUpload, setImageUpload] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [suppliers, setSuppliers] = useState([]);
+
+  const validationSchema = Yup.object().shape({
+    //validacion de campos del formulario productDataFormik
+    description: Yup.string()
+      .min(3, "La descripcion debe contener al menos 3 caracteres")
+      .max(50, "La descripcion debe contener a lo mas 50 caracteres")
+      .required("La descripcion es obligatoria"),
+
+    manufacturer: Yup.string()
+      .min(2, "El fabricante debe contener al menos 3 caracteres")
+      .max(20, "El fabricante debe contener a lo mas 20 caracteres")
+      .required("El fabricante es obligatorio"),
+
+    manufacturerPartNo: Yup.string()
+      .min(2, "El n° parte fabricante debe contener al menos 3 caracteres")
+      .max(20, "El n° parte fabricante debe contener a lo mas 20 caracteres")
+      .required("El n° parte fabricante es un campo obligatorio"),
+
+    priceFor: Yup.string().required("Este campo es obligatorio"),
+
+    productCategory: Yup.string()
+      .required("Este campo es obligatorio")
+      .min(1, "Este campo es obligatorio"),
+
+    priceForQuantity: Yup.string()
+      .required("Este campo es obligatorio")
+      .min(1, "Este campo es obligatorio"),
+  });
 
   useEffect(() => {
     if (imageUpload) {
@@ -696,13 +697,25 @@ export function CreateProductDialog({ open, handler }) {
 }
 
 function NewSupplierRow({ supplier }) {
-  const [prices, setPrices] = useState([{ quantity: "", price: "" }]);
-  const [stock, setStock] = useState([{ country: "", stock: "" }]);
-  const [extraData, setExtraData] = useState([{}]);
+  const [prices, setPrices] = useState([
+    { id: uuidv4(), quantity: "", price: "" },
+  ]);
+  const [stock, setStock] = useState([
+    { id: uuidv4(), country: "", stock: "" },
+  ]);
+  const [extraData, setExtraData] = useState([{ id: uuidv4() }]);
 
   useEffect(() => {
-    console.log("precios en estado", prices);
+    console.log("precios actualizados...", prices);
   }, [prices]);
+
+  useEffect(() => {
+    console.log("stock actualizado...", stock);
+  }, [stock]);
+
+  useEffect(() => {
+    console.log("datos extras actualizados...", extraData);
+  }, [extraData]);
 
   const supplierValidationSchema = Yup.object().shape({
     //validacion de campos del formulario productDataFormik
@@ -734,36 +747,56 @@ function NewSupplierRow({ supplier }) {
 
   const addPrices = () => {
     let newPrices = prices;
-    newPrices.push({ quantity: "", price: "" });
+    newPrices.push({ id: uuidv4(), quantity: "", price: "" });
     setPrices([...newPrices]);
   };
 
   const addStock = () => {
     let newStock = stock;
-    newStock.push({ country: "", stock: "" });
+    newStock.push({ id: uuidv4(), country: "", stock: "" });
     setStock([...newStock]);
   };
 
   const addExtraData = () => {
     let newExtraData = extraData;
-    newExtraData.push({});
+    newExtraData.push({ id: uuidv4() });
     setExtraData([...newExtraData]);
   };
 
-  const onUpdatePrice = (index, newPrice) => {
-    console.log("actualizando en index... ", index);
-    console.log("precios actuales...", prices);
-    let newPrices = [...prices];
-    newPrices[index] = newPrice;
-    setPrices([...newPrices]);
+  const onUpdatePrice = (priceId, newPrice) => {
+    const updatedPrices = prices.map((price) =>
+      price.id === priceId ? { id: priceId, ...newPrice } : price
+    );
+    setPrices(updatedPrices);
   };
 
-  const onPriceRowRemove = (index) => {
-    console.log("borrando en index... ", index);
-    console.log("precios actuales...", prices);
-    let newPrices = [...prices];
-    newPrices.splice(index, 1);
-    setPrices(newPrices);
+  const onPriceRowRemove = (priceId) => {
+    const updatedPrices = prices.filter((price) => price.id !== priceId);
+    setPrices(updatedPrices);
+  };
+
+  const onUpdateStock = (stockId, newStock) => {
+    const updatedStock = stock.map((stock) =>
+      stock.id === stockId ? { id: stockId, ...newStock } : stock
+    );
+    setStock(updatedStock);
+  };
+
+  const onStockRowRemove = (stockId) => {
+    const updatedStock = stock.filter((stock) => stock.id !== stockId);
+    setStock(updatedStock);
+  };
+
+  const onUpdateExtraData = (dataId, newData) => {
+    const updatedExtraData = extraData.map((data) =>
+      data.id === dataId ? { id: dataId, ...newData } : data
+    );
+    setExtraData(updatedExtraData);
+  };
+
+  const onExtraDataRowRemove = (dataId) => {
+    const updatedExtraData = extraData.filter((data) => data.id !== dataId);
+    setExtraData(updatedExtraData);
   };
 
   return (
@@ -816,17 +849,18 @@ function NewSupplierRow({ supplier }) {
             {prices?.map((price, index) => {
               return (
                 <PricesRow
-                  key={index}
-                  onPriceRowRemove={onPriceRowRemove}
-                  index={index}
-                  onUpdatePrice={onUpdatePrice}
+                  key={price.id}
+                  onPriceRowRemove={() => onPriceRowRemove(price.id)}
+                  onUpdatePrice={(newPrice) =>
+                    onUpdatePrice(price.id, newPrice)
+                  }
                 />
               );
             })}
             <div>
               <Button
                 size="sm"
-                className="rounded bg-three shadow-none hover:bg-threeHover "
+                className="rounded bg-three shadow-none hover:bg-threeHover w-[32px] h-[32px] px-2 mt-2"
                 onClick={() => {
                   addPrices();
                 }}
@@ -853,12 +887,20 @@ function NewSupplierRow({ supplier }) {
               Ingresar stock
             </Typography>
             {stock?.map((stock, index) => {
-              return <StockRow key={index} />;
+              return (
+                <StockRow
+                  key={stock.id}
+                  onStockRowRemove={() => onStockRowRemove(stock.id)}
+                  onUpdateStock={(newStock) =>
+                    onUpdateStock(stock.id, newStock)
+                  }
+                />
+              );
             })}
             <div>
               <Button
                 size="sm"
-                className="rounded bg-three shadow-none hover:bg-threeHover w-[32px] h-[32px] px-2 my-auto"
+                className="rounded bg-three shadow-none hover:bg-threeHover w-[32px] h-[32px] px-2 mt-2"
                 onClick={() => {
                   addStock();
                 }}
@@ -885,12 +927,20 @@ function NewSupplierRow({ supplier }) {
               Ingresar datos adicionales
             </Typography>
             {extraData?.map((data, index) => {
-              return <ExtraDataRow key={index} />;
+              return (
+                <ExtraDataRow
+                  key={data.id}
+                  onExtraDataRowRemove={() => onExtraDataRowRemove(data.id)}
+                  onUpdateExtraData={(newData) =>
+                    onUpdateExtraData(data.id, newData)
+                  }
+                />
+              );
             })}
-            <div className="">
+            <div>
               <Button
                 size="sm"
-                className="rounded bg-three shadow-none hover:bg-threeHover w-[32px] h-[32px] px-2"
+                className="rounded bg-three shadow-none hover:bg-threeHover w-[32px] h-[32px] px-2 mt-2"
                 onClick={() => {
                   addExtraData();
                 }}
@@ -960,7 +1010,7 @@ function NewSupplierRow({ supplier }) {
   );
 }
 
-function PricesRow({ index, onPriceRowRemove, onUpdatePrice }) {
+function PricesRow({ onPriceRowRemove, onUpdatePrice }) {
   const [isPriceHovered, setIsPriceHovered] = useState(false);
   const [isQuantityHovered, setIsQuantityHovered] = useState(false);
   const [inputsEditedCounter, setInputsEditedCounter] = useState(0);
@@ -987,8 +1037,7 @@ function PricesRow({ index, onPriceRowRemove, onUpdatePrice }) {
     validateOnBlur: true,
     validationSchema: supplierValidationSchema,
     onSubmit: () => {
-      onUpdatePrice(index, priceRowFormik.values);
-      console.log(priceRowFormik.values);
+      onUpdatePrice(priceRowFormik.values);
     },
   });
 
@@ -998,14 +1047,14 @@ function PricesRow({ index, onPriceRowRemove, onUpdatePrice }) {
 
   const handlePriceInputChange = (e) => {
     const validatedValue = e.target.value.replace(/[^0-9.,]/g, "");
-
     priceRowFormik.setFieldValue("price", validatedValue);
+    setInputsEditedCounter(inputsEditedCounter + 1);
   };
 
   const handleQuantityInputChange = (e) => {
     const validatedValue = e.target.value.replace(/[^0-9]/g, "");
-
     priceRowFormik.setFieldValue("quantity", validatedValue);
+    setInputsEditedCounter(inputsEditedCounter + 1);
   };
 
   return (
@@ -1022,10 +1071,10 @@ function PricesRow({ index, onPriceRowRemove, onUpdatePrice }) {
         }}
         onMouseEnter={() => setIsQuantityHovered(true)}
         onMouseLeave={() => setIsQuantityHovered(false)}
-        className={`mr-1 rounded-md px-1 w-1/2 text-dark font-sans text-[14px] ${
+        className={`mr-1 rounded-md px-1 w-1/2 text-light bg-dark2 font-sans text-[14px] shadow-md border-2 ${
           priceRowFormik.errors.quantity
-            ? "border-2 border-red-500 animate-pulse"
-            : null
+            ? " border-red-500 animate-pulse"
+            : "border-gray-700"
         }`}
       />
       {priceRowFormik.errors.quantity && isQuantityHovered && (
@@ -1045,10 +1094,10 @@ function PricesRow({ index, onPriceRowRemove, onUpdatePrice }) {
         }}
         onMouseEnter={() => setIsPriceHovered(true)}
         onMouseLeave={() => setIsPriceHovered(false)}
-        className={`mr-1 rounded-md px-1 w-1/2 text-dark font-sans text-[14px] ${
+        className={`rounded-md px-1 w-1/2 text-light bg-dark2 font-sans text-[14px] shadow-md border-2 ${
           priceRowFormik.errors.price
-            ? "border-2 border-red-500 animate-pulse"
-            : null
+            ? " border-red-500 animate-pulse"
+            : "border-gray-700"
         }`}
       />
       {priceRowFormik.errors.price && isPriceHovered && (
@@ -1060,7 +1109,7 @@ function PricesRow({ index, onPriceRowRemove, onUpdatePrice }) {
         size="sm"
         className="rounded bg-three shadow-none hover:bg-threeHover w-[32px] h-[32px] px-2 my-auto ml-1"
         onClick={() => {
-          onPriceRowRemove(index);
+          onPriceRowRemove();
         }}
       >
         <svg
@@ -1082,10 +1131,228 @@ function PricesRow({ index, onPriceRowRemove, onUpdatePrice }) {
   );
 }
 
-function StockRow() {
-  return <div className="flex">stock</div>;
+function StockRow({ onStockRowRemove, onUpdateStock }) {
+  const [isStockNumberHovered, setIsStockNumberHovered] = useState(false);
+  const [isCountrySelectHovered, setIsCountrySelectHovered] = useState(false);
+  const [inputsEditedCounter, setInputsEditedCounter] = useState(0);
+  const [selectedOption, setSelectedOption] = useState("");
+
+  const stockRowValidationSchema = Yup.object().shape({
+    stockNumber: Yup.number()
+      .typeError("La cantidad debe ser un número")
+      .required("La cantidad de stock es obligatoria")
+      .positive("La cantidad debe ser un número positivo")
+      .integer("La cantidad debe ser un número entero"),
+    country: Yup.string().required("El país es obligatorio"),
+  });
+
+  const stockRowFormik = useFormik({
+    initialValues: {
+      country: "",
+      stockNumber: "",
+    },
+    validateOnMount: true,
+    validateOnChange: true,
+    validateOnBlur: true,
+    validationSchema: stockRowValidationSchema,
+    onSubmit: () => {
+      onUpdateStock(stockRowFormik.values);
+    },
+  });
+
+  useEffect(() => {
+    stockRowFormik.handleSubmit();
+  }, [inputsEditedCounter]);
+
+  const handleStockNumberInputChange = (e) => {
+    const validatedValue = e.target.value.replace(/[^0-9]/g, "");
+    stockRowFormik.setFieldValue("stockNumber", validatedValue);
+    setInputsEditedCounter(inputsEditedCounter + 1);
+  };
+
+  return (
+    <div className="flex my-2">
+      <select
+        name="country"
+        label="Seleccionar país"
+        value={selectedOption}
+        onMouseEnter={() => setIsCountrySelectHovered(true)}
+        onMouseLeave={() => setIsCountrySelectHovered(false)}
+        className={`mr-1 rounded-md px-2 w-1/2 text-light bg-dark2 font-sans text-[14px] shadow-md border-2 ${
+          stockRowFormik.errors.country
+            ? " border-red-500 animate-pulse"
+            : "border-gray-700"
+        }`}
+        onChange={(e) => {
+          stockRowFormik.handleChange(e);
+          setSelectedOption(e.target.value);
+          setInputsEditedCounter(inputsEditedCounter + 1);
+        }}
+      >
+        <option value="" disabled hidden className="text-light opacity-70">
+          País
+        </option>
+        <option value={"us"} className=" text-light">
+          Estados Unidos
+        </option>
+        <option value={"uk"} className=" text-light ">
+          Reino Unido
+        </option>
+        <option value={"cl"} className=" text-light ">
+          Chile
+        </option>
+      </select>
+      {stockRowFormik.errors.country && isCountrySelectHovered && (
+        <Alert className="absolute mt-[40px] bg-red-500 max-w-xs z-50">
+          {stockRowFormik.errors.country}
+        </Alert>
+      )}
+      <input
+        type="text"
+        name="stockNumber"
+        placeholder="Stock"
+        label="Stock"
+        value={stockRowFormik.values.stockNumber}
+        onChange={(e) => {
+          handleStockNumberInputChange(e);
+        }}
+        onMouseEnter={() => setIsStockNumberHovered(true)}
+        onMouseLeave={() => setIsStockNumberHovered(false)}
+        className={`rounded-md px-2 w-1/2 text-light bg-dark2 font-sans text-[14px] shadow-md border-2 ${
+          stockRowFormik.errors.stockNumber
+            ? " border-red-500 animate-pulse"
+            : "border-gray-700"
+        }`}
+      ></input>
+      {stockRowFormik.errors.stockNumber && isStockNumberHovered && (
+        <Alert className="absolute mt-[40px] bg-red-500 max-w-xs z-50">
+          {stockRowFormik.errors.stockNumber}
+        </Alert>
+      )}
+      <Button
+        size="sm"
+        className="rounded bg-three shadow-none hover:bg-threeHover w-[32px] h-[32px] px-2 my-auto ml-1"
+        onClick={() => {
+          onStockRowRemove();
+        }}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={2}
+          stroke="currentColor"
+          className="w-4 h-4 mr-auto"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </Button>
+    </div>
+  );
 }
 
-function ExtraDataRow() {
-  return <div className="flex">data</div>;
+function ExtraDataRow({ onExtraDataRowRemove, onUpdateExtraData }) {
+  const [isExtraDataValueHovered, setIsExtraDataValueHovered] = useState(false);
+  const [isExtraDataNameHovered, setIsExtraDataNameHovered] = useState(false);
+  const [inputsEditedCounter, setInputsEditedCounter] = useState(0);
+
+  const extraDataRowValidationSchema = Yup.object().shape({
+    extraDataValue: Yup.string().required("El valor es obligatorio"),
+    extraDataName: Yup.string().required("El nombre es obligatorio"),
+  });
+
+  const extraDataRowFormik = useFormik({
+    initialValues: {
+      extraDataName: "",
+      extraDataValue: "",
+    },
+    validateOnMount: true,
+    validateOnChange: true,
+    validateOnBlur: true,
+    validationSchema: extraDataRowValidationSchema,
+    onSubmit: () => {
+      onUpdateExtraData(extraDataRowFormik.values);
+    },
+  });
+
+  useEffect(() => {
+    extraDataRowFormik.handleSubmit();
+  }, [inputsEditedCounter]);
+
+  return (
+    <div className="flex my-2">
+      <input
+        type="text"
+        name="extraDataName"
+        placeholder="Nombre dato"
+        label="NombreExtraData"
+        value={extraDataRowFormik.values.extraDataName}
+        onChange={(e) => {
+          extraDataRowFormik.handleChange(e);
+          setInputsEditedCounter(inputsEditedCounter + 1);
+        }}
+        onMouseEnter={() => setIsExtraDataNameHovered(true)}
+        onMouseLeave={() => setIsExtraDataNameHovered(false)}
+        className={`mr-1 rounded-md px-2 w-1/2 text-light bg-dark2 font-sans text-[14px] shadow-md border-2 ${
+          extraDataRowFormik.errors.extraDataName
+            ? " border-red-500 animate-pulse"
+            : "border-gray-700"
+        }`}
+      />
+      {extraDataRowFormik.errors.extraDataName && isExtraDataNameHovered && (
+        <Alert className="absolute mt-[40px] bg-red-500 max-w-xs z-50">
+          {extraDataRowFormik.errors.extraDataName}
+        </Alert>
+      )}
+      <input
+        type="text"
+        name="extraDataValue"
+        placeholder="Valor dato"
+        label="ValorExtraData"
+        value={extraDataRowFormik.values.extraDataValue}
+        onChange={(e) => {
+          extraDataRowFormik.handleChange(e);
+          setInputsEditedCounter(inputsEditedCounter + 1);
+        }}
+        onMouseEnter={() => setIsExtraDataValueHovered(true)}
+        onMouseLeave={() => setIsExtraDataValueHovered(false)}
+        className={`rounded-md px-2 w-1/2 text-light bg-dark2 font-sans text-[14px] shadow-md border-2 ${
+          extraDataRowFormik.errors.extraDataValue
+            ? " border-red-500 animate-pulse"
+            : "border-gray-700"
+        }`}
+      />
+      {extraDataRowFormik.errors.extraDataValue && isExtraDataValueHovered && (
+        <Alert className="absolute mt-[40px] bg-red-500 max-w-xs z-50">
+          {extraDataRowFormik.errors.extraDataValue}
+        </Alert>
+      )}
+      <Button
+        size="sm"
+        className="rounded bg-three shadow-none hover:bg-threeHover w-[32px] h-[32px] px-2 my-auto ml-1"
+        onClick={() => {
+          onExtraDataRowRemove();
+        }}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={2}
+          stroke="currentColor"
+          className="w-4 h-4 mr-auto"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </Button>
+    </div>
+  );
 }

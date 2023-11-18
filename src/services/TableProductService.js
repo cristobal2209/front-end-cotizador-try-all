@@ -10,8 +10,8 @@ import {
 
 export const countProducts = async (category) => {
   try {
-    const response = await axios.get("/api/countProducts", category);
-    return response.data;
+    // const response = await axios.get("/api/countProducts", category);
+    // return response.data;
   } catch (error) {
     throw new Error(error);
   }
