@@ -33,14 +33,6 @@ import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 //pagination
 import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 
-const TABLE_HEAD = [
-  "Producto",
-  "Fabricante",
-  "N° Parte fabricante",
-  "Proveedores",
-  "Opciones",
-];
-
 export default function TableProduct() {
   const [isLoadingTable, setIsLoadingTable] = useState(false);
   const [openAlertSuccess, setOpenAlertSuccess] = useState(false);
@@ -54,6 +46,14 @@ export default function TableProduct() {
   const [totalItems, setTotalItems] = useState(0);
   const [openCreateProductDialog, setOpenCreateProductDialog] = useState(false);
   const itemsPerPage = 10;
+
+  const TABLE_HEAD = [
+    "Producto",
+    "Fabricante",
+    "N° Parte fabricante",
+    "Proveedores",
+    "Opciones",
+  ];
 
   useEffect(() => {
     document.title = "Tabla gestión de productos";
@@ -697,25 +697,11 @@ export function CreateProductDialog({ open, handler }) {
 }
 
 function NewSupplierRow({ supplier }) {
-  const [prices, setPrices] = useState([
-    { id: uuidv4(), quantity: "", price: "" },
-  ]);
-  const [stock, setStock] = useState([
-    { id: uuidv4(), country: "", stock: "" },
-  ]);
-  const [extraData, setExtraData] = useState([{ id: uuidv4() }]);
-
-  useEffect(() => {
-    console.log("precios actualizados...", prices);
-  }, [prices]);
-
-  useEffect(() => {
-    console.log("stock actualizado...", stock);
-  }, [stock]);
-
-  useEffect(() => {
-    console.log("datos extras actualizados...", extraData);
-  }, [extraData]);
+  const [prices, setPrices] = useState([]);
+  const [stock, setStock] = useState([]);
+  const [extraData, setExtraData] = useState([]);
+  const [supplierRowHaveErrors, setSupplierRowHaveErrors] = useState(true);
+  const [rowsHaveErrors, setRowsHaveErrors] = useState([]);
 
   const supplierValidationSchema = Yup.object().shape({
     //validacion de campos del formulario productDataFormik
@@ -745,22 +731,38 @@ function NewSupplierRow({ supplier }) {
     },
   });
 
+  useEffect(() => {
+    addPrices();
+    addStock();
+    addExtraData();
+  }, []);
+
+  useEffect(() => {
+    let hasErrors = false;
+    rowsHaveErrors.forEach((row) => {
+      if (row.errors === true) {
+        hasErrors = true;
+      }
+    });
+    setSupplierRowHaveErrors(hasErrors);
+  }, [rowsHaveErrors]);
+
+  const handleValidationChange = (rowId, hasErrors) => {
+    const updatedRowsHaveErrors = rowsHaveErrors.map((row) =>
+      row.id === rowId ? { id: rowId, errors: hasErrors } : row
+    );
+    setRowsHaveErrors(updatedRowsHaveErrors);
+  };
+
   const addPrices = () => {
     let newPrices = prices;
-    newPrices.push({ id: uuidv4(), quantity: "", price: "" });
+    let id = uuidv4();
+    newPrices.push({ id: id, quantity: "", price: "" });
     setPrices([...newPrices]);
-  };
-
-  const addStock = () => {
-    let newStock = stock;
-    newStock.push({ id: uuidv4(), country: "", stock: "" });
-    setStock([...newStock]);
-  };
-
-  const addExtraData = () => {
-    let newExtraData = extraData;
-    newExtraData.push({ id: uuidv4() });
-    setExtraData([...newExtraData]);
+    //se crea en arreglo de verificacion de errores
+    let newRowsHaveErrors = rowsHaveErrors;
+    newRowsHaveErrors.push({ id: id, errors: true });
+    setRowsHaveErrors([...newRowsHaveErrors]);
   };
 
   const onUpdatePrice = (priceId, newPrice) => {
@@ -772,7 +774,22 @@ function NewSupplierRow({ supplier }) {
 
   const onPriceRowRemove = (priceId) => {
     const updatedPrices = prices.filter((price) => price.id !== priceId);
+    const updatedRowsHaveErrors = rowsHaveErrors.filter(
+      (row) => row.id !== priceId
+    );
     setPrices(updatedPrices);
+    setRowsHaveErrors(updatedRowsHaveErrors);
+  };
+
+  const addStock = () => {
+    let newStock = stock;
+    let id = uuidv4();
+    newStock.push({ id: id, country: "", stock: "" });
+    setStock([...newStock]);
+    //se crea en arreglo de verificacion de errores
+    let newRowsHaveErrors = rowsHaveErrors;
+    newRowsHaveErrors.push({ id: id, errors: true });
+    setRowsHaveErrors([...newRowsHaveErrors]);
   };
 
   const onUpdateStock = (stockId, newStock) => {
@@ -784,7 +801,22 @@ function NewSupplierRow({ supplier }) {
 
   const onStockRowRemove = (stockId) => {
     const updatedStock = stock.filter((stock) => stock.id !== stockId);
+    const updatedRowsHaveErrors = rowsHaveErrors.filter(
+      (row) => row.id !== stockId
+    );
+    setRowsHaveErrors(updatedRowsHaveErrors);
     setStock(updatedStock);
+  };
+
+  const addExtraData = () => {
+    let newExtraData = extraData;
+    let id = uuidv4();
+    newExtraData.push({ id: id });
+    setExtraData([...newExtraData]);
+    //se crea en arreglo de verificacion de errores
+    let newRowsHaveErrors = rowsHaveErrors;
+    newRowsHaveErrors.push({ id: id, errors: true });
+    setRowsHaveErrors([...newRowsHaveErrors]);
   };
 
   const onUpdateExtraData = (dataId, newData) => {
@@ -796,6 +828,10 @@ function NewSupplierRow({ supplier }) {
 
   const onExtraDataRowRemove = (dataId) => {
     const updatedExtraData = extraData.filter((data) => data.id !== dataId);
+    const updatedRowsHaveErrors = rowsHaveErrors.filter(
+      (row) => row.id !== dataId
+    );
+    setRowsHaveErrors(updatedRowsHaveErrors);
     setExtraData(updatedExtraData);
   };
 
@@ -854,9 +890,17 @@ function NewSupplierRow({ supplier }) {
                   onUpdatePrice={(newPrice) =>
                     onUpdatePrice(price.id, newPrice)
                   }
+                  onValidationChange={(hasErrors) => {
+                    handleValidationChange(price.id, hasErrors);
+                  }}
                 />
               );
             })}
+            {prices.length == 0 && (
+              <Alert className="block bg-red-500 max-w-xs z-50 mb-auto mt-2">
+                Debe ingresar al menos un precio por cantidad
+              </Alert>
+            )}
             <div>
               <Button
                 size="sm"
@@ -894,9 +938,17 @@ function NewSupplierRow({ supplier }) {
                   onUpdateStock={(newStock) =>
                     onUpdateStock(stock.id, newStock)
                   }
+                  onValidationChange={(hasErrors) => {
+                    handleValidationChange(stock.id, hasErrors);
+                  }}
                 />
               );
             })}
+            {stock.length == 0 && (
+              <Alert className="block bg-red-500 max-w-xs z-50 mb-auto mt-2">
+                Debe ingresar al menos un dato de stock.
+              </Alert>
+            )}
             <div>
               <Button
                 size="sm"
@@ -924,7 +976,7 @@ function NewSupplierRow({ supplier }) {
           </div>
           <div className="flex flex-col">
             <Typography variant="small" className="text-light">
-              Ingresar datos adicionales
+              Ingresar datos adicionales (opcional)
             </Typography>
             {extraData?.map((data, index) => {
               return (
@@ -934,6 +986,9 @@ function NewSupplierRow({ supplier }) {
                   onUpdateExtraData={(newData) =>
                     onUpdateExtraData(data.id, newData)
                   }
+                  onValidationChange={(hasErrors) => {
+                    handleValidationChange(data.id, hasErrors);
+                  }}
                 />
               );
             })}
@@ -968,6 +1023,9 @@ function NewSupplierRow({ supplier }) {
             size="sm"
             color="green"
             className="rounded w-[32px] h-[32px] px-2 mx-1"
+            disabled={
+              supplierRowHaveErrors || prices.length == 0 || stock.length == 0
+            }
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -1010,10 +1068,12 @@ function NewSupplierRow({ supplier }) {
   );
 }
 
-function PricesRow({ onPriceRowRemove, onUpdatePrice }) {
+function PricesRow({ onPriceRowRemove, onUpdatePrice, onValidationChange }) {
   const [isPriceHovered, setIsPriceHovered] = useState(false);
   const [isQuantityHovered, setIsQuantityHovered] = useState(false);
   const [inputsEditedCounter, setInputsEditedCounter] = useState(0);
+  const [rowHasErrors, setRowHasErrors] = useState(true);
+  const [counter, setCounter] = useState(0);
 
   const supplierValidationSchema = Yup.object().shape({
     quantity: Yup.number()
@@ -1041,8 +1101,23 @@ function PricesRow({ onPriceRowRemove, onUpdatePrice }) {
     },
   });
 
+  //si estado rowHasErrors cambia, ejecuta la funcion del componente padre para transmitir la informacion
+  useEffect(() => {
+    onValidationChange(rowHasErrors);
+  }, [rowHasErrors]);
+
+  //si el estado counter cambia, comprueba si hay errores en los campos
+  useEffect(() => {
+    setRowHasErrors(
+      priceRowFormik.errors.price || priceRowFormik.errors.quantity
+        ? true
+        : false
+    );
+  }, [counter]);
+
   useEffect(() => {
     priceRowFormik.handleSubmit();
+    setCounter(counter + 1);
   }, [inputsEditedCounter]);
 
   const handlePriceInputChange = (e) => {
@@ -1131,11 +1206,13 @@ function PricesRow({ onPriceRowRemove, onUpdatePrice }) {
   );
 }
 
-function StockRow({ onStockRowRemove, onUpdateStock }) {
+function StockRow({ onStockRowRemove, onUpdateStock, onValidationChange }) {
   const [isStockNumberHovered, setIsStockNumberHovered] = useState(false);
   const [isCountrySelectHovered, setIsCountrySelectHovered] = useState(false);
   const [inputsEditedCounter, setInputsEditedCounter] = useState(0);
   const [selectedOption, setSelectedOption] = useState("");
+  const [rowHasErrors, setRowHasErrors] = useState(true);
+  const [counter, setCounter] = useState(0);
 
   const stockRowValidationSchema = Yup.object().shape({
     stockNumber: Yup.number()
@@ -1161,7 +1238,20 @@ function StockRow({ onStockRowRemove, onUpdateStock }) {
   });
 
   useEffect(() => {
+    onValidationChange(rowHasErrors);
+  }, [rowHasErrors]);
+
+  useEffect(() => {
+    setRowHasErrors(
+      stockRowFormik.errors.country || stockRowFormik.errors.stockNumber
+        ? true
+        : false
+    );
+  }, [counter]);
+
+  useEffect(() => {
     stockRowFormik.handleSubmit();
+    setCounter(counter + 1);
   }, [inputsEditedCounter]);
 
   const handleStockNumberInputChange = (e) => {
@@ -1255,10 +1345,16 @@ function StockRow({ onStockRowRemove, onUpdateStock }) {
   );
 }
 
-function ExtraDataRow({ onExtraDataRowRemove, onUpdateExtraData }) {
+function ExtraDataRow({
+  onExtraDataRowRemove,
+  onUpdateExtraData,
+  onValidationChange,
+}) {
   const [isExtraDataValueHovered, setIsExtraDataValueHovered] = useState(false);
   const [isExtraDataNameHovered, setIsExtraDataNameHovered] = useState(false);
   const [inputsEditedCounter, setInputsEditedCounter] = useState(0);
+  const [rowHasErrors, setRowHasErrors] = useState(true);
+  const [counter, setCounter] = useState(0);
 
   const extraDataRowValidationSchema = Yup.object().shape({
     extraDataValue: Yup.string().required("El valor es obligatorio"),
@@ -1280,7 +1376,21 @@ function ExtraDataRow({ onExtraDataRowRemove, onUpdateExtraData }) {
   });
 
   useEffect(() => {
+    onValidationChange(rowHasErrors);
+  }, [rowHasErrors]);
+
+  useEffect(() => {
+    setRowHasErrors(
+      extraDataRowFormik.errors.extraDataName ||
+        extraDataRowFormik.errors.extraDataValue
+        ? true
+        : false
+    );
+  }, [counter]);
+
+  useEffect(() => {
     extraDataRowFormik.handleSubmit();
+    setCounter(counter + 1);
   }, [inputsEditedCounter]);
 
   return (
