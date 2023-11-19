@@ -321,12 +321,7 @@ export function CreateProductDialog({ open, handler }) {
   // }, [suppliers]);
 
   const addNewSupplier = () => {
-    const suppliersCopy = suppliers;
-    suppliersCopy.push({
-      supplier: "",
-      productUrl: "",
-      supplierPartNo: "",
-    });
+    let suppliersCopy = suppliers;
     setSuppliers([...suppliersCopy]);
   };
 
@@ -653,7 +648,7 @@ export function CreateProductDialog({ open, handler }) {
           </Typography>
           <div className="flex flex-col">
             {suppliers?.map((supplier, index) => {
-              return <NewSupplierRow supplier={supplier} key={index} />;
+              return <NewSupplierRow key={index} />;
             })}
             <Button
               className="bg-two flex items-center gap-3 w-[150px] my-2"
@@ -696,24 +691,28 @@ export function CreateProductDialog({ open, handler }) {
   );
 }
 
-function NewSupplierRow({ supplier }) {
+function NewSupplierRow() {
   const [prices, setPrices] = useState([]);
   const [stock, setStock] = useState([]);
   const [extraData, setExtraData] = useState([]);
   const [supplierRowHaveErrors, setSupplierRowHaveErrors] = useState(true);
   const [rowsHaveErrors, setRowsHaveErrors] = useState([]);
+  const [inputsEditedCounter, setInputsEditedCounter] = useState(0);
+  const [counter, setCounter] = useState(0);
+  const [inputEdited, setInputEdited] = useState(null);
 
   const supplierValidationSchema = Yup.object().shape({
-    //validacion de campos del formulario productDataFormik
     supplier: Yup.string()
-      .min(1, "La supplier debe contener al menos 3 caracteres")
-      .max(50, "La supplier debe contener a lo mas 50 caracteres")
-      .required("La supplier es obligatoria"),
+      .min(1, "Se requiere al menos un caractere")
+      .max(50, "Se requiere a a lo mas 50 caracteres")
+      .required("El nombre es obligatorio"),
     supplierPartNo: Yup.string()
-      .min(1, "La descripcion debe contener al menos 3 caracteres")
-      .max(50, "La descripcion debe contener a lo mas 50 caracteres")
-      .required("La descripcion es obligatoria"),
-    productUrl: Yup.string().required("La descripcion es obligatoria"),
+      .min(1, "Se requiere al menos un caracter")
+      .max(50, "Se requiere a lo mas 50 caracteres")
+      .required("El n° parte es obligatorio"),
+    productUrl: Yup.string()
+      .required("La URL es obligatoria")
+      .url("Debe ser un una URL válida"),
   });
 
   const formik = useFormik({
@@ -721,12 +720,18 @@ function NewSupplierRow({ supplier }) {
       supplier: "",
       productUrl: "",
       supplierPartNo: "",
+      prices: prices,
+      stock: stock,
+      extraData: extraData,
     },
     validateOnMount: true,
     validateOnChange: true,
     validateOnBlur: true,
     validationSchema: supplierValidationSchema,
     onSubmit: () => {
+      formik.values.prices = prices;
+      formik.values.stock = stock;
+      formik.values.extraData = extraData;
       console.log(formik.values);
     },
   });
@@ -735,6 +740,11 @@ function NewSupplierRow({ supplier }) {
     addPrices();
     addStock();
     addExtraData();
+    let newRowsHaveErrors = rowsHaveErrors;
+    newRowsHaveErrors.push({ id: "supplier", errors: true });
+    newRowsHaveErrors.push({ id: "supplierPartNo", errors: true });
+    newRowsHaveErrors.push({ id: "productUrl", errors: true });
+    setRowsHaveErrors(newRowsHaveErrors);
   }, []);
 
   useEffect(() => {
@@ -746,6 +756,17 @@ function NewSupplierRow({ supplier }) {
     });
     setSupplierRowHaveErrors(hasErrors);
   }, [rowsHaveErrors]);
+
+  useEffect(() => {
+    handleValidationChange(
+      inputEdited,
+      formik.errors[inputEdited] ? true : false
+    );
+  }, [counter]);
+
+  useEffect(() => {
+    setCounter(counter + 1);
+  }, [inputsEditedCounter]);
 
   const handleValidationChange = (rowId, hasErrors) => {
     const updatedRowsHaveErrors = rowsHaveErrors.map((row) =>
@@ -848,9 +869,19 @@ function NewSupplierRow({ supplier }) {
               label="Nombre proveedor"
               labelProps={{ className: "text-light opacity-50" }}
               value={formik.values.supplier}
-              onChange={formik.handleChange}
+              onChange={(e) => {
+                formik.handleChange(e);
+                setInputEdited("supplier");
+                setInputsEditedCounter(inputsEditedCounter + 1);
+              }}
               onBlur={formik.handleBlur}
+              error={formik.errors.supplier}
             />
+            {formik.errors.supplier && (
+              <Alert className="block mt-1 bg-red-500 z-50">
+                {formik.errors.supplier}
+              </Alert>
+            )}
           </div>
           <div>
             <Input
@@ -861,9 +892,19 @@ function NewSupplierRow({ supplier }) {
               label="N° parte proveedor"
               labelProps={{ className: "text-light opacity-50" }}
               value={formik.values.supplierPartNo}
-              onChange={formik.handleChange}
+              onChange={(e) => {
+                formik.handleChange(e);
+                setInputEdited("supplierPartNo");
+                setInputsEditedCounter(inputsEditedCounter + 1);
+              }}
               onBlur={formik.handleBlur}
+              error={formik.errors.supplierPartNo}
             />
+            {formik.errors.supplierPartNo && (
+              <Alert className="block mt-1 bg-red-500 z-50">
+                {formik.errors.supplierPartNo}
+              </Alert>
+            )}
           </div>
           <div>
             <Input
@@ -874,9 +915,19 @@ function NewSupplierRow({ supplier }) {
               label="Enlace producto"
               labelProps={{ className: "text-light opacity-50" }}
               value={formik.values.productUrl}
-              onChange={formik.handleChange}
+              onChange={(e) => {
+                formik.handleChange(e);
+                setInputEdited("productUrl");
+                setInputsEditedCounter(inputsEditedCounter + 1);
+              }}
               onBlur={formik.handleBlur}
+              error={formik.errors.productUrl}
             />
+            {formik.errors.productUrl && (
+              <Alert className="block mt-1 bg-red-500 z-50">
+                {formik.errors.productUrl}
+              </Alert>
+            )}
           </div>
           <div className="flex flex-col">
             <Typography variant="small" className="text-light">
@@ -1018,6 +1069,7 @@ function NewSupplierRow({ supplier }) {
             </div>
           </div>
         </div>
+
         <div className="m-auto flex justify-between">
           <Button
             size="sm"
@@ -1026,6 +1078,7 @@ function NewSupplierRow({ supplier }) {
             disabled={
               supplierRowHaveErrors || prices.length == 0 || stock.length == 0
             }
+            onClick={formik.handleSubmit}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
