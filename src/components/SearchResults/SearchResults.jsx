@@ -26,7 +26,7 @@ function GridSearchResults({ products }) {
         <Card
           className="h-full mx-2 w-48 cursor-pointer text-center shadow-md"
           key={index}
-          onClick={(event) => openNewWindow(productResult.idt)}
+          onClick={(event) => openNewWindow(productResult.idProduct)}
         >
           <CardBody className="h-32">
             <img
