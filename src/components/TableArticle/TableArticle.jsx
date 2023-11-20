@@ -282,6 +282,7 @@ export function CreateProductDialog({ open, handler }) {
   const [suppliers, setSuppliers] = useState([]);
   const [hasErrors, setHasErrors] = useState(true);
   const [inputChangedCounter, setInputChangedCounter] = useState(0);
+  const [suppliersDataHasErrors, setSuppliersDataHasErrors] = useState(false);
   const [counter, setCounter] = useState(0);
 
   const validationSchema = Yup.object().shape({
@@ -334,7 +335,15 @@ export function CreateProductDialog({ open, handler }) {
 
   useEffect(() => {
     setCounter(counter + 1);
+  }, [suppliersDataHasErrors]);
+
+  useEffect(() => {
+    setCounter(counter + 1);
   }, [inputChangedCounter]);
+
+  const onValidateSuppliersHasErrors = (hasErrors) => {
+    setSuppliersDataHasErrors(hasErrors);
+  };
 
   const addNewSupplier = () => {
     let newSuppliers = suppliers;
@@ -700,6 +709,9 @@ export function CreateProductDialog({ open, handler }) {
                   onSupplierUpdate={(newSupplierData) => {
                     updateSuppliers(supplier.id, newSupplierData);
                   }}
+                  onValidateSuppliersHasErrors={(hasErrors) => {
+                    onValidateSuppliersHasErrors(hasErrors);
+                  }}
                 />
               );
             })}
@@ -736,7 +748,7 @@ export function CreateProductDialog({ open, handler }) {
           variant="gradient"
           color="green"
           onClick={(e) => productDataFormik.handleSubmit(e)}
-          disabled={hasErrors}
+          disabled={hasErrors || suppliersDataHasErrors}
         >
           <span>Crear</span>
         </Button>
@@ -745,7 +757,11 @@ export function CreateProductDialog({ open, handler }) {
   );
 }
 
-function NewSupplierRow({ onSupplierRemove, onSupplierUpdate }) {
+function NewSupplierRow({
+  onSupplierRemove,
+  onSupplierUpdate,
+  onValidateSuppliersHasErrors,
+}) {
   const [prices, setPrices] = useState([]);
   const [stock, setStock] = useState([]);
   const [extraData, setExtraData] = useState([]);
@@ -801,6 +817,10 @@ function NewSupplierRow({ onSupplierRemove, onSupplierUpdate }) {
     newRowsHaveErrors.push({ id: "productUrl", errors: true });
     setRowsHaveErrors(newRowsHaveErrors);
   }, []);
+
+  useEffect(() => {
+    onValidateSuppliersHasErrors(supplierRowHaveErrors);
+  }, [supplierRowHaveErrors]);
 
   useEffect(() => {
     let hasErrors = false;
@@ -932,7 +952,7 @@ function NewSupplierRow({ onSupplierRemove, onSupplierUpdate }) {
                     setInputsEditedCounter(inputsEditedCounter + 1);
                   }}
                   onBlur={formik.handleBlur}
-                  error={formik.errors.supplier}
+                  error={formik.errors.supplier ? true : false}
                 />
                 {formik.errors.supplier && (
                   <Alert className="block mt-1 bg-red-500 z-50">
@@ -955,7 +975,7 @@ function NewSupplierRow({ onSupplierRemove, onSupplierUpdate }) {
                     setInputsEditedCounter(inputsEditedCounter + 1);
                   }}
                   onBlur={formik.handleBlur}
-                  error={formik.errors.supplierPartNo}
+                  error={formik.errors.supplierPartNo ? true : false}
                 />
                 {formik.errors.supplierPartNo && (
                   <Alert className="block mt-1 bg-red-500 z-50">
@@ -978,7 +998,7 @@ function NewSupplierRow({ onSupplierRemove, onSupplierUpdate }) {
                     setInputsEditedCounter(inputsEditedCounter + 1);
                   }}
                   onBlur={formik.handleBlur}
-                  error={formik.errors.productUrl}
+                  error={formik.errors.productUrl ? true : false}
                 />
                 {formik.errors.productUrl && (
                   <Alert className="block mt-1 bg-red-500 z-50">
@@ -1522,7 +1542,6 @@ function StockRow({
       <select
         name="country"
         label="Seleccionar país"
-        defaultValue={selectedOption}
         value={stockRowFormik.values.country}
         onMouseEnter={() => setIsCountrySelectHovered(true)}
         onMouseLeave={() => setIsCountrySelectHovered(false)}
