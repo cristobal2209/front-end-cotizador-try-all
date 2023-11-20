@@ -535,26 +535,28 @@ export function CreateProductDialog({
                 setInputChangedCounter(inputChangedCounter + 1);
               }}
             >
-              <Option value={"computacion"}>Computación</Option>
-              <Option value={"bricolaje"}>Bricolaje</Option>
-              <Option value={"electronica"}>Electrónica</Option>
-              <Option value={"iluminacion"}>Iluminación</Option>
-              <Option value={"herramientasEInsumos"}>
+              <Option value={"Computación"}>Computación</Option>
+              <Option value={"Bricolaje"}>Bricolaje</Option>
+              <Option value={"Electrónica"}>Electrónica</Option>
+              <Option value={"Iluminación"}>Iluminación</Option>
+              <Option value={"Herramientas e insumos"}>
                 Herramientas e insumos
               </Option>
-              <Option value={"automatizacionEIot"}>Automatización e IoT</Option>
-              <Option value={"energias"}>Energías</Option>
-              <Option value={"administracionTermica"}>
+              <Option value={"Automatización e IOT"}>
+                Automatización e IoT
+              </Option>
+              <Option value={"Energías"}>Energías</Option>
+              <Option value={"Administración térmica"}>
                 Adminstración térmica
               </Option>
-              <Option value={"robotica"}>Robótica</Option>
-              <Option value={"cableado"}>Cableado</Option>
-              <Option value={"regadio"}>Regadío</Option>
-              <Option value={"electromecanica"}>Electromecánica</Option>
-              <Option value={"inalambricos"}>Inalámbricos</Option>
-              <Option value={"seguridad"}>Seguridad</Option>
-              <Option value={"electricidad"}>Electricidad</Option>
-              <Option value={"sensores"}>Sensores</Option>
+              <Option value={"Robótica"}>Robótica</Option>
+              <Option value={"Cableado"}>Cableado</Option>
+              <Option value={"Regadío"}>Regadío</Option>
+              <Option value={"Electromecánica"}>Electromecánica</Option>
+              <Option value={"Inalámbricos"}>Inalámbricos</Option>
+              <Option value={"Seguridad"}>Seguridad</Option>
+              <Option value={"Electricidad"}>Electricidad</Option>
+              <Option value={"Sensores"}>Sensores</Option>
             </Select>
             {productDataFormik.errors.productCategory ? (
               <Alert className="block mt-[10px] bg-red-500 !w-auto animate-pulse">

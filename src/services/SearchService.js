@@ -51,11 +51,12 @@ export async function getSearchSuggestions(query) {
   }
 }
 
-export const getProductsFromCategory = async () => {
+export const getProductsFromCategory = async (productSearchParam) => {
   try {
     //productSearchParam = productSearchParam.tolowercase();
     const searchParams = {
-      q: "*",
+      q: productSearchParam,
+      query_by: "productCategory",
     };
 
     const result = await client

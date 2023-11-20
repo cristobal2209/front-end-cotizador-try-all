@@ -51,7 +51,7 @@ export default function ProductRow({
           >
             {product.description}
           </Typography>
-          <div className="ml-auto">
+          <div className="ml-auto w-[100px]">
             <img src={product.imgSrc} className="ml-1 rounded-md"></img>
           </div>
         </div>
