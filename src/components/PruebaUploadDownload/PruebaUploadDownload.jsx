@@ -2,32 +2,36 @@ import { Button } from "@material-tailwind/react";
 import { useState, useEffect } from "react";
 import { storage } from "../../firebaseConfig";
 import { ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
-import { v4 } from "uuid";
+import { uuidv4 } from "@firebase/util";
 
 export default function ButtonDefault() {
   const [imageUpload, setImageUpload] = useState(null);
   const [imageList, setImageList] = useState([]);
 
-  const imageListRef = ref(storage, "WebAppAssets/");
+  const imageListRef = ref(storage, "ProductsImages/");
+
   const uploadImage = () => {
     if (imageUpload == null) return;
-    const imageRef = ref(storage, `WebAppAssets/${imageUpload.name + v4()}`);
+    const imageRef = ref(
+      storage,
+      `ProductsImages/${imageUpload.name + uuidv4()}`
+    );
     uploadBytes(imageRef, imageUpload).then((snaphsot) => {
       getDownloadURL(snaphsot.ref).then((url) => {
         setImageList((prev) => [...prev, url]);
         alert("Image Uploaded");
-      })
+      });
     });
   };
 
   useEffect(() => {
     listAll(imageListRef).then((response) => {
-        response.items.forEach((item) => {
-          getDownloadURL(item).then((url) => {
-            setImageList((prev) => [...prev, url]);
-          });
+      response.items.forEach((item) => {
+        getDownloadURL(item).then((url) => {
+          setImageList((prev) => [...prev, url]);
         });
       });
+    });
   }, []);
 
   return (
@@ -42,7 +46,7 @@ export default function ButtonDefault() {
         Upload
       </Button>
       {imageList.map((url) => {
-        return <img src={url}/>
+        return <img src={url} />;
       })}
     </div>
   );

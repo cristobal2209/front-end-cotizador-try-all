@@ -1,12 +1,86 @@
 import { db } from "../firebaseConfig";
-import axios from "axios";
+import { uuidv4 } from "@firebase/util";
+import { storage } from "../firebaseConfig";
+import { ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
+
 import {
   collection,
   getDocs,
   query,
   limit,
   startAfter,
+  addDoc,
 } from "firebase/firestore";
+
+const uploadImage = async (imageUpload) => {
+  if (imageUpload == null) return;
+  const imageRef = ref(
+    storage,
+    `ProductsImages/${imageUpload.name + uuidv4()}`
+  );
+  return await uploadBytes(imageRef, imageUpload)
+    .then(async (snapshot) => {
+      return await getDownloadURL(snapshot.ref).then((url) => {
+        return url;
+      });
+    })
+    .catch((e) => {
+      return e;
+    });
+};
+
+const writeExtraDataToSupplier = (supplier) => {
+  supplier.extraData.forEach((data) => {
+    supplier[data.extraDataName] = data.extraDataValue;
+  });
+  delete supplier.extraData;
+};
+
+const removeIdField = (objArr) => {
+  objArr.forEach((obj) => {
+    if (Object.prototype.hasOwnProperty.call(obj, "id")) {
+      delete obj["id"];
+    }
+  });
+};
+
+export const createProduct = async (productData) => {
+  //removiendo campos "id" de los arreglos
+  removeIdField(productData.suppliers);
+  productData.suppliers.forEach((supplier) => {
+    removeIdField(supplier.extraData);
+    removeIdField(supplier.prices);
+    removeIdField(supplier.stock);
+  });
+
+  //uniendo priceFor con priceForQuantity para que quede guardado en priceFor
+  if (productData.priceFor !== "each")
+    productData.priceFor += productData.priceForQuantity;
+  //se elimina el campo priceForQuantity
+  delete productData.priceForQuantity;
+
+  //escribiendo la data extra al proveedor
+  productData.suppliers.forEach((supplier) => {
+    writeExtraDataToSupplier(supplier);
+  });
+
+  console.log(productData);
+
+  return await uploadImage(productData.imgSrc)
+    .then(async (imgUrl) => {
+      productData.imgSrc = imgUrl;
+      return await addDoc(collection(db, "products"), productData)
+        .then(() => {
+          return `Producto ${productData.description} creado correctamente.`;
+        })
+        .catch((error) => {
+          return error;
+        });
+    })
+    .catch((e) => {
+      return e;
+    });
+};
 
 export const countProducts = async (category) => {
   try {

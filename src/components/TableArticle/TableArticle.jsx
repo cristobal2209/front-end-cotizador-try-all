@@ -269,14 +269,21 @@ export default function TableProduct() {
         </Card>
         <CreateProductDialog
           open={openCreateProductDialog}
-          handler={handleOpenCreateProductDialog}
+          handler={() => handleOpenCreateProductDialog()}
+          handleSuccessAlert={(msg) => handleSuccessAlert(msg)}
+          handleFailedAlert={(error) => handleFailedAlert(error)}
         />
       </div>
     </>
   );
 }
 
-export function CreateProductDialog({ open, handler }) {
+export function CreateProductDialog({
+  open,
+  handler,
+  handleSuccessAlert,
+  handleFailedAlert,
+}) {
   const [imageUpload, setImageUpload] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [suppliers, setSuppliers] = useState([]);
@@ -341,6 +348,11 @@ export function CreateProductDialog({ open, handler }) {
     setCounter(counter + 1);
   }, [inputChangedCounter]);
 
+  useEffect(() => {
+    if (suppliers.length === 0) setSuppliersDataHasErrors(false);
+    setCounter(counter + 1);
+  }, [suppliers]);
+
   const onValidateSuppliersHasErrors = (hasErrors) => {
     setSuppliersDataHasErrors(hasErrors);
   };
@@ -380,9 +392,17 @@ export function CreateProductDialog({ open, handler }) {
     validateOnChange: true,
     validateOnBlur: true,
     validationSchema: validationSchema,
-    onSubmit: () => {
+    onSubmit: async () => {
       productDataFormik.values.suppliers = suppliers;
-      createProduct(productDataFormik.values);
+      await createProduct(productDataFormik.values)
+        .then((msg) => {
+          handler();
+          handleSuccessAlert(msg);
+        })
+        .catch((error) => {
+          handler();
+          handleFailedAlert(error.message);
+        });
     },
   });
 
