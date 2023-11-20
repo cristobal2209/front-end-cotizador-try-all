@@ -5,6 +5,7 @@ import { useFormik } from "formik";
 import {
   getNextProductsCollection,
   countProducts,
+  createProduct,
 } from "../../services/TableProductService";
 import ProductRow from "./ProductRow";
 import AlertFailed from "./AlertFailed";
@@ -279,6 +280,9 @@ export function CreateProductDialog({ open, handler }) {
   const [imageUpload, setImageUpload] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [suppliers, setSuppliers] = useState([]);
+  const [hasErrors, setHasErrors] = useState(true);
+  const [inputChangedCounter, setInputChangedCounter] = useState(0);
+  const [counter, setCounter] = useState(0);
 
   const validationSchema = Yup.object().shape({
     //validacion de campos del formulario productDataFormik
@@ -316,19 +320,40 @@ export function CreateProductDialog({ open, handler }) {
     }
   }, [imageUpload]);
 
-  // useEffect(() => {
-  //   console.log(suppliers);
-  // }, [suppliers]);
+  useEffect(() => {
+    if (
+      Object.keys(productDataFormik.errors).some(
+        (fieldName) => productDataFormik.errors[fieldName]
+      )
+    ) {
+      setHasErrors(true);
+    } else {
+      setHasErrors(false);
+    }
+  }, [counter]);
+
+  useEffect(() => {
+    setCounter(counter + 1);
+  }, [inputChangedCounter]);
 
   const addNewSupplier = () => {
-    let suppliersCopy = suppliers;
-    setSuppliers([...suppliersCopy]);
+    let newSuppliers = suppliers;
+    newSuppliers.push({ id: uuidv4() });
+    setSuppliers([...newSuppliers]);
   };
 
-  const removeSupplier = (index) => {};
+  const updateSuppliers = (supplierId, newSupplier) => {
+    const updatedSuppliers = suppliers.map((supplier) =>
+      supplier.id === supplierId ? { id: supplierId, ...newSupplier } : supplier
+    );
+    setSuppliers(updatedSuppliers);
+  };
 
-  const submitRegister = (formValues) => {
-    console.log(formValues);
+  const removeSupplier = (supplierId) => {
+    const updatedSuppliers = suppliers.filter(
+      (supplier) => supplier.id !== supplierId
+    );
+    setSuppliers(updatedSuppliers);
   };
 
   const productDataFormik = useFormik({
@@ -340,13 +365,15 @@ export function CreateProductDialog({ open, handler }) {
       manufacturerPartNo: "",
       productCategory: "",
       imgSrc: "",
+      suppliers: suppliers,
     },
     validateOnMount: true,
     validateOnChange: true,
     validateOnBlur: true,
     validationSchema: validationSchema,
     onSubmit: () => {
-      submitRegister(productDataFormik.values);
+      productDataFormik.values.suppliers = suppliers;
+      createProduct(productDataFormik.values);
     },
   });
 
@@ -397,7 +424,10 @@ export function CreateProductDialog({ open, handler }) {
               label="Descripción"
               name="description"
               value={productDataFormik.values.description}
-              onChange={productDataFormik.handleChange}
+              onChange={(e) => {
+                productDataFormik.handleChange(e);
+                setInputChangedCounter(inputChangedCounter + 1);
+              }}
               className="border-light text-light"
               labelProps={{ className: "!text-light opacity-50" }}
               required
@@ -410,14 +440,16 @@ export function CreateProductDialog({ open, handler }) {
               </Alert>
             ) : null}
           </div>
-
           <div className="py-2 mr-1 grow">
             <Input
               variant="standard"
               label="Fabricante"
               name="manufacturer"
               value={productDataFormik.values.manufacturer}
-              onChange={productDataFormik.handleChange}
+              onChange={(e) => {
+                productDataFormik.handleChange(e);
+                setInputChangedCounter(inputChangedCounter + 1);
+              }}
               labelProps={{ className: "!text-light opacity-50" }}
               color="white"
               required
@@ -436,7 +468,10 @@ export function CreateProductDialog({ open, handler }) {
               label="N° parte fabricante"
               name="manufacturerPartNo"
               value={productDataFormik.values.manufacturerPartNo}
-              onChange={productDataFormik.handleChange}
+              onChange={(e) => {
+                productDataFormik.handleChange(e);
+                setInputChangedCounter(inputChangedCounter + 1);
+              }}
               labelProps={{ className: "!text-light opacity-50" }}
               color="white"
               required
@@ -468,6 +503,7 @@ export function CreateProductDialog({ open, handler }) {
                   "productCategory",
                   selectedValue
                 );
+                setInputChangedCounter(inputChangedCounter + 1);
               }}
             >
               <Option value={"computacion"}>Computación</Option>
@@ -517,6 +553,7 @@ export function CreateProductDialog({ open, handler }) {
                     },
                   });
                   productDataFormik.setFieldValue("priceFor", selectedValue);
+                  setInputChangedCounter(inputChangedCounter + 1);
                 }}
               >
                 <Option
@@ -554,7 +591,10 @@ export function CreateProductDialog({ open, handler }) {
                     label="ingrese una cantidad"
                     labelProps={{ className: "text-light opacity-50" }}
                     value={productDataFormik.values.priceForQuantity}
-                    onChange={handleInputChange}
+                    onChange={(e) => {
+                      handleInputChange(e);
+                      setInputChangedCounter(inputChangedCounter + 1);
+                    }}
                     onBlur={productDataFormik.handleBlur}
                   />
                   <div className="rounded-md rounded-l-none pl-1 mt-auto">
@@ -573,7 +613,10 @@ export function CreateProductDialog({ open, handler }) {
                     label="ingrese una cantidad"
                     labelProps={{ className: "text-light opacity-50" }}
                     value={productDataFormik.values.priceForQuantity}
-                    onChange={handleInputChange}
+                    onChange={(e) => {
+                      handleInputChange(e);
+                      setInputChangedCounter(inputChangedCounter + 1);
+                    }}
                     onBlur={productDataFormik.handleBlur}
                   />
                   <div className="rounded-md rounded-l-none pl-1 mt-auto">
@@ -648,7 +691,17 @@ export function CreateProductDialog({ open, handler }) {
           </Typography>
           <div className="flex flex-col">
             {suppliers?.map((supplier, index) => {
-              return <NewSupplierRow key={index} />;
+              return (
+                <NewSupplierRow
+                  key={supplier.id}
+                  onSupplierRemove={() => {
+                    removeSupplier(supplier.id);
+                  }}
+                  onSupplierUpdate={(newSupplierData) => {
+                    updateSuppliers(supplier.id, newSupplierData);
+                  }}
+                />
+              );
             })}
             <Button
               className="bg-two flex items-center gap-3 w-[150px] my-2"
@@ -682,7 +735,8 @@ export function CreateProductDialog({ open, handler }) {
         <Button
           variant="gradient"
           color="green"
-          onClick={() => productDataFormik.handleSubmit()}
+          onClick={(e) => productDataFormik.handleSubmit(e)}
+          disabled={hasErrors}
         >
           <span>Crear</span>
         </Button>
@@ -691,7 +745,7 @@ export function CreateProductDialog({ open, handler }) {
   );
 }
 
-function NewSupplierRow() {
+function NewSupplierRow({ onSupplierRemove, onSupplierUpdate }) {
   const [prices, setPrices] = useState([]);
   const [stock, setStock] = useState([]);
   const [extraData, setExtraData] = useState([]);
@@ -700,6 +754,7 @@ function NewSupplierRow() {
   const [inputsEditedCounter, setInputsEditedCounter] = useState(0);
   const [counter, setCounter] = useState(0);
   const [inputEdited, setInputEdited] = useState(null);
+  const [isEditing, setIsEditing] = useState(true);
 
   const supplierValidationSchema = Yup.object().shape({
     supplier: Yup.string()
@@ -732,7 +787,7 @@ function NewSupplierRow() {
       formik.values.prices = prices;
       formik.values.stock = stock;
       formik.values.extraData = extraData;
-      console.log(formik.values);
+      onSupplierUpdate(formik.values);
     },
   });
 
@@ -858,106 +913,238 @@ function NewSupplierRow() {
 
   return (
     <>
-      <div className="flex bg-one rounded-md p-4 my-2">
-        <div className="grid grid-cols-3 gap-4 w-full">
-          <div>
-            <Input
-              type="text"
-              name="supplier"
-              color="white"
-              variant="standard"
-              label="Nombre proveedor"
-              labelProps={{ className: "text-light opacity-50" }}
-              value={formik.values.supplier}
-              onChange={(e) => {
-                formik.handleChange(e);
-                setInputEdited("supplier");
-                setInputsEditedCounter(inputsEditedCounter + 1);
-              }}
-              onBlur={formik.handleBlur}
-              error={formik.errors.supplier}
-            />
-            {formik.errors.supplier && (
-              <Alert className="block mt-1 bg-red-500 z-50">
-                {formik.errors.supplier}
-              </Alert>
-            )}
-          </div>
-          <div>
-            <Input
-              type="text"
-              name="supplierPartNo"
-              color="white"
-              variant="standard"
-              label="N° parte proveedor"
-              labelProps={{ className: "text-light opacity-50" }}
-              value={formik.values.supplierPartNo}
-              onChange={(e) => {
-                formik.handleChange(e);
-                setInputEdited("supplierPartNo");
-                setInputsEditedCounter(inputsEditedCounter + 1);
-              }}
-              onBlur={formik.handleBlur}
-              error={formik.errors.supplierPartNo}
-            />
-            {formik.errors.supplierPartNo && (
-              <Alert className="block mt-1 bg-red-500 z-50">
-                {formik.errors.supplierPartNo}
-              </Alert>
-            )}
-          </div>
-          <div>
-            <Input
-              type="text"
-              name="productUrl"
-              color="white"
-              variant="standard"
-              label="Enlace producto"
-              labelProps={{ className: "text-light opacity-50" }}
-              value={formik.values.productUrl}
-              onChange={(e) => {
-                formik.handleChange(e);
-                setInputEdited("productUrl");
-                setInputsEditedCounter(inputsEditedCounter + 1);
-              }}
-              onBlur={formik.handleBlur}
-              error={formik.errors.productUrl}
-            />
-            {formik.errors.productUrl && (
-              <Alert className="block mt-1 bg-red-500 z-50">
-                {formik.errors.productUrl}
-              </Alert>
-            )}
-          </div>
-          <div className="flex flex-col">
-            <Typography variant="small" className="text-light">
-              Ingresar precios
-            </Typography>
-            {prices?.map((price, index) => {
-              return (
-                <PricesRow
-                  key={price.id}
-                  onPriceRowRemove={() => onPriceRowRemove(price.id)}
-                  onUpdatePrice={(newPrice) =>
-                    onUpdatePrice(price.id, newPrice)
-                  }
-                  onValidationChange={(hasErrors) => {
-                    handleValidationChange(price.id, hasErrors);
+      <div className="flex bg-one rounded-md p-4 my-2 overflow-auto">
+        {isEditing ? (
+          <>
+            <div className="grid grid-cols-3 gap-4 w-full">
+              <div>
+                <Input
+                  type="text"
+                  name="supplier"
+                  color="white"
+                  variant="standard"
+                  label="Nombre proveedor"
+                  labelProps={{ className: "text-light opacity-50" }}
+                  value={formik.values.supplier}
+                  onChange={(e) => {
+                    formik.handleChange(e);
+                    setInputEdited("supplier");
+                    setInputsEditedCounter(inputsEditedCounter + 1);
                   }}
+                  onBlur={formik.handleBlur}
+                  error={formik.errors.supplier}
                 />
-              );
-            })}
-            {prices.length == 0 && (
-              <Alert className="block bg-red-500 max-w-xs z-50 mb-auto mt-2">
-                Debe ingresar al menos un precio por cantidad
-              </Alert>
-            )}
-            <div>
+                {formik.errors.supplier && (
+                  <Alert className="block mt-1 bg-red-500 z-50">
+                    {formik.errors.supplier}
+                  </Alert>
+                )}
+              </div>
+              <div>
+                <Input
+                  type="text"
+                  name="supplierPartNo"
+                  color="white"
+                  variant="standard"
+                  label="N° parte proveedor"
+                  labelProps={{ className: "text-light opacity-50" }}
+                  value={formik.values.supplierPartNo}
+                  onChange={(e) => {
+                    formik.handleChange(e);
+                    setInputEdited("supplierPartNo");
+                    setInputsEditedCounter(inputsEditedCounter + 1);
+                  }}
+                  onBlur={formik.handleBlur}
+                  error={formik.errors.supplierPartNo}
+                />
+                {formik.errors.supplierPartNo && (
+                  <Alert className="block mt-1 bg-red-500 z-50">
+                    {formik.errors.supplierPartNo}
+                  </Alert>
+                )}
+              </div>
+              <div>
+                <Input
+                  type="text"
+                  name="productUrl"
+                  color="white"
+                  variant="standard"
+                  label="Enlace producto"
+                  labelProps={{ className: "text-light opacity-50" }}
+                  value={formik.values.productUrl}
+                  onChange={(e) => {
+                    formik.handleChange(e);
+                    setInputEdited("productUrl");
+                    setInputsEditedCounter(inputsEditedCounter + 1);
+                  }}
+                  onBlur={formik.handleBlur}
+                  error={formik.errors.productUrl}
+                />
+                {formik.errors.productUrl && (
+                  <Alert className="block mt-1 bg-red-500 z-50">
+                    {formik.errors.productUrl}
+                  </Alert>
+                )}
+              </div>
+              <div className="flex flex-col">
+                <Typography variant="small" className="text-light">
+                  Ingresar precios por cantidad
+                </Typography>
+                {prices?.map((price, index) => {
+                  return (
+                    <PricesRow
+                      quantity={price.quantity}
+                      price={price.price}
+                      key={price.id}
+                      onPriceRowRemove={() => onPriceRowRemove(price.id)}
+                      onUpdatePrice={(newPrice) =>
+                        onUpdatePrice(price.id, newPrice)
+                      }
+                      onValidationChange={(hasErrors) => {
+                        handleValidationChange(price.id, hasErrors);
+                      }}
+                    />
+                  );
+                })}
+                {prices.length == 0 && (
+                  <Alert className="block bg-red-500 max-w-xs z-50 mb-auto mt-2">
+                    Debe ingresar al menos un precio por cantidad
+                  </Alert>
+                )}
+                <div>
+                  <Button
+                    size="sm"
+                    className="rounded bg-three shadow-none hover:bg-threeHover w-[32px] h-[32px] px-2 mt-2"
+                    onClick={() => {
+                      addPrices();
+                    }}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-4 h-4 mr-auto"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M12 4.5v15m7.5-7.5h-15"
+                      />
+                    </svg>
+                  </Button>
+                </div>
+              </div>
+              <div className="flex flex-col">
+                <Typography variant="small" className="text-light">
+                  Ingresar stock
+                </Typography>
+                {stock?.map((stock, index) => {
+                  return (
+                    <StockRow
+                      country={stock.country}
+                      stockNumber={stock.stockNumber}
+                      key={stock.id}
+                      onStockRowRemove={() => onStockRowRemove(stock.id)}
+                      onUpdateStock={(newStock) =>
+                        onUpdateStock(stock.id, newStock)
+                      }
+                      onValidationChange={(hasErrors) => {
+                        handleValidationChange(stock.id, hasErrors);
+                      }}
+                    />
+                  );
+                })}
+                {stock.length == 0 && (
+                  <Alert className="block bg-red-500 max-w-xs z-50 mb-auto mt-2">
+                    Debe ingresar al menos un dato de stock.
+                  </Alert>
+                )}
+                <div>
+                  <Button
+                    size="sm"
+                    className="rounded bg-three shadow-none hover:bg-threeHover w-[32px] h-[32px] px-2 mt-2"
+                    onClick={() => {
+                      addStock();
+                    }}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-4 h-4 mr-auto"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M12 4.5v15m7.5-7.5h-15"
+                      />
+                    </svg>
+                  </Button>
+                </div>
+              </div>
+              <div className="flex flex-col">
+                <Typography variant="small" className="text-light">
+                  Ingresar datos adicionales (opcional)
+                </Typography>
+                {extraData?.map((data, index) => {
+                  return (
+                    <ExtraDataRow
+                      extraDataName={data.extraDataName}
+                      extraDataValue={data.extraDataValue}
+                      key={data.id}
+                      onExtraDataRowRemove={() => onExtraDataRowRemove(data.id)}
+                      onUpdateExtraData={(newData) =>
+                        onUpdateExtraData(data.id, newData)
+                      }
+                      onValidationChange={(hasErrors) => {
+                        handleValidationChange(data.id, hasErrors);
+                      }}
+                    />
+                  );
+                })}
+                <div>
+                  <Button
+                    size="sm"
+                    className="rounded bg-three shadow-none hover:bg-threeHover w-[32px] h-[32px] px-2 mt-2"
+                    onClick={() => {
+                      addExtraData();
+                    }}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-4 h-4 mr-auto"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M12 4.5v15m7.5-7.5h-15"
+                      />
+                    </svg>
+                  </Button>
+                </div>
+              </div>
+            </div>
+            <div className="my-auto ml-3  flex justify-between">
               <Button
                 size="sm"
-                className="rounded bg-three shadow-none hover:bg-threeHover w-[32px] h-[32px] px-2 mt-2"
-                onClick={() => {
-                  addPrices();
+                color="green"
+                className="rounded w-[32px] h-[32px] px-2 mx-1"
+                disabled={
+                  supplierRowHaveErrors ||
+                  prices.length == 0 ||
+                  stock.length == 0
+                }
+                onClick={(e) => {
+                  formik.handleSubmit(e);
+                  setIsEditing(false);
                 }}
               >
                 <svg
@@ -966,46 +1153,141 @@ function NewSupplierRow() {
                   viewBox="0 0 24 24"
                   strokeWidth={1.5}
                   stroke="currentColor"
-                  className="w-4 h-4 mr-auto"
+                  className="w-4 h-4"
                 >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    d="M12 4.5v15m7.5-7.5h-15"
+                    d="M4.5 12.75l6 6 9-13.5"
+                  />
+                </svg>
+              </Button>
+              <Button
+                size="sm"
+                color="red"
+                className="rounded w-[32px] h-[32px] px-2 mx-1"
+                onClick={onSupplierRemove}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-4 h-4"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
                   />
                 </svg>
               </Button>
             </div>
-          </div>
-          <div className="flex flex-col">
-            <Typography variant="small" className="text-light">
-              Ingresar stock
-            </Typography>
-            {stock?.map((stock, index) => {
-              return (
-                <StockRow
-                  key={stock.id}
-                  onStockRowRemove={() => onStockRowRemove(stock.id)}
-                  onUpdateStock={(newStock) =>
-                    onUpdateStock(stock.id, newStock)
-                  }
-                  onValidationChange={(hasErrors) => {
-                    handleValidationChange(stock.id, hasErrors);
-                  }}
-                />
-              );
-            })}
-            {stock.length == 0 && (
-              <Alert className="block bg-red-500 max-w-xs z-50 mb-auto mt-2">
-                Debe ingresar al menos un dato de stock.
-              </Alert>
-            )}
-            <div>
+          </>
+        ) : (
+          <>
+            <div className="grid grid-cols-3 gap-4 w-full">
+              <div className="flex flex-col text-light">
+                <Typography variant="paragraph">Nombre proveedor</Typography>
+                <Typography variant="small" className="opacity-70 mt-1">
+                  {formik.values.supplier}
+                </Typography>
+              </div>
+              <div className="flex flex-col text-light">
+                <Typography variant="paragraph">N° parte proveedor</Typography>
+                <Typography variant="small" className="opacity-70 mt-1">
+                  {formik.values.supplierPartNo}
+                </Typography>
+              </div>
+              <div className="flex flex-col text-light">
+                <Typography variant="paragraph">Link producto</Typography>
+                <a href="formik.values.productUrl" className="hover:underline">
+                  <Typography variant="small" className="opacity-70 mt-1">
+                    {formik.values.productUrl}
+                  </Typography>
+                </a>
+              </div>
+              <div className="flex flex-col">
+                <Typography variant="paragraph" className="text-light">
+                  Precios por cantidad
+                </Typography>
+                {prices?.map((price, index) => {
+                  return (
+                    <div key={price.id} className="flex justify-between">
+                      <div className="mr-1">
+                        <Typography variant="small" className="text-light">
+                          {price.quantity}+
+                        </Typography>
+                      </div>
+                      <div className="ml-1">
+                        <Typography
+                          variant="small"
+                          className="text-light opacity-70"
+                        >
+                          ${price.price}
+                        </Typography>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="flex flex-col">
+                <Typography variant="paragraph" className="text-light">
+                  Stock
+                </Typography>
+                {stock?.map((stock, index) => {
+                  return (
+                    <div key={stock.id} className="flex justify-between">
+                      <div className="mr-1">
+                        <Typography variant="small" className="text-light">
+                          {stock.country}
+                        </Typography>
+                      </div>
+                      <div className="ml-1">
+                        <Typography
+                          variant="small"
+                          className="text-light opacity-70"
+                        >
+                          {stock.stockNumber} unidades
+                        </Typography>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="flex flex-col">
+                <Typography variant="paragraph" className="text-light">
+                  Datos adicionales
+                </Typography>
+                {extraData?.map((data, index) => {
+                  return (
+                    <div key={data.id} className="flex justify-between">
+                      <div className="mr-1">
+                        <Typography variant="small" className="text-light">
+                          {data.extraDataName}
+                        </Typography>
+                      </div>
+                      <div className="ml-1">
+                        <Typography
+                          variant="small"
+                          className="text-light opacity-70"
+                        >
+                          {data.extraDataValue}
+                        </Typography>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="my-auto ml-3 flex justify-between">
               <Button
                 size="sm"
-                className="rounded bg-three shadow-none hover:bg-threeHover w-[32px] h-[32px] px-2 mt-2"
+                color="orange"
+                className="rounded w-[32px] h-[32px] px-2 mx-1"
                 onClick={() => {
-                  addStock();
+                  setIsEditing(true);
                 }}
               >
                 <svg
@@ -1014,114 +1296,30 @@ function NewSupplierRow() {
                   viewBox="0 0 24 24"
                   strokeWidth={1.5}
                   stroke="currentColor"
-                  className="w-4 h-4 mr-auto"
+                  className="w-4 h-4"
                 >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    d="M12 4.5v15m7.5-7.5h-15"
+                    d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"
                   />
                 </svg>
               </Button>
             </div>
-          </div>
-          <div className="flex flex-col">
-            <Typography variant="small" className="text-light">
-              Ingresar datos adicionales (opcional)
-            </Typography>
-            {extraData?.map((data, index) => {
-              return (
-                <ExtraDataRow
-                  key={data.id}
-                  onExtraDataRowRemove={() => onExtraDataRowRemove(data.id)}
-                  onUpdateExtraData={(newData) =>
-                    onUpdateExtraData(data.id, newData)
-                  }
-                  onValidationChange={(hasErrors) => {
-                    handleValidationChange(data.id, hasErrors);
-                  }}
-                />
-              );
-            })}
-            <div>
-              <Button
-                size="sm"
-                className="rounded bg-three shadow-none hover:bg-threeHover w-[32px] h-[32px] px-2 mt-2"
-                onClick={() => {
-                  addExtraData();
-                }}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-4 h-4 mr-auto"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 4.5v15m7.5-7.5h-15"
-                  />
-                </svg>
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        <div className="m-auto flex justify-between">
-          <Button
-            size="sm"
-            color="green"
-            className="rounded w-[32px] h-[32px] px-2 mx-1"
-            disabled={
-              supplierRowHaveErrors || prices.length == 0 || stock.length == 0
-            }
-            onClick={formik.handleSubmit}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-4 h-4"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M4.5 12.75l6 6 9-13.5"
-              />
-            </svg>
-          </Button>
-          <Button
-            size="sm"
-            color="red"
-            className="rounded w-[32px] h-[32px] px-2 mx-1"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-4 h-4"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </Button>
-        </div>
+          </>
+        )}
       </div>
     </>
   );
 }
 
-function PricesRow({ onPriceRowRemove, onUpdatePrice, onValidationChange }) {
+function PricesRow({
+  price,
+  quantity,
+  onPriceRowRemove,
+  onUpdatePrice,
+  onValidationChange,
+}) {
   const [isPriceHovered, setIsPriceHovered] = useState(false);
   const [isQuantityHovered, setIsQuantityHovered] = useState(false);
   const [inputsEditedCounter, setInputsEditedCounter] = useState(0);
@@ -1142,8 +1340,8 @@ function PricesRow({ onPriceRowRemove, onUpdatePrice, onValidationChange }) {
 
   const priceRowFormik = useFormik({
     initialValues: {
-      quantity: "",
-      price: "",
+      quantity: quantity,
+      price: price,
     },
     validateOnMount: true,
     validateOnChange: true,
@@ -1259,7 +1457,13 @@ function PricesRow({ onPriceRowRemove, onUpdatePrice, onValidationChange }) {
   );
 }
 
-function StockRow({ onStockRowRemove, onUpdateStock, onValidationChange }) {
+function StockRow({
+  country,
+  stockNumber,
+  onStockRowRemove,
+  onUpdateStock,
+  onValidationChange,
+}) {
   const [isStockNumberHovered, setIsStockNumberHovered] = useState(false);
   const [isCountrySelectHovered, setIsCountrySelectHovered] = useState(false);
   const [inputsEditedCounter, setInputsEditedCounter] = useState(0);
@@ -1278,8 +1482,8 @@ function StockRow({ onStockRowRemove, onUpdateStock, onValidationChange }) {
 
   const stockRowFormik = useFormik({
     initialValues: {
-      country: "",
-      stockNumber: "",
+      country: country,
+      stockNumber: stockNumber,
     },
     validateOnMount: true,
     validateOnChange: true,
@@ -1318,7 +1522,8 @@ function StockRow({ onStockRowRemove, onUpdateStock, onValidationChange }) {
       <select
         name="country"
         label="Seleccionar país"
-        value={selectedOption}
+        defaultValue={selectedOption}
+        value={stockRowFormik.values.country}
         onMouseEnter={() => setIsCountrySelectHovered(true)}
         onMouseLeave={() => setIsCountrySelectHovered(false)}
         className={`mr-1 rounded-md px-2 w-1/2 text-light bg-dark2 font-sans text-[14px] shadow-md border-2 ${
@@ -1399,6 +1604,8 @@ function StockRow({ onStockRowRemove, onUpdateStock, onValidationChange }) {
 }
 
 function ExtraDataRow({
+  extraDataName,
+  extraDataValue,
   onExtraDataRowRemove,
   onUpdateExtraData,
   onValidationChange,
@@ -1416,8 +1623,8 @@ function ExtraDataRow({
 
   const extraDataRowFormik = useFormik({
     initialValues: {
-      extraDataName: "",
-      extraDataValue: "",
+      extraDataName: extraDataName,
+      extraDataValue: extraDataValue,
     },
     validateOnMount: true,
     validateOnChange: true,
