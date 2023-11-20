@@ -31,12 +31,19 @@ export default function CategoryList() {
   }, []);
 
   return (
+<<<<<<< Updated upstream
     <div className="flex h-full w-full items-center justify-center">
       {loading ? (
         <p>Loading categories...</p>
       ) : (
         <div className="grid w-3/4 grid-cols-4 gap-2">
           {categories.map((category, index) => (
+=======
+    <div className=" flex h-full w-full items-center justify-center">
+      <div className="grid w-3/4  grid-cols-4 gap-2 ">
+        {/* {newCategories.map((category, index) => {
+          return (
+>>>>>>> Stashed changes
             <a
               href={`/search/${(category.categoryName)}`}
               key={index}
@@ -50,9 +57,15 @@ export default function CategoryList() {
                 <div className="text-left">{category.categoryName}</div>
               </div>
             </a>
+<<<<<<< Updated upstream
           ))}
         </div>
       )}
+=======
+          );
+        })} */}
+      </div>
+>>>>>>> Stashed changes
     </div>
   );
 }

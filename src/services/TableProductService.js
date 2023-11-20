@@ -1,7 +1,7 @@
 import { db } from "../firebaseConfig";
 import { uuidv4 } from "@firebase/util";
 import { storage } from "../firebaseConfig";
-import { ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import axios from "axios";
 import {
   collection,
@@ -45,7 +45,6 @@ const removeIdField = (objArr) => {
 };
 
 export const createProduct = async (productData) => {
-  //removiendo campos "id" de los arreglos
   removeIdField(productData.suppliers);
   productData.suppliers.forEach((supplier) => {
     removeIdField(supplier.extraData);
@@ -53,13 +52,10 @@ export const createProduct = async (productData) => {
     removeIdField(supplier.stock);
   });
 
-  //uniendo priceFor con priceForQuantity para que quede guardado en priceFor
   if (productData.priceFor !== "each")
     productData.priceFor += productData.priceForQuantity;
-  //se elimina el campo priceForQuantity
   delete productData.priceForQuantity;
 
-  //escribiendo la data extra al proveedor
   productData.suppliers.forEach((supplier) => {
     writeExtraDataToSupplier(supplier);
   });

@@ -1,6 +1,5 @@
 import { client } from "../services/typesense.js";
 
-//productos de search
 export const getProductsFromInput = async (
   productSearchParam,
   page = 1,
