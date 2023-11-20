@@ -1,8 +1,8 @@
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import { useEffect, useState } from "react";
-import { getProductsFromCategory } from "../../services/SearchService"; 
-import { useNavigate } from 'react-router-dom';
+import { getProductsFromCategory } from "../../services/SearchService";
+import { useNavigate } from "react-router-dom";
 export default function CategoryList() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -11,8 +11,6 @@ export default function CategoryList() {
     const [searchResults, setSearchResults] = useState([]);
     getProductsFromCategory(categoryName);
     navigate(`/search/${encodeURIComponent(categoryName)}`);
-    
-    
   };
   useEffect(() => {
     async function fetchCategories() {
@@ -31,21 +29,14 @@ export default function CategoryList() {
   }, []);
 
   return (
-<<<<<<< Updated upstream
     <div className="flex h-full w-full items-center justify-center">
       {loading ? (
         <p>Loading categories...</p>
       ) : (
         <div className="grid w-3/4 grid-cols-4 gap-2">
           {categories.map((category, index) => (
-=======
-    <div className=" flex h-full w-full items-center justify-center">
-      <div className="grid w-3/4  grid-cols-4 gap-2 ">
-        {/* {newCategories.map((category, index) => {
-          return (
->>>>>>> Stashed changes
             <a
-              href={`/search/${(category.categoryName)}`}
+              href={`/search/${category.categoryName}`}
               key={index}
               className="rounded-md text-light font-semibold hover:bg-transparent hover:shadow-lg"
               onClick={() => handleCategoryClick(category.categoryName)}
@@ -57,15 +48,9 @@ export default function CategoryList() {
                 <div className="text-left">{category.categoryName}</div>
               </div>
             </a>
-<<<<<<< Updated upstream
           ))}
         </div>
       )}
-=======
-          );
-        })} */}
-      </div>
->>>>>>> Stashed changes
     </div>
   );
 }
