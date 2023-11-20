@@ -2,7 +2,7 @@ import { db } from "../firebaseConfig";
 import { uuidv4 } from "@firebase/util";
 import { storage } from "../firebaseConfig";
 import { ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
-
+import axios from "axios";
 import {
   collection,
   getDocs,
@@ -84,8 +84,8 @@ export const createProduct = async (productData) => {
 
 export const countProducts = async (category) => {
   try {
-    // const response = await axios.get("/api/countProducts", category);
-    // return response.data;
+    const response = await axios.get("/api/countProducts", category);
+    return response.data;
   } catch (error) {
     throw new Error(error);
   }

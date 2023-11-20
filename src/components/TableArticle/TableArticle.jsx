@@ -79,12 +79,12 @@ export default function TableProduct() {
   };
 
   const getNextProducts = async () => {
-    // const { data, firstVisible, lastVisible } =
-    //   await getNextProductsCollection(nextDocRef);
-    // setProductsCollection(data);
-    // setNextDocRef(lastVisible);
-    // setPrevDocRef(firstVisible);
-    // setShowedProductsQuantity(showedProductsQuantity + itemsPerPage);
+    const { data, firstVisible, lastVisible } =
+      await getNextProductsCollection(nextDocRef);
+    setProductsCollection(data);
+    setNextDocRef(lastVisible);
+    setPrevDocRef(firstVisible);
+    setShowedProductsQuantity(showedProductsQuantity + itemsPerPage);
   };
 
   const getPrevProducts = async () => {
