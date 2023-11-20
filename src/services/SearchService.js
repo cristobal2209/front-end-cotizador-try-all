@@ -50,3 +50,24 @@ export async function getSearchSuggestions(query) {
     return [];
   }
 }
+
+export const getProductsFromCategory = async () => {
+  try {
+    //productSearchParam = productSearchParam.tolowercase();
+    const searchParams = {
+      q: "*",
+    };
+
+    const result = await client
+      .collections("typesenseProducts")
+      .documents()
+      .search(searchParams);
+
+    const productos = result.hits.map((document) => document.document);
+
+    return productos;
+  } catch (error) {
+    console.error("Error al realizar la búsqueda:", error);
+    throw error;
+  }
+};
