@@ -1,5 +1,3 @@
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "../../firebaseConfig";
 import { useEffect, useState } from "react";
 import { getProductsFromCategory } from "../../services/SearchService";
 import { useNavigate } from "react-router-dom";
@@ -12,9 +10,6 @@ export default function CategoryList() {
     getProductsFromCategory(categoryName);
     navigate(`/search/${encodeURIComponent(categoryName)}`);
   };
-  useEffect(() => {
-    getCategories();
-  }, []);
 
   return (
     <div className=" flex h-full w-full items-center justify-center">
