@@ -14,7 +14,7 @@ import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 function GridSearchResults({ products }) {
   const openNewWindow = (productDataId) => {
     // URL o contenido que deseas mostrar en la nueva pestaña
-    const url = `http://localhost:4000/articles/${productDataId}`;
+    const url = `https://quotemaster.homedns.org/articles/${productDataId}`;
 
     // Abre una nueva pestaña o ventana con el contenido
     window.open(url, "_blank");
@@ -118,9 +118,7 @@ export default function SearchResults() {
   useEffect(() => {
     result();
   }, []);
-  useEffect(() => {
-    console.log(searchResults);
-  }, [searchResults]);
+
   async function result() {
     setIsLoading(true);
     try {
