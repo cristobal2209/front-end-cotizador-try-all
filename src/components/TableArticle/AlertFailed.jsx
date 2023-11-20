@@ -1,4 +1,4 @@
-import { Alert } from "@material-tailwind/react";
+import { Alert, Typography } from "@material-tailwind/react";
 
 export default function AlertFailed({ open, handler, error }) {
   function Icon() {
@@ -32,10 +32,7 @@ export default function AlertFailed({ open, handler, error }) {
             unmount: { y: 100 },
           }}
         >
-          <>
-            {error &&
-              (error.message ? error.message : "Por favor, intente nuevamente")}
-          </>
+          <Typography variant="paragraph">{error ? error : " "}</Typography>
         </Alert>
       </div>
     </>

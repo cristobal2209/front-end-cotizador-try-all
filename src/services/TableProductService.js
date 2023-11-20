@@ -1,4 +1,7 @@
 import { db } from "../firebaseConfig";
+import { uuidv4 } from "@firebase/util";
+import { storage } from "../firebaseConfig";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import axios from "axios";
 import {
   collection,
@@ -6,7 +9,74 @@ import {
   query,
   limit,
   startAfter,
+  addDoc,
 } from "firebase/firestore";
+
+const uploadImage = async (imageUpload) => {
+  if (imageUpload == null) return;
+  const imageRef = ref(
+    storage,
+    `ProductsImages/${imageUpload.name + uuidv4()}`
+  );
+  return await uploadBytes(imageRef, imageUpload)
+    .then(async (snapshot) => {
+      return await getDownloadURL(snapshot.ref).then((url) => {
+        return url;
+      });
+    })
+    .catch((e) => {
+      return e;
+    });
+};
+
+const writeExtraDataToSupplier = (supplier) => {
+  supplier.extraData.forEach((data) => {
+    supplier[data.extraDataName] = data.extraDataValue;
+  });
+  delete supplier.extraData;
+};
+
+const removeIdField = (objArr) => {
+  objArr.forEach((obj) => {
+    if (Object.prototype.hasOwnProperty.call(obj, "id")) {
+      delete obj["id"];
+    }
+  });
+};
+
+export const createProduct = async (productData) => {
+  removeIdField(productData.suppliers);
+  productData.suppliers.forEach((supplier) => {
+    removeIdField(supplier.extraData);
+    removeIdField(supplier.prices);
+    removeIdField(supplier.stock);
+  });
+
+  if (productData.priceFor !== "each")
+    productData.priceFor += productData.priceForQuantity;
+  delete productData.priceForQuantity;
+
+  productData.suppliers.forEach((supplier) => {
+    writeExtraDataToSupplier(supplier);
+  });
+
+  console.log(productData);
+
+  return await uploadImage(productData.imgSrc)
+    .then(async (imgUrl) => {
+      productData.imgSrc = imgUrl;
+      return await addDoc(collection(db, "products"), productData)
+        .then(() => {
+          return `Producto ${productData.description} creado correctamente.`;
+        })
+        .catch((error) => {
+          return error;
+        });
+    })
+    .catch((e) => {
+      return e;
+    });
+};
 
 export const countProducts = async (category) => {
   try {

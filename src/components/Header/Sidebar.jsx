@@ -29,9 +29,9 @@ export default function Sidebar({ setIsSidebarOpen }) {
     });
 
     return () => {
-      unsubscribe(); // Unsubscribe from the listener when the component unmounts.
+      unsubscribe();
     };
-  }, []); // Empty dependency array ensures this effect runs only once.
+  }, []);
 
   const handleLogOut = () => {
     auth
@@ -82,10 +82,8 @@ export default function Sidebar({ setIsSidebarOpen }) {
           </ul>
         </div>
 
-        {/* Sección 2 */}
         {token?.claims.admin ? (
           <>
-            {/* Barra horizontal */}
             <hr className="mx-auto my-2 w-5/6 border-dark2" />
             <div className=" p-4">
               <ul className="space-y-2">

@@ -30,13 +30,13 @@ export default function Router() {
           .catch((error) => {});
       }
 
-      setIsLoading(false); // Set loading to false once the auth state is determined.
+      setIsLoading(false);
     });
 
     return () => {
-      unsubscribe(); // Unsubscribe from the listener when the component unmounts.
+      unsubscribe();
     };
-  }, []); // Empty dependency array ensures this effect runs only once.
+  }, []);
 
   onAuthStateChanged(auth, (authUser) => {
     setUser(authUser);
