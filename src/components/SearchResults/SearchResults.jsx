@@ -106,76 +106,47 @@ function RenderFilters() {
 }
 
 export default function SearchResults() {
-  const [contador, setContador] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const { productSearchParam } = useParams();
-  const [nextDocRef, setNextDocRef] = useState(null);
-  const [prevDocRef, setPrevDocRef] = useState(null);
+  const [totalPages, setTotalPages] = useState(0);
+ 
   
   useEffect(() => {
     result();
-  }, []);
-  useEffect(() => {
-      console.log(searchResults);
-   }, [searchResults]);
-  async function result(){
-    let productos = await getProductsFromInput(productSearchParam);
-    console.log(productos);
-   setSearchResults(productos);
+  }, [currentPage]);
+
+  async function result() {
+    setIsLoading(true);
+    try {
+      const { data, totalPages: total, currentPage: current } = await getProductsFromInput(
+        productSearchParam,
+        currentPage
+      );
+
+      setSearchResults(data);
+      setTotalPages(total);
+      setCurrentPage(current);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    } finally {
+      setIsLoading(false);
+    }
   }
-  // useEffect(() => {
-  //   document.title = `Resultado búsqueda "${productSearchParam}"`;
-  //   getNextProducts();
-  // }, []);
 
-  // useEffect(() => {
-  //   setContador(contador + 1);
-  // }, [searchResults]);
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
 
-  // const getNextProducts = async () => {
-  //   setIsLoading(true);
-  //   const { data, firstVisible, lastVisible } = await getProductsFromInput(
-  //     productSearchParam,
-  //     nextDocRef
-  //   );
-  //   setSearchResults(data);
-  //   setNextDocRef(lastVisible);
-  //   setPrevDocRef(firstVisible);
-  //   setIsLoading(false);
-  // };
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
 
-  // const getPrevProducts = async () => {
-  //   const { data, firstVisible, lastVisible } = await getProductsFromInput(
-  //     productSearchParam,
-  //     prevDocRef
-  //   );
-  //   setSearchResults(data);
-  //   setNextDocRef(lastVisible);
-  //   setPrevDocRef(firstVisible);
-  // };
- // const [productSearchParam, setProductSearchParam] = useState('');
-  // // const [currentPage, setCurrentPage] = useState(1);
-  // // const [productsData, setProductsData] = useState(null);
-
-  // // const handleSearch = async () => {
-  // //   try {
-  // //     const result = await getProductsFromInput(productSearchParam);
-  // //     setProductsData(result);
-  // //   } catch (error) {
-  // //     console.error('Error searching for products:', error);
-  // //   }
-  // // };
-
-  // // useEffect(() => {
-  // //   // Realizar la búsqueda inicial al cargar la página o cuando cambie la página actual
-  // //   handleSearch();
-  // // }, [currentPage]);
-
-  // // const handlePageChange = (newPage) => {
-  // //   // Actualizar la página actual cuando cambie la paginación
-  // //   setCurrentPage(newPage);
-  // // }
 
   return (
     <div className="mx-auto max-w-7xl px-5 pt-10">
@@ -193,7 +164,7 @@ export default function SearchResults() {
                   <Button
                     variant="text"
                     className="mx-auto flex items-center gap-2 bg-two hover:bg-twoHover text-light"
-                    // onClick={getPrevProducts}
+                    onClick={handlePrevPage}
                   >
                     <ArrowLeftIcon
                       strokeWidth={2}
@@ -204,7 +175,7 @@ export default function SearchResults() {
                   <Button
                     variant="text"
                     className="mx-auto flex items-center gap-2 bg-two hover:bg-twoHover text-light"
-                    // onClick={getNextProducts}
+                    onClick={handleNextPage}
                   >
                     Siguiente
                     <ArrowRightIcon
