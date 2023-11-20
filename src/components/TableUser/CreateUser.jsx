@@ -1,6 +1,6 @@
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { createUser } from "../../services/TableUserService";
+import { createUser } from "../../services/TableUserService.js";
 import {
   Button,
   Input,

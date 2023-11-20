@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { fetchUserData } from "../../services/TableUserService";
+import { fetchUserData } from "../../services/TableUserService.js";
 import CreateUser from "./CreateUser";
 import UserDataRow from "./UserDataRow";
 import AlertFailed from "./AlertFailed";

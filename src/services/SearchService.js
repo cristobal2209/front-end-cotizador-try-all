@@ -1,87 +1,74 @@
-import {
-  collection,
-  getDocs,
-  query,
-  or,
-  where,
-  limit,
-  startAfter,
-} from "firebase/firestore";
-import { db } from "../firebaseConfig";
+import { client } from "../services/typesense.js";
 
-export const getProductsFromInput = async (productSearchParam, docRef) => {
+//productos de search
+export const getProductsFromInput = async (
+  productSearchParam,
+  page = 1,
+  pageSize = 20
+) => {
   try {
-    let data = [];
-    const productsCollection = collection(db, "products");
-    const queryOptions = docRef
-      ? query(
-          productsCollection,
-          or(
-            where("manufacturer", ">=", productSearchParam),
-            where("manufacturer", "<=", productSearchParam + "\uf8ff"),
-            where(
-              "manufacturer",
-              ">=",
-              productSearchParam.charAt(0).toUpperCase() +
-                productSearchParam.slice(1)
-            ),
-            where(
-              "manufacturer",
-              "<=",
-              productSearchParam.charAt(0).toUpperCase() +
-                productSearchParam.slice(1) +
-                "\uf8ff"
-            ),
-            where("manufacturer", ">=", productSearchParam.toLowerCase()),
-            where(
-              "manufacturer",
-              "<=",
-              productSearchParam.toLowerCase() + "\uf8ff"
-            )
-          ),
-          startAfter(docRef),
-          limit(12)
-        )
-      : query(
-          productsCollection,
-          or(
-            where("manufacturer", ">=", productSearchParam),
-            where("manufacturer", "<=", productSearchParam + "\uf8ff"),
-            where(
-              "manufacturer",
-              ">=",
-              productSearchParam.charAt(0).toUpperCase() +
-                productSearchParam.slice(1)
-            ),
-            where(
-              "manufacturer",
-              "<=",
-              productSearchParam.charAt(0).toUpperCase() +
-                productSearchParam.slice(1) +
-                "\uf8ff"
-            ),
-            where("manufacturer", ">=", productSearchParam.toLowerCase()),
-            where(
-              "manufacturer",
-              "<=",
-              productSearchParam.toLowerCase() + "\uf8ff"
-            )
-          ),
-          limit(12)
-        );
-    const documentSnapshots = await getDocs(queryOptions);
+    const searchParams = {
+      q: productSearchParam,
+      query_by: "description",
+      infix: "always",
+      page,
+      per_page: pageSize,
+    };
 
-    const lastVisible =
-      documentSnapshots.docs[documentSnapshots.docs.length - 1];
+    const result = await client
+      .collections("typesenseProducts")
+      .documents()
+      .search(searchParams);
 
-    const firstVisible = documentSnapshots.docs[documentSnapshots.docs[0]];
+    const productos = result.hits.map((document) => document.document);
 
-    documentSnapshots.forEach((doc) => {
-      data.push({ id: doc.id, ...doc.data() });
-    });
-
-    return { data, firstVisible, lastVisible };
+    return {
+      data: productos,
+      totalPages: result.found / pageSize,
+      currentPage: page,
+    };
   } catch (error) {
-    throw new Error(error);
+    console.error("Error al realizar la búsqueda:", error);
+    throw error;
+  }
+};
+export async function getSearchSuggestions(query) {
+  try {
+    const searchParams = {
+      q: query,
+      query_by: "description",
+      per_page: 5, // Número de sugerencias que deseas obtener
+    };
+    const result = await client
+      .collections("typesenseProducts")
+      .documents()
+      .search(searchParams);
+    const suggestions = result.hits.map((document) => document.document);
+    return suggestions;
+  } catch (error) {
+    console.error("Error fetching search suggestions:", error);
+    return [];
+  }
+}
+
+export const getProductsFromCategory = async (productSearchParam) => {
+  try {
+    //productSearchParam = productSearchParam.tolowercase();
+    const searchParams = {
+      q: productSearchParam,
+      query_by: "productCategory",
+    };
+
+    const result = await client
+      .collections("typesenseProducts")
+      .documents()
+      .search(searchParams);
+
+    const productos = result.hits.map((document) => document.document);
+
+    return productos;
+  } catch (error) {
+    console.error("Error al realizar la búsqueda:", error);
+    throw error;
   }
 };

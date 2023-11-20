@@ -261,7 +261,7 @@ function ProductQuoteRow({
       <td>
         <div className="flex p-4">
           <a
-            href={`http://localhost:4000/articles/${product.id}`}
+            href={`http://162.212.155.221:4000/articles/${product.id}`}
             className="hover:underline mr-1 max-w-xs"
           >
             <Typography variant="small" className=" text-light">
