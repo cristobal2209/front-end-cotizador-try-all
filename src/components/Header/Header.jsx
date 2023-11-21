@@ -16,8 +16,7 @@ import {
   XMarkIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
-import { getSearchSuggestions } from "../../services/SearchService";
-
+//import { getSearchSuggestions } from "../../services/SearchService";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -33,7 +32,6 @@ export default function Header() {
       navigate(`/search/${userSearch}`);
       window.location.reload();
     }
-    
   };
 
   const handleCategoriesClickOutside = (event) => {
@@ -71,31 +69,27 @@ export default function Header() {
     };
   }, []);
 
-  
-    const [suggestions, setSuggestions] = useState([]);
-    const handleInputChange = async (texto) => {
-      try {
-        const suggestions = await getSearchSuggestions(texto);
-        setSuggestions(suggestions);
-        console.log
-      } catch (error) {
-        console.error('Error fetching search suggestions:', error);
-        setSuggestions([]);
-      }
-    };
+  // const [suggestions, setSuggestions] = useState([]);
+  // const handleInputChange = async (texto) => {
+  //   try {
+  //     const suggestions = await getSearchSuggestions(texto);
+  //     setSuggestions(suggestions);
+  //     console.log
+  //   } catch (error) {
+  //     console.error('Error fetching search suggestions:', error);
+  //     setSuggestions([]);
+  //   }
+  // };
   const onChangeUserSearch = (event) => {
     const newText = event.target.value;
     setUserSearch(newText);
     handleInputChange(newText);
-    
   };
 
   const handleclickSearchButton = () => {
     navigate(`/search/${userSearch}`);
     window.location.reload();
-  }
-
-  
+  };
 
   const memoizedHandleCategoriesClickOutside = useMemo(
     () => handleCategoriesClickOutside,
@@ -153,19 +147,18 @@ export default function Header() {
               }}
             />
             {/* render del autocompletado */}
-         <ul className="absolute mt-[300px] bg-one w-full">
-         {/* verifica si existe texto en el usuario para ocultar o mostrar la barra de autocompletado */}
-          {userSearch && 
-            suggestions.map((suggestion, index) => (
-              <li key={index}>
-                <Link to={`/articles/${suggestion.idt}`}>
-                  {suggestion.description.slice(0, 30)}
-                </Link>
-              </li>
-            ))}
-        </ul>
+            <ul className="absolute mt-[300px] bg-one w-full">
+              {/* verifica si existe texto en el usuario para ocultar o mostrar la barra de autocompletado */}
+              {userSearch &&
+                suggestions.map((suggestion, index) => (
+                  <li key={index}>
+                    <Link to={`/articles/${suggestion.idt}`}>
+                      {suggestion.description.slice(0, 30)}
+                    </Link>
+                  </li>
+                ))}
+            </ul>
 
-            
             <Button
               size="sm"
               className="py-1 right-32 rounded !absolute bg-transparent !shadow-none !hover:shadow-lg z-10 hover:bg-fourHover"
