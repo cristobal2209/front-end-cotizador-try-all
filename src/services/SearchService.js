@@ -1,23 +1,17 @@
 import { client } from "../services/typesense.js";
 
-export const getProductsFromInput = async (
-  productSearchParam,
-  page = 1,
-  pageSize = 20
-) => {
+export const getProductsFromInput = async (productSearchParam, page = 1, pageSize = 20) => {
   try {
     const searchParams = {
       q: productSearchParam,
-      query_by: "description",
-      infix: "always",
+      query_by: 'description',
+      infix: 'always',
       page,
       per_page: pageSize,
     };
-
-    const result = await client
-      .collections("typesenseProducts")
-      .documents()
-      .search(searchParams);
+    console.log(await client.collections('typesenseProducts').retrieve())
+    console.log('Search URL:', client.collections("typesenseProducts").documents().search(searchParams)._url);
+    const result = await client.collections("typesenseProducts").documents().search(searchParams);
 
     const productos = result.hits.map((document) => document.document);
 
@@ -27,7 +21,7 @@ export const getProductsFromInput = async (
       currentPage: page,
     };
   } catch (error) {
-    console.error("Error al realizar la búsqueda:", error);
+    console.error('Error al realizar la búsqueda:', error);
     throw error;
   }
 };
