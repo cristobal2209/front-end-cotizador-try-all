@@ -4,9 +4,9 @@ export const client = new Typesense.Client({
   nodes: [
     {
       host: "quotemaster.homedns.org",
-      port: 8443,
+      port: 443,
       protocol: "https",
-     // path: "/typesense",
+      // path: "/typesense",
     },
   ],
   apiKey: "brandon",
