@@ -9,6 +9,7 @@ import SearchResults from "../SearchResults/SearchResults";
 import MainLayout from "../MainLayout/MainLayout";
 import QuoteDetails from "../QuoteDetails/QuoteDetails";
 import RedirectToLogin from "./RedirectToLogin";
+import SearchCategoryResults from "../SearchResults/SearchCategoryResults";
 import { auth } from "../../firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
@@ -63,6 +64,7 @@ export default function Router() {
         <Route path="articles/:productId" element={<Article />} />
         <Route path="quoteDetails/:quoteId" element={<QuoteDetails />} />
         <Route path="search/:productSearchParam" element={<SearchResults />} />
+        <Route path="search/category/:categorySearchParam" element={<SearchCategoryResults />} />
         <Route path="redirectLogin" element={<RedirectToLogin />} />
         {user ? (
           <Route element={!token.claims.admin ? <Navigate to="/" /> : ""}>

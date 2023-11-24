@@ -50,12 +50,13 @@ export async function getSearchSuggestions(query) {
   }
 }
 
-export const getProductsFromCategory = async (productSearchParam) => {
+export const getProductsFromCategory = async (categorySearchParam, page = 1,pageSize = 20) => {
   try {
-    //productSearchParam = productSearchParam.tolowercase();
     const searchParams = {
-      q: productSearchParam,
+      q: categorySearchParam,
       query_by: "productCategory",
+      page,
+      per_page: pageSize,
     };
 
     const result = await client
@@ -64,10 +65,42 @@ export const getProductsFromCategory = async (productSearchParam) => {
       .search(searchParams);
 
     const productos = result.hits.map((document) => document.document);
-
-    return productos;
+    console.log(productos);
+    return {
+      data: productos,
+      totalPages: result.found / pageSize,
+      currentPage: page,
+    };
   } catch (error) {
     console.error("Error al realizar la búsqueda:", error);
     throw error;
   }
 };
+
+export const getProductsFromCategoryAndName = async (categorySearchParam,page = 1,pageSize = 20) => {
+  try {
+    const searchParams = {
+      q: categorySearchParam,
+      query_by: "productCategory",
+      page,
+      per_page: pageSize,
+    };
+
+    const result = await client
+      .collections("typesenseProducts")
+      .documents()
+      .search(searchParams);
+
+    const productos = result.hits.map((document) => document.document);
+    console.log(productos);
+    return {
+      data: productos,
+      totalPages: result.found / pageSize,
+      currentPage: page,
+    };
+  } catch (error) {
+    console.error("Error al realizar la búsqueda:", error);
+    throw error;
+  }
+};
+

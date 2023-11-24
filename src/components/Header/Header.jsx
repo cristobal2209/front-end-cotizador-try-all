@@ -77,7 +77,7 @@ export default function Header() {
       try {
         const suggestions = await getSearchSuggestions(texto);
         setSuggestions(suggestions);
-        console.log
+        
       } catch (error) {
         console.error('Error fetching search suggestions:', error);
         setSuggestions([]);
@@ -158,7 +158,7 @@ export default function Header() {
           {userSearch && 
             suggestions.map((suggestion, index) => (
               <li key={index}>
-                <Link to={`/articles/${suggestion.idt}`}>
+                <Link to={`/articles/${suggestion.idProduct}`}>
                   {suggestion.description.slice(0, 30)}
                 </Link>
               </li>
