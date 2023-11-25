@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { subscribeToCollection } from "../../services/TableQuoteService";
+import {subscribeToCollection } from "../../services/TableQuoteService";
 import UserQuoteRow from "./UserQuoteRow";
 import {
   Button,
@@ -22,6 +22,7 @@ import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 import * as xlsx from "xlsx";
 
+
 const TABLE_HEAD = ["Nombre", "Estado", "Fecha Creación", "Ver", "Opciones"];
 
 export default function TableQuote() {
@@ -42,23 +43,26 @@ export default function TableQuote() {
   const endIndex = startIndex + itemsPerPage;
 
   const visibleItems = userQuotesCollection.slice(startIndex, endIndex);
+ const [originalUserQuotesCollection, setOriginalUserQuotesCollection] = useState([]);
 
-  useEffect(() => {
-    document.title = "Mis cotizaciones";
-    const unsubscribe = subscribeToCollection("quotes", (data) => {
-      setUserQuotesCollection(data);
-    });
+ useEffect(() => {
+  document.title = "Mis cotizaciones";
+  const unsubscribe = subscribeToCollection("quotes", (data) => {
+    setUserQuotesCollection(data);
+    setOriginalUserQuotesCollection(data); // Almacenar el estado original
+  });
 
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-    };
-  }, []);
+  return () => {
+    if (unsubscribe) {
+      unsubscribe();
+    }
+  };
+}, []);
 
   useEffect(() => {
     setContador(contador + 1);
   }, [userQuotesCollection]);
+
 
   const handleOpenQuoteView = () => setOpenQuoteView(!openQuoteView);
 
@@ -94,6 +98,31 @@ export default function TableQuote() {
     color: "gray",
     onClick: () => setActive(index),
   });
+ 
+  const [searchTerm, setSearchTerm] = useState('');
+  const handleSearch = async (searchTerm) => {
+    try {
+      if (searchTerm.trim() === "") {
+        // Si el término de búsqueda está vacío, restaurar el estado original
+        setUserQuotesCollection(originalUserQuotesCollection);
+      } else {
+        // Filtrar userQuotesCollection por searchTerm
+        const filteredQuotes = originalUserQuotesCollection.filter((quote) => {
+          // Puedes ajustar las condiciones de filtrado según tus necesidades
+          return (
+            quote.quoteName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            quote.responsibleName.toLowerCase().includes(searchTerm.toLowerCase())
+            // Agrega más condiciones según las propiedades que deseas incluir en la búsqueda
+          );
+        });
+
+        // Establecer el nuevo estado filtrado
+        setUserQuotesCollection(filteredQuotes);
+      }
+    } catch (error) {
+      console.error('Error al realizar la búsqueda:', error);
+    }
+  };
 
   const TableHeader = (
     <thead>
@@ -134,11 +163,19 @@ export default function TableQuote() {
             </div>
             <div className="flex w-full shrink-0 gap-2 md:w-max">
               <div className="w-full md:w-72">
-                <Input
-                  label="Buscar cotización"
-                  icon={<MagnifyingGlassIcon className="h-5 w-5 text-dark" />}
-                  disabled={true}
-                />
+
+            <Input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => {
+                
+                setSearchTerm(e.target.value);
+                handleSearch(e.target.value);
+              }}
+              placeholder="Buscar cotización"
+             
+/>
+                
               </div>
             </div>
             <AlertSuccess open={openAlertSuccess} data={alertData} />
