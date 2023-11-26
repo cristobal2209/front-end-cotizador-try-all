@@ -39,6 +39,7 @@ export default function TableProduct() {
   const [openAlertSuccess, setOpenAlertSuccess] = useState(false);
   const [openAlertFailed, setOpenAlertFailed] = useState(false);
   const [ProductsCollection, setProductsCollection] = useState([]);
+
   const [alertData, setAlertData] = useState();
   const [contador, setContador] = useState(0);
   const [nextDocRef, setNextDocRef] = useState(null);
@@ -47,6 +48,9 @@ export default function TableProduct() {
   const [totalItems, setTotalItems] = useState(0);
   const [openCreateProductDialog, setOpenCreateProductDialog] = useState(false);
   const itemsPerPage = 10;
+  const [searchTerm, setSearchTerm] = useState('');
+  const [originalProductsCollection, setOriginalProductsCollection] = useState([]);
+  
 
   const TABLE_HEAD = [
     "Producto",
@@ -79,13 +83,17 @@ export default function TableProduct() {
   };
 
   const getNextProducts = async () => {
-    const { data, firstVisible, lastVisible } =
-      await getNextProductsCollection(nextDocRef);
-    setProductsCollection(data);
-    setNextDocRef(lastVisible);
-    setPrevDocRef(firstVisible);
-    setShowedProductsQuantity(showedProductsQuantity + itemsPerPage);
-  };
+  const { data, firstVisible, lastVisible } = await getNextProductsCollection(nextDocRef);
+  // Si es la primera carga, guarda la data original
+  if (ProductsCollection.length === 0) {
+    setOriginalProductsCollection(data);
+  }
+
+  setProductsCollection(data);
+  setNextDocRef(lastVisible);
+  setPrevDocRef(firstVisible);
+  setShowedProductsQuantity(showedProductsQuantity + itemsPerPage);
+};
 
   const getPrevProducts = async () => {
     const { data, firstVisible, lastVisible } =
@@ -122,6 +130,21 @@ export default function TableProduct() {
     setAlertData(error);
     handleOpenAlertFailed(true);
   };
+  
+const handleSearch = (searchTerm) => {
+  // Convierte el término de búsqueda a minúsculas para hacer la búsqueda sin distinción entre mayúsculas y minúsculas
+  const searchTermLower = searchTerm.toLowerCase();
+
+  // Filtra los productos basándose en el término de búsqueda en la propiedad 'description'
+  const filteredProducts = originalProductsCollection.filter(product => {
+    return product.description.toLowerCase().includes(searchTermLower);
+  });
+
+  // Actualiza el estado ProductsCollection con los productos filtrados
+  setProductsCollection(filteredProducts);
+
+  // También podrías querer actualizar otros estados relacionados con la búsqueda si es necesario
+};
 
   return (
     <>
@@ -147,13 +170,16 @@ export default function TableProduct() {
               <div className="flex w-full shrink-0 gap-2 md:w-max">
                 <div className="w-full">
                   <div className="flex flex-row">
-                    <Input
-                      label="Buscar producto"
-                      icon={
-                        <MagnifyingGlassIcon className="h-5 w-5 text-dark" />
-                      }
-                      disabled={true}
-                    />
+                              <Input
+                            type="text"
+                            value={searchTerm}
+                            onChange={(e) => {
+                              setSearchTerm(e.target.value);
+                              handleSearch(e.target.value);
+                            }}
+                            placeholder="Buscar Producto"
+                            
+                          />
                     <Button
                       className=" bg-three hover:bg-threeHover ml-2 !w-max"
                       size="sm"
