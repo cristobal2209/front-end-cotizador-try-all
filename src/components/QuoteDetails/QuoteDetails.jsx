@@ -146,60 +146,65 @@ export default function QuoteDetails() {
               </Typography>
             </>
           ) : (
-            <table className="w-full min-w-max table-auto text-left">
-              <thead>
-                <tr>
-                  {TABLE_HEAD.map((head) => (
-                    <th key={head} className=" bg-dark3 border-opacity-50 p-4">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal leading-none  text-light"
-                      >
-                        {head}
-                      </Typography>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="mx-auto">
-                {isLoadingTable ? (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-max table-auto text-left ">
+                <thead>
                   <tr>
-                    <td>
-                      <div>
-                        <Spinner className="h-12 w-12" />
-                      </div>
-                    </td>
+                    {TABLE_HEAD.map((head) => (
+                      <th
+                        key={head}
+                        className=" bg-dark3 border-opacity-50 p-4"
+                      >
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal leading-none  text-light"
+                        >
+                          {head}
+                        </Typography>
+                      </th>
+                    ))}
                   </tr>
-                ) : (
-                  <>
-                    {quoteProducts?.map((productData, index) => {
-                      const isLast = index === quote.products.length - 1;
-                      const classes = isLast
-                        ? "p-4"
-                        : "p-4 border-b border-blue-gray-50";
-                      return (
-                        <ProductQuoteRow
-                          productData={productData}
-                          key={productData.id}
-                          classes={classes}
-                          updateSubtotal={(newQuantity, newPrice) => {
-                            updateSubtotal(
-                              productData.id,
-                              newQuantity,
-                              newPrice
-                            );
-                          }}
-                          deleteProduct={() => {
-                            deleteProduct(productData.id);
-                          }}
-                        />
-                      );
-                    })}
-                  </>
-                )}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="mx-auto ">
+                  {isLoadingTable ? (
+                    <tr>
+                      <td>
+                        <div>
+                          <Spinner className="h-12 w-12" />
+                        </div>
+                      </td>
+                    </tr>
+                  ) : (
+                    <>
+                      {quoteProducts?.map((productData, index) => {
+                        const isLast = index === quote.products.length - 1;
+                        const classes = isLast
+                          ? "p-4"
+                          : "p-4 border-b border-blue-gray-50";
+                        return (
+                          <ProductQuoteRow
+                            productData={productData}
+                            key={productData.id}
+                            classes={classes}
+                            updateSubtotal={(newQuantity, newPrice) => {
+                              updateSubtotal(
+                                productData.id,
+                                newQuantity,
+                                newPrice
+                              );
+                            }}
+                            deleteProduct={() => {
+                              deleteProduct(productData.id);
+                            }}
+                          />
+                        );
+                      })}
+                    </>
+                  )}
+                </tbody>
+              </table>
+            </div>
           )}
         </CardBody>
         {quoteProducts?.length === 0 || !quoteProducts ? (
@@ -302,6 +307,13 @@ function ProductQuoteRow({
     return inputString.charAt(0).toUpperCase() + inputString.slice(1);
   }
 
+  const handleQuantityChange = (event) => {
+    const newQuantity = parseInt(event.target.value, 10) || 1;
+    if (newQuantity <= totalStock) {
+      updatePriceAndSubtotal(newQuantity);
+    }
+  };
+
   return (
     <tr
       className={`bg-two hover:bg-twoHover text-light items-center ${classes}`}
@@ -361,8 +373,12 @@ function ProductQuoteRow({
           </Button>
           <div className="self-center mx-5">
             <Typography variant="small" className=" text-light">
-              {" "}
-              {quantity}
+              <input
+                type="text"
+                value={quantity}
+                onChange={handleQuantityChange}
+                className="self-center rounded-md bg-dark px-3 text-center border-2 border-dark2 max-w-[100px]"
+              />
             </Typography>
           </div>
           <Button
