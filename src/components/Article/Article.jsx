@@ -237,8 +237,6 @@ function SupplierRow({ supplier, classes, handleAddProductToQuote }) {
     handleAddProductToQuote: PropTypes.func.isRequired,
   };
 
-  console.log(supplier);
-
   return (
     <tr className="bg-two hover:bg-twoHover">
       <td className={classes}>
