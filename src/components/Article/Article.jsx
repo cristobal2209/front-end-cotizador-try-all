@@ -237,6 +237,8 @@ function SupplierRow({ supplier, classes, handleAddProductToQuote }) {
     handleAddProductToQuote: PropTypes.func.isRequired,
   };
 
+  console.log(supplier);
+
   return (
     <tr className="bg-two hover:bg-twoHover">
       <td className={classes}>
@@ -282,18 +284,28 @@ function SupplierRow({ supplier, classes, handleAddProductToQuote }) {
       </td>
       <td className={classes}>
         <div className="flex flex-col">
-          {supplier.stock?.map((currentStock, index) => {
-            return (
-              <div className="flex justify-between" key={index}>
-                <Typography variant="small" className="opacity-70">
-                  {currentStock.country === "us" ? "EE.UU" : "Reino Unido"}:
-                </Typography>
-                <Typography variant="small">
-                  {currentStock.stock} &nbsp; u.
-                </Typography>
-              </div>
-            );
-          })}
+          {supplier.stock.length !== 0 ? (
+            <>
+              {supplier.stock.map((currentStock, index) => {
+                return (
+                  <div className="flex justify-between" key={index}>
+                    <Typography variant="small" className="opacity-70">
+                      {currentStock.country === "us" ? "EE.UU" : "Reino Unido"}:
+                    </Typography>
+                    <Typography variant="small">
+                      {currentStock.stock} &nbsp; u.
+                    </Typography>
+                  </div>
+                );
+              })}
+            </>
+          ) : (
+            <>
+              <Typography variant="small" className="opacity-70">
+                Sin stock.
+              </Typography>
+            </>
+          )}
         </div>
       </td>
       <td className={`${classes}`}>
@@ -304,6 +316,7 @@ function SupplierRow({ supplier, classes, handleAddProductToQuote }) {
             onClick={() => {
               handleAddProductToQuote(supplier);
             }}
+            disabled={supplier.stock.length === 0}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
