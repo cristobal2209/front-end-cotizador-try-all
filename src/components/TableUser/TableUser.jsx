@@ -26,21 +26,32 @@ export default function TableUser() {
   const [userDataCollection, setUserDataCollection] = useState([{}]);
   const [openCreateUserModal, setOpenCreateUserModal] = useState(false);
   const [alertData, setAlertData] = useState();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [originaluserDataCollection, setoriginaluserDataCollection] = useState([{}]);
-
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredUserData, setFilteredUserData] = useState([]);
+  useEffect(() => {
+    setFilteredUserData(userDataCollection);
+  }, [userDataCollection]);
   useEffect(() => {
     document.title = "Tabla Usuarios";
     getUserData();
   }, []);
+  const handleSearch = () => {
+    const filteredData = userDataCollection.filter((user) =>
+      Object.values(user).some(
+        (value) =>
+          typeof value === "string" &&
+          value.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    );
+    setFilteredUserData(filteredData);
+  };
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
 
   const getUserData = async () => {
     setIsLoadingTable(true);
     const userData = await fetchUserData();
-    // Si es la primera carga, guarda la data original
-    if (userDataCollection.length === 0) {
-      setoriginaluserDataCollection(userData);
-    }
     setUserDataCollection(userData);
     setIsLoadingTable(false);
   };
@@ -73,20 +84,6 @@ export default function TableUser() {
     setAlertData(error);
     handleOpenAlertFailed(true);
   };
-  const handleSearch = (searchTerm) => {
-    // Convierte el término de búsqueda a minúsculas para hacer la búsqueda sin distinción entre mayúsculas y minúsculas
-    const searchTermLower = searchTerm.toLowerCase();
-  
-    // Filtra los productos basándose en el término de búsqueda en la propiedad 'description'
-    const filteredProducts = originaluserDataCollection.filter(product => {
-      return product.description.toLowerCase().includes(searchTermLower);
-    });
-  
-    // Actualiza el estado ProductsCollection con los productos filtrados
-    setUserDataCollection(filteredProducts);
-  
-    // También podrías querer actualizar otros estados relacionados con la búsqueda si es necesario
-  };
 
   return (
     <>
@@ -109,14 +106,14 @@ export default function TableUser() {
               </div>
               <div className="flex w-full shrink-0 gap-2 md:w-max">
                 <div className="w-full md:w-72">
-                          <Input
+                            <Input
                             type="text"
                             value={searchTerm}
                             onChange={(e) => {
                               setSearchTerm(e.target.value);
                               handleSearch(e.target.value);
                             }}
-                            placeholder="Buscar Usuario"
+                            placeholder="Buscar Producto"
                             
                           />
                 </div>
@@ -179,7 +176,7 @@ export default function TableUser() {
                   </tr>
                 ) : (
                   <>
-                    {userDataCollection.map((user, index) => {
+                    {filteredUserData.map((user, index) => {
                       const isLast = index === userDataCollection.length - 1;
                       const classes = isLast
                         ? "p-4"
