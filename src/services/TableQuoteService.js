@@ -45,7 +45,7 @@ export const changeQuoteStatus = async (quoteId, newStatus) => {
     const quoteRef = doc(db, "usersQuotes", user.uid, "quotes", quoteId);
     await updateDoc(quoteRef, { status: newStatus });
 
-    return newStatus;
+    return "Estado de cotización cambiado.";
   } catch (error) {
     throw new Error(error);
   }

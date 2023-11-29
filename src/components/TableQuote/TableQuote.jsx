@@ -188,8 +188,8 @@ export default function TableQuote() {
               {userQuotesCollection.length === 0 ? (
                 <Typography className="w-full text-center font-bold text-light">
                   Usted no tiene tiene cotizaciones guardadas. Para crear una
-                  cotización, presione el botón &quote;Nueva cotización&quote;
-                  en la barra de navegación.
+                  cotización, presione el botón &quot;Nueva cotización&quot; en
+                  la barra de navegación.
                 </Typography>
               ) : (
                 <table className="w-full min-w-max table-auto text-left">

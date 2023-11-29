@@ -87,6 +87,7 @@ export default function UserQuoteRow({
   };
 
   const handleCancelChangeStatus = () => {
+    setNewQuoteStatus(String(quote.status));
     setIsConfirmationDialogOpen(false);
   };
 
@@ -311,10 +312,10 @@ export default function UserQuoteRow({
       </td>
       <Dialog open={isConfirmationDialogOpen} className="bg-dark">
         <DialogHeader className="text-light">
-          Confirmar Cambio de Estado
+          Confirmar cambio de estado cotización.
         </DialogHeader>
-        <DialogBody className="text-light opacity-70">
-          ¿Estás seguro en cambiar el estado?
+        <DialogBody className="text-light opacity-70 text-center">
+          ¿Está seguro en cambiar el estado de la cotización?
         </DialogBody>
         <DialogFooter>
           <Button
