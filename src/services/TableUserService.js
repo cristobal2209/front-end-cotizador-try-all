@@ -30,6 +30,28 @@ export const changeUserStatus = async (isDisabled, UID) => {
   }
 };
 
+export const updateUserData = async (UID, newUserData) => {
+  const dataToSend = { uid: UID, ...newUserData };
+
+  try {
+    const response = await axios.patch("/api/updateUserData", dataToSend);
+    return response.data;
+  } catch (error) {
+    throw new Error("Error al actualizar los datos de usuario.");
+
+  }
+}
+
+export const deleteUser = async (UID) => {
+
+  try {
+    const response = await axios.post("/api/deleteUser", { uid: UID });
+    return response.data;
+  } catch (error) {
+    throw new Error("Error al eliminar el usuario.");
+  }
+}
+
 export const fetchUserData = async () => {
   try {
     const response = await axios.get("/api/getUsers");
@@ -38,3 +60,5 @@ export const fetchUserData = async () => {
     throw new Error("No se pudo recuperar los datos de usuarios.");
   }
 };
+
+

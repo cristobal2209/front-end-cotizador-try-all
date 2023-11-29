@@ -16,7 +16,13 @@ import {
 } from "@material-tailwind/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
-const TABLE_HEAD = ["Nombre", "Correo", "Privilegios", "Habilitado", "Editar"];
+const TABLE_HEAD = [
+  "Nombre",
+  "Correo",
+  "Privilegios",
+  "Habilitado",
+  "Opciones",
+];
 
 export default function TableUser() {
   const [isLoadingTable, setIsLoadingTable] = useState(false);
@@ -175,7 +181,6 @@ export default function TableUser() {
               </tbody>
             </table>
           </CardBody>
-          <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4"></CardFooter>
         </Card>
         {openCreateUserModal && (
           <CreateUser
