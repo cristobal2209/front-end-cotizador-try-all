@@ -13,11 +13,14 @@ import {
   DialogHeader,
   DialogBody,
   DialogFooter,
+  Alert,
 } from "@material-tailwind/react";
 import {
   changeQuoteStatus,
   deleteQuote,
 } from "../../services/TableQuoteService";
+import * as Yup from "yup";
+import { useFormik } from "formik";
 
 export default function UserQuoteRow({
   quote,
@@ -32,6 +35,8 @@ export default function UserQuoteRow({
   const [newQuoteStatus, setNewQuoteStatus] = useState(quoteStatus);
   const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] =
     useState(false);
+  const [isEditingQuoteName, setIsEditingQuoteName] = useState(false);
+  const [isQuoteNameHovered, setIsQuoteNameHovered] = useState(false);
 
   const handleChangeQuoteStatus = (newQuoteStatus) => {
     setIsConfirmationDialogOpen(true);
@@ -68,34 +73,70 @@ export default function UserQuoteRow({
     setIsConfirmationDialogOpen(false);
   };
 
+  const handleChangeQuoteName = () => {
+    setIsEditingQuoteName(true);
+  };
+
   useEffect(() => {
     setQuoteStatus(String(quote.status));
+    console.log(quote);
   }, [quote]);
+
+  const validationSchema = Yup.object().shape({
+    quoteName: Yup.string()
+      .min(3, "El nombre debe contener al menos 3 caracteres")
+      .max(20, "El nombre debe contener a lo más 20 caracteres")
+      .required("El nombre es obligatorio")
+      .matches(
+        /^[a-zA-Z0-9 ]*$/,
+        "No se permiten caracteres especiales en el nombre"
+      ),
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      quoteName: quote.quoteName,
+    },
+    validateOnMount: true,
+    validationSchema: validationSchema,
+    onSubmit: () => {},
+  });
 
   return (
     <tr className="hover:bg-two">
       <td className={classes}>
-        <div className="flex items-center">
-          <Typography variant="small" className="font-normal text-light mr-1">
-            {quote.quoteName}
-          </Typography>
-          <Button className="hover:bg-twoHover bg-transparent shadow-none !px-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-4 h-4"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"
-              />
-            </svg>
-          </Button>
-        </div>
+        {isEditingQuoteName ? (
+          <>
+            <input
+              type="text"
+              name="quoteName"
+              placeholder="Nombre cotización"
+              label="Nombre cotización"
+              value={formik.values.quoteName}
+              onChange={(e) => {
+                formik.handleChange(e);
+              }}
+              onMouseEnter={() => setIsQuoteNameHovered(true)}
+              onMouseLeave={() => setIsQuoteNameHovered(false)}
+              className={`mr-1 rounded-md px-1 w-1/2 text-light bg-dark2 font-sans text-[14px] shadow-md border-2 ${
+                formik.errors.quoteName
+                  ? " border-red-500 animate-pulse"
+                  : "border-gray-700"
+              }`}
+            />
+            {formik.errors.quoteName && isQuoteNameHovered ? (
+              <Alert className="absolute mt-1 bg-red-500 !w-auto animate-pulse">
+                {formik.errors.quoteName}
+              </Alert>
+            ) : null}
+          </>
+        ) : (
+          <>
+            <Typography variant="small" className="font-normal text-light mr-1">
+              {quote.quoteName}
+            </Typography>
+          </>
+        )}
       </td>
       <td className={classes}>
         <div className="max-w-[10rem]">
@@ -153,38 +194,45 @@ export default function UserQuoteRow({
         </Button>
       </td>
       <td className={classes}>
-        <Menu>
-          <MenuHandler>
-            <Button
-              variant="text"
-              className="px-3 bg-transparent shadow-none hover:shadow-md hover:bg-twoHover"
-              onClick={() => setOpenThreeDotsOptions(!openThreeDotsOptions)}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-6 h-6 text-light"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z"
-                />
-              </svg>
-            </Button>
-          </MenuHandler>
-          <MenuList className="bg-dark text-light border-dark2">
-            <MenuItem disabled>Cambiar nombre</MenuItem>
-            <MenuItem disabled>Ver Versiones</MenuItem>
-            <MenuItem onClick={() => handleGenerateExcel(quote)}>
-              Descargar Excel
-            </MenuItem>
-            <MenuItem onClick={handleOpenDeleteDialog}>Eliminar</MenuItem>
-          </MenuList>
-        </Menu>
+        {isEditingQuoteName ? (
+          <></>
+        ) : (
+          <>
+            <Menu>
+              <MenuHandler>
+                <Button
+                  variant="text"
+                  className="px-3 bg-transparent shadow-none hover:shadow-md hover:bg-twoHover"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-6 h-6 text-light"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z"
+                    />
+                  </svg>
+                </Button>
+              </MenuHandler>
+              <MenuList className="bg-dark text-light border-dark2">
+                <MenuItem onClick={handleChangeQuoteName}>
+                  Cambiar nombre
+                </MenuItem>
+                <MenuItem disabled>Ver Versiones</MenuItem>
+                <MenuItem onClick={() => handleGenerateExcel(quote)}>
+                  Descargar Excel
+                </MenuItem>
+                <MenuItem onClick={handleOpenDeleteDialog}>Eliminar</MenuItem>
+              </MenuList>
+            </Menu>
+          </>
+        )}
       </td>
       <Dialog open={isConfirmationDialogOpen} className="bg-dark">
         <DialogHeader className="text-light">
