@@ -10,6 +10,21 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 
+export const updateQuoteName = async (quoteId, newQuoteName) => {
+  const user = auth.currentUser;
+  if (!user) {
+    throw new Error("Usuario no autenticado");
+  }
+
+  const docRef = doc(db, "usersQuotes", user.uid, "quotes", quoteId);
+  return await updateDoc(docRef, { quoteName: newQuoteName }).then(() => {
+    return "Nombre cotización actualizado.";
+  })
+    .catch((e) => {
+      throw new Error("Error al actualizar el nombre de cotización.");
+    });
+}
+
 export const changeQuoteStatus = async (quoteId, newStatus) => {
   try {
     const user = auth.currentUser;

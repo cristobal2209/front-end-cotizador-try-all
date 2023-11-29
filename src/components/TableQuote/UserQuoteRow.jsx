@@ -14,10 +14,12 @@ import {
   DialogBody,
   DialogFooter,
   Alert,
+  Spinner,
 } from "@material-tailwind/react";
 import {
   changeQuoteStatus,
   deleteQuote,
+  updateQuoteName,
 } from "../../services/TableQuoteService";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -25,11 +27,11 @@ import { useFormik } from "formik";
 export default function UserQuoteRow({
   quote,
   classes,
-  handleAlert,
+  handleSuccessAlert,
+  handleFailedAlert,
   handleGenerateExcel,
   handleQuoteView,
 }) {
-  const [openThreeDotsOptions, setOpenThreeDotsOptions] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [quoteStatus, setQuoteStatus] = useState(String(quote.status));
   const [newQuoteStatus, setNewQuoteStatus] = useState(quoteStatus);
@@ -37,6 +39,7 @@ export default function UserQuoteRow({
     useState(false);
   const [isEditingQuoteName, setIsEditingQuoteName] = useState(false);
   const [isQuoteNameHovered, setIsQuoteNameHovered] = useState(false);
+  const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
 
   const handleChangeQuoteStatus = (newQuoteStatus) => {
     setIsConfirmationDialogOpen(true);
@@ -48,25 +51,39 @@ export default function UserQuoteRow({
   };
 
   const handleConfirmChangeStatus = async () => {
-    try {
-      await changeQuoteStatus(quote.id, parseInt(newQuoteStatus, 10));
-      handleAlert(true, "Estado cotización cambiado");
-    } catch (error) {
-      handleAlert(false, "Error al cambiar el estado");
-    } finally {
-      setIsConfirmationDialogOpen(false);
-    }
+    await changeQuoteStatus(quote.id, parseInt(newQuoteStatus, 10))
+      .then((data) => {
+        handleSuccessAlert(data);
+      })
+      .catch((error) => {
+        handleFailedAlert(error);
+      });
+    setIsConfirmationDialogOpen(false);
   };
 
   const handleConfirmDelete = async () => {
-    try {
-      await deleteQuote(quote.id);
-      handleAlert(true, "Cotización eliminada correctamente");
-    } catch (error) {
-      handleAlert(false, "Error al eliminar la cotización");
-    } finally {
-      handleOpenDeleteDialog();
-    }
+    await deleteQuote(quote.id)
+      .then((data) => {
+        handleSuccessAlert(data);
+      })
+      .catch((error) => {
+        handleFailedAlert(error);
+      });
+
+    handleOpenDeleteDialog();
+  };
+
+  const handleConfirmUpdateQuoteName = async (formikValues) => {
+    setIsLoadingUpdate(true);
+    updateQuoteName(quote.id, formikValues.quoteName)
+      .then((data) => {
+        handleSuccessAlert(data);
+        setIsLoadingUpdate(false);
+        setIsEditingQuoteName(false);
+      })
+      .catch((error) => {
+        handleFailedAlert(error);
+      });
   };
 
   const handleCancelChangeStatus = () => {
@@ -79,7 +96,6 @@ export default function UserQuoteRow({
 
   useEffect(() => {
     setQuoteStatus(String(quote.status));
-    console.log(quote);
   }, [quote]);
 
   const validationSchema = Yup.object().shape({
@@ -99,7 +115,9 @@ export default function UserQuoteRow({
     },
     validateOnMount: true,
     validationSchema: validationSchema,
-    onSubmit: () => {},
+    onSubmit: () => {
+      handleConfirmUpdateQuoteName(formik.values);
+    },
   });
 
   return (
@@ -118,7 +136,7 @@ export default function UserQuoteRow({
               }}
               onMouseEnter={() => setIsQuoteNameHovered(true)}
               onMouseLeave={() => setIsQuoteNameHovered(false)}
-              className={`mr-1 rounded-md px-1 w-1/2 text-light bg-dark2 font-sans text-[14px] shadow-md border-2 ${
+              className={`mr-1 rounded-md px-2 py-1 w-1/2 text-light bg-dark2 font-sans text-[14px] shadow-md border-2 ${
                 formik.errors.quoteName
                   ? " border-red-500 animate-pulse"
                   : "border-gray-700"
@@ -195,7 +213,64 @@ export default function UserQuoteRow({
       </td>
       <td className={classes}>
         {isEditingQuoteName ? (
-          <></>
+          <>
+            {isLoadingUpdate ? (
+              <>
+                <Spinner />
+              </>
+            ) : (
+              <>
+                <Button
+                  size="sm"
+                  color="green"
+                  className="rounded w-[32px] h-[32px] px-2 mx-1"
+                  disabled={formik.errors.quoteName}
+                  onClick={(e) => {
+                    formik.handleSubmit(e);
+                  }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-4 h-4"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M4.5 12.75l6 6 9-13.5"
+                    />
+                  </svg>
+                </Button>
+                <Button
+                  size="sm"
+                  color="red"
+                  className="rounded w-[32px] h-[32px] px-2 mx-1"
+                  onClick={() => {
+                    setIsEditingQuoteName(false);
+                    formik.setFieldValue("quoteName", quote.quoteName);
+                  }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-4 h-4"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </Button>
+              </>
+            )}
+          </>
         ) : (
           <>
             <Menu>
@@ -290,11 +365,3 @@ export default function UserQuoteRow({
     </tr>
   );
 }
-
-UserQuoteRow.propTypes = {
-  quote: PropTypes.object.isRequired,
-  classes: PropTypes.string.isRequired,
-  handleAlert: PropTypes.func.isRequired,
-  handleGenerateExcel: PropTypes.func.isRequired,
-  handleQuoteView: PropTypes.func.isRequired,
-};

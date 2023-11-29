@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { subscribeToCollection } from "../../services/TableQuoteService";
 import UserQuoteRow from "./UserQuoteRow";
+import AlertFailed from "./AlertFailed";
+import AlertSuccess from "./AlertSuccess";
 import {
   Button,
   Spinner,
@@ -11,7 +13,6 @@ import {
   CardBody,
   CardFooter,
   Input,
-  Alert,
   Dialog,
   DialogHeader,
   DialogBody,
@@ -69,14 +70,6 @@ export default function TableQuote() {
 
   const handleGenerateExcel = (quote) => generateExcel(quote);
 
-  const handleAlert = (success, message) => {
-    setAlertData(message);
-    success ? setOpenAlertSuccess(true) : setOpenAlertFailed(true);
-    setTimeout(() => {
-      success ? setOpenAlertSuccess(false) : setOpenAlertFailed(false);
-    }, 3000);
-  };
-
   const next = () => {
     if (active < totalPages) {
       setActive(active + 1);
@@ -94,6 +87,30 @@ export default function TableQuote() {
     color: "gray",
     onClick: () => setActive(index),
   });
+
+  const handleOpenAlertSuccess = (boolean) => {
+    setOpenAlertSuccess(boolean);
+    setTimeout(() => {
+      setOpenAlertSuccess(false);
+    }, 5000);
+  };
+
+  const handleOpenAlertFailed = (boolean) => {
+    setOpenAlertFailed(boolean);
+    setTimeout(() => {
+      setOpenAlertFailed(false);
+    }, 5000);
+  };
+
+  const handleSuccessAlert = (message) => {
+    setAlertData(message);
+    handleOpenAlertSuccess(true);
+  };
+
+  const handleFailedAlert = (error) => {
+    setAlertData(error);
+    handleOpenAlertFailed(true);
+  };
 
   const TableHeader = (
     <thead>
@@ -141,8 +158,16 @@ export default function TableQuote() {
                 />
               </div>
             </div>
-            <AlertSuccess open={openAlertSuccess} data={alertData} />
-            <AlertFailed open={openAlertFailed} error={alertData} />
+            <AlertSuccess
+              open={openAlertSuccess}
+              handler={handleOpenAlertSuccess}
+              data={alertData}
+            />
+            <AlertFailed
+              open={openAlertFailed}
+              handler={handleOpenAlertFailed}
+              error={alertData}
+            />
           </div>
         </CardHeader>
         <CardBody
@@ -175,7 +200,8 @@ export default function TableQuote() {
                         quote={quote}
                         classes="p-4 border-y border-blue-gray-100"
                         key={index}
-                        handleAlert={handleAlert}
+                        handleSuccessAlert={handleSuccessAlert}
+                        handleFailedAlert={handleFailedAlert}
                         handleGenerateExcel={handleGenerateExcel}
                         handleQuoteView={handleQuoteView}
                       />
@@ -230,86 +256,6 @@ export default function TableQuote() {
         quoteData={quoteData}
       />
     </div>
-  );
-}
-function AlertFailed({ open, error }) {
-  function Icon() {
-    return (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-        className="w-6 h-6"
-      >
-        <path
-          fillRule="evenodd"
-          d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z"
-          clipRule="evenodd"
-        />
-      </svg>
-    );
-  }
-  AlertFailed.propTypes = {
-    open: PropTypes.bool.isRequired,
-    handler: PropTypes.func.isRequired,
-    error: PropTypes.string,
-  };
-  return (
-    <>
-      <div className="fixed w-auto right-[0px]">
-        <Alert
-          open={open}
-          color="red"
-          icon={<Icon />}
-          animate={{
-            mount: { y: 0 },
-            unmount: { y: 100 },
-          }}
-        >
-          <Typography variant="small">{error ? error : " "}</Typography>
-        </Alert>
-      </div>
-    </>
-  );
-}
-function AlertSuccess({ open, data }) {
-  function Icon() {
-    return (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-        className="h-6 w-6"
-      >
-        <path
-          fillRule="evenodd"
-          d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z"
-          clipRule="evenodd"
-        />
-      </svg>
-    );
-  }
-  AlertSuccess.propTypes = {
-    open: PropTypes.bool.isRequired,
-    handler: PropTypes.func.isRequired,
-    data: PropTypes.string,
-  };
-  return (
-    <>
-      <div className="!absolute w-auto right-[0px]">
-        <Alert
-          open={open}
-          color="green"
-          icon={<Icon />}
-          animate={{
-            mount: { y: 0 },
-            unmount: { y: 100 },
-          }}
-        >
-          <Typography variant="small">{data ? data : " "}</Typography>
-        </Alert>
-      </div>
-    </>
   );
 }
 
