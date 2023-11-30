@@ -11,10 +11,8 @@ import {
   CardHeader,
   Typography,
   CardBody,
-  CardFooter,
   Input,
 } from "@material-tailwind/react";
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 const TABLE_HEAD = [
   "Nombre",

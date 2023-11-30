@@ -151,7 +151,7 @@ export default function UserDataRow({
         ) : (
           <>
             <Typography variant="small" className="font-normal text-light">
-              {user?.displayName}
+              {formik.values.displayName}
             </Typography>
           </>
         )}
@@ -185,7 +185,7 @@ export default function UserDataRow({
         ) : (
           <>
             <Typography variant="small" className="font-normal text-light">
-              {user?.email}
+              {formik.values.email}
             </Typography>
           </>
         )}
