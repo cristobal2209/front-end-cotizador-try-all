@@ -245,18 +245,28 @@ export default function CreateQuote() {
         </Button>
       )}
       <Dialog
-        className="!h-auto"
+        className="!h-auto bg-dark"
         open={openQuoteNameAlert}
         handler={handleOpenQuoteNameAlert}
       >
-        <DialogHeader>Creación de nueva cotización</DialogHeader>
+        <DialogHeader>
+          <Typography variant="h5" className="text-light">
+            Creación de nueva cotización
+          </Typography>
+        </DialogHeader>
         <DialogBody divider>
-          <p className="text-center">
+          <Typography
+            variant="paragraph"
+            className="text-center text-light opacity-70"
+          >
             ¿Está seguro en crear la siguiente cotización?
-          </p>
-          <p className="font-bold text-center overflow-y-auto">
+          </Typography>
+          <Typography
+            variant="paragraph"
+            className="font-bold text-center overflow-y-auto text-light"
+          >
             {quoteData.quoteName}
-          </p>
+          </Typography>
         </DialogBody>
         <DialogFooter>
           <Button
