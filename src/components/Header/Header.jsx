@@ -18,22 +18,22 @@ import {
 } from "@heroicons/react/24/outline";
 import { getSearchSuggestions } from "../../services/SearchService";
 
-
 export default function Header() {
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userSearch, setUserSearch] = useState("");
   const [openCategories, setOpenCategories] = useState(false);
   const [user, setUser] = useState(null);
+  const [suggestions, setSuggestions] = useState([]);
   const menuRef = useRef(null);
   const categoriesRef = useRef(null);
 
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
       navigate(`/search/${userSearch}`);
+      setUserSearch(null);
       window.location.reload();
     }
-    
   };
 
   const handleCategoriesClickOutside = (event) => {
@@ -71,31 +71,35 @@ export default function Header() {
     };
   }, []);
 
-  
-    const [suggestions, setSuggestions] = useState([]);
-    const handleInputChange = async (texto) => {
-      try {
-        const suggestions = await getSearchSuggestions(texto);
-        setSuggestions(suggestions);
-        
-      } catch (error) {
-        console.error('Error fetching search suggestions:', error);
-        setSuggestions([]);
-      }
-    };
+  const [suggestions, setSuggestions] = useState([]);
+  useEffect(() => {
+    console.log(userSearch);
+  }, [userSearch]);
+
+  useEffect(() => {
+    console.log(suggestions);
+  }, [suggestions]);
+
+  const handleInputChange = async (texto) => {
+    try {
+      const suggestions = await getSearchSuggestions(texto);
+      setSuggestions(suggestions);
+      console.log;
+    } catch (error) {
+      console.error("Error fetching search suggestions:", error);
+      setSuggestions([]);
+    }
+  };
   const onChangeUserSearch = (event) => {
     const newText = event.target.value;
     setUserSearch(newText);
     handleInputChange(newText);
-    
   };
 
   const handleclickSearchButton = () => {
     navigate(`/search/${userSearch}`);
     window.location.reload();
-  }
-
-  
+  };
 
   const memoizedHandleCategoriesClickOutside = useMemo(
     () => handleCategoriesClickOutside,
@@ -153,19 +157,26 @@ export default function Header() {
               }}
             />
             {/* render del autocompletado */}
-         <ul className="absolute mt-[300px] bg-one w-full">
-         {/* verifica si existe texto en el usuario para ocultar o mostrar la barra de autocompletado */}
-          {userSearch && 
-            suggestions.map((suggestion, index) => (
-              <li key={index}>
-                <Link to={`/articles/${suggestion.idProduct}`}>
-                  {suggestion.description.slice(0, 30)}
-                </Link>
-              </li>
-            ))}
-        </ul>
+            {/* verifica si existe texto en el usuario para ocultar o mostrar la barra de autocompletado */}
+            {userSearch && suggestions?.length !== 0 && (
+              <>
+                <ul className="absolute mt-[270px] p-5 bg-gradient-to-b from-one to-three w-full rounded-md">
+                  {suggestions.map((suggestion) => (
+                    <li
+                      key={suggestion.id}
+                      className="hover:bg-threeHover hover:shadow-md px-2 py-1 rounded-md"
+                    >
+                      <Link to={`/articles/${suggestion.id}`}>
+                        <Typography variant="paragraph" className="text-white">
+                          {suggestion.description.slice(0, 50)}
+                        </Typography>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
 
-            
             <Button
               size="sm"
               className="py-1 right-32 rounded !absolute bg-transparent !shadow-none !hover:shadow-lg z-10 hover:bg-fourHover"
