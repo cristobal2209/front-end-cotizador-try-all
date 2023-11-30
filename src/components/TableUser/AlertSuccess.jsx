@@ -23,7 +23,7 @@ export default function AlertSuccess({ open, handler, data }) {
       <Alert
         open={open}
         onClose={() => handler(false)}
-        className="fixed w-auto right-[8px] mt-[-60px]"
+        className="fixed w-auto right-[8px] mt-[60px] z-50"
         color="green"
         icon={<Icon />}
         animate={{
@@ -38,6 +38,7 @@ export default function AlertSuccess({ open, handler, data }) {
         {data?.userStatusChanged && !data.disabled
           ? `Usuario ${data.userStatusChanged} habilitado.`
           : ""}
+        {data?.message ? data.message : ""}
       </Alert>
     </>
   );
