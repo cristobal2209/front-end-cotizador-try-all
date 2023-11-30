@@ -50,7 +50,7 @@ export async function getSearchSuggestions(query) {
   }
 }
 
-export const getProductsFromCategory = async (categorySearchParam, page = 1,pageSize = 20) => {
+export const getProductsFromCategory = async (categorySearchParam, page = 1, pageSize = 20) => {
   try {
     const searchParams = {
       q: categorySearchParam,
@@ -65,7 +65,7 @@ export const getProductsFromCategory = async (categorySearchParam, page = 1,page
       .search(searchParams);
 
     const productos = result.hits.map((document) => document.document);
-    console.log(productos);
+
     return {
       data: productos,
       totalPages: result.found / pageSize,
@@ -77,7 +77,7 @@ export const getProductsFromCategory = async (categorySearchParam, page = 1,page
   }
 };
 
-export const getProductsFromCategoryAndName = async (categorySearchParam,page = 1,pageSize = 20) => {
+export const getProductsFromCategoryAndName = async (categorySearchParam, page = 1, pageSize = 20) => {
   try {
     const searchParams = {
       q: categorySearchParam,

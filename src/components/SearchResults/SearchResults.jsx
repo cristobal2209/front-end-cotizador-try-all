@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   Card,
   CardBody,
   CardFooter,
   Button,
-  IconButton,
   Spinner,
 } from "@material-tailwind/react";
 import { getProductsFromInput } from "../../services/SearchService";
@@ -54,6 +53,7 @@ function RenderFilters() {
               className="w-full rounded border border-gray-300 px-4 py-2"
               type="text"
               placeholder="Min"
+              disabled={true}
             />
           </div>
           -
@@ -62,6 +62,7 @@ function RenderFilters() {
               className="w-full rounded border border-gray-300 px-4 py-2"
               type="text"
               placeholder="Max"
+              disabled={true}
             />
           </div>
         </div>
@@ -72,6 +73,7 @@ function RenderFilters() {
               className="w-full rounded border border-gray-300 px-4 py-2"
               type="text"
               placeholder="Min"
+              disabled={true}
             />
           </div>
           -
@@ -80,6 +82,7 @@ function RenderFilters() {
               className="w-full rounded border border-gray-300 px-4 py-2"
               type="text"
               placeholder="Max"
+              disabled={true}
             />
           </div>
         </div>
@@ -92,6 +95,7 @@ function RenderFilters() {
             <select
               id="selectOption"
               className="w-full rounded border border-gray-300 bg-one px-4 py-2 text-gray-400"
+              disabled={true}
             >
               <option value="">Marcas</option>
               <option value="option1">Bauker</option>
@@ -111,8 +115,7 @@ export default function SearchResults() {
   const [searchResults, setSearchResults] = useState([]);
   const { productSearchParam } = useParams();
   const [totalPages, setTotalPages] = useState(0);
- 
-  
+
   useEffect(() => {
     result();
   }, [currentPage]);
@@ -120,16 +123,17 @@ export default function SearchResults() {
   async function result() {
     setIsLoading(true);
     try {
-      const { data, totalPages: total, currentPage: current } = await getProductsFromInput(
-        productSearchParam,
-        currentPage
-      );
+      const {
+        data,
+        totalPages: total,
+        currentPage: current,
+      } = await getProductsFromInput(productSearchParam, currentPage);
 
       setSearchResults(data);
       setTotalPages(total);
       setCurrentPage(current);
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error("Error fetching products:", error);
     } finally {
       setIsLoading(false);
     }
@@ -146,7 +150,6 @@ export default function SearchResults() {
       setCurrentPage(currentPage - 1);
     }
   };
-
 
   return (
     <div className="mx-auto max-w-7xl px-5 pt-10">

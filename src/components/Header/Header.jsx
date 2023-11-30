@@ -71,14 +71,6 @@ export default function Header() {
     };
   }, []);
 
-  useEffect(() => {
-    console.log(userSearch);
-  }, [userSearch]);
-
-  useEffect(() => {
-    console.log(suggestions);
-  }, [suggestions]);
-
   const handleInputChange = async (texto) => {
     try {
       const suggestions = await getSearchSuggestions(texto);
@@ -206,7 +198,7 @@ export default function Header() {
               onClick={() => {
                 setOpenCategories(!openCategories);
               }}
-              ref={categoriesRef}
+              // ref={categoriesRef}
             >
               <Typography variant="small" className="!font-mono text-light">
                 Categorías

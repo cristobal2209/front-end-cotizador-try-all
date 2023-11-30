@@ -7,6 +7,7 @@ import {
   Button,
   Input,
   Spinner,
+  Typography,
 } from "@material-tailwind/react";
 import { getProductsFromCategory } from "../../services/SearchService";
 import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
@@ -47,22 +48,21 @@ function RenderFilters() {
   return (
     <aside className="flex-start col-span-1 flex flex-col pr-10 pt-20">
       <div className=" max-w-[300px] rounded-lg bg-two p-4 shadow-lg">
-        
         <Input
-              label="Buscar Productos en Categoria"
-              
-              color="white"
-              containerProps={{
-                className: "mx-auto min-w-0 bg-four rounded-md mb-4",
-              }}
-            />
-            
+          label="Buscar Productos en Categoria"
+          disabled={true}
+          color="white"
+          containerProps={{
+            className: "mx-auto min-w-0 bg-four rounded-md mb-4",
+          }}
+        />
         <div className="mb-5 flex">
           <div className="w-1/2 pr-2">
             <input
               className="w-full rounded border border-gray-300 px-4 py-2"
               type="text"
               placeholder="Min"
+              disabled={true}
             />
           </div>
           -
@@ -71,6 +71,7 @@ function RenderFilters() {
               className="w-full rounded border border-gray-300 px-4 py-2"
               type="text"
               placeholder="Max"
+              disabled={true}
             />
           </div>
         </div>
@@ -81,6 +82,7 @@ function RenderFilters() {
               className="w-full rounded border border-gray-300 px-4 py-2"
               type="text"
               placeholder="Min"
+              disabled={true}
             />
           </div>
           -
@@ -89,6 +91,7 @@ function RenderFilters() {
               className="w-full rounded border border-gray-300 px-4 py-2"
               type="text"
               placeholder="Max"
+              disabled={true}
             />
           </div>
         </div>
@@ -101,6 +104,7 @@ function RenderFilters() {
             <select
               id="selectOption"
               className="w-full rounded border border-gray-300 bg-one px-4 py-2 text-gray-400"
+              disabled={true}
             >
               <option value="">Marcas</option>
               <option value="option1">Bauker</option>
@@ -120,23 +124,7 @@ export default function SearchCategoryResults() {
   const [searchResults, setSearchResults] = useState([]);
   const { categorySearchParam } = useParams();
   const [totalPages, setTotalPages] = useState(0);
-  
-  const navigate = useNavigate();
-  const [userSearch, setUserSearch] = useState("");
 
-  const onChangeSearch = (event) => {
-    const newText = event.target.value;
-    setUserSearch(newText);
-    handleInputChange(newText);
-    
-  };
-
-  const handleclickSearchButton = () => {
-    navigate(`/search/category/${userSearch}`);
-    window.location.reload();
-  }
-
-  
   useEffect(() => {
     result();
   }, [currentPage]);
@@ -144,15 +132,18 @@ export default function SearchCategoryResults() {
   async function result() {
     setIsLoading(true);
     try {
-
       //if donde selecciona segun la data el tipo de search
-      const { data, totalPages: total, currentPage: current } = await getProductsFromCategory(categorySearchParam,currentPage);
+      const {
+        data,
+        totalPages: total,
+        currentPage: current,
+      } = await getProductsFromCategory(categorySearchParam, currentPage);
 
       setSearchResults(data);
       setTotalPages(total);
       setCurrentPage(current);
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error("Error fetching products:", error);
     } finally {
       setIsLoading(false);
     }
@@ -170,7 +161,6 @@ export default function SearchCategoryResults() {
     }
   };
 
-
   return (
     <div className="mx-auto max-w-7xl px-5 pt-10">
       <div className="flex flex-row">
@@ -180,34 +170,46 @@ export default function SearchCategoryResults() {
             {isLoading ? (
               <Spinner className="mx-auto mt-20 h-12 w-12" />
             ) : (
-              <div className="pb-10">
-                <GridSearchResults products={searchResults} />
-                {/* <GridSearchResults products={searchResults} /> */}
-                <div className="mx-auto flex pt-20">
-                  <Button
-                    variant="text"
-                    className="mx-auto flex items-center gap-2 bg-two hover:bg-twoHover text-light"
-                    onClick={handlePrevPage}
-                  >
-                    <ArrowLeftIcon
-                      strokeWidth={2}
-                      className="mx-auto h-4 w-4"
-                    />{" "}
-                    Anterior
-                  </Button>
-                  <Button
-                    variant="text"
-                    className="mx-auto flex items-center gap-2 bg-two hover:bg-twoHover text-light"
-                    onClick={handleNextPage}
-                  >
-                    Siguiente
-                    <ArrowRightIcon
-                      strokeWidth={2}
-                      className="mx-auto h-4 w-4"
-                    />
-                  </Button>
-                </div>
-              </div>
+              <>
+                {searchResults?.length === 0 ? (
+                  <>
+                    <Typography variant="paragraph" className="text-center">
+                      No se encontraron productos.
+                    </Typography>
+                  </>
+                ) : (
+                  <>
+                    <div className="pb-10">
+                      <GridSearchResults products={searchResults} />
+                      {/* <GridSearchResults products={searchResults} /> */}
+                      <div className="mx-auto flex pt-20">
+                        <Button
+                          variant="text"
+                          className="mx-auto flex items-center gap-2 bg-two hover:bg-twoHover text-light"
+                          onClick={handlePrevPage}
+                        >
+                          <ArrowLeftIcon
+                            strokeWidth={2}
+                            className="mx-auto h-4 w-4"
+                          />{" "}
+                          Anterior
+                        </Button>
+                        <Button
+                          variant="text"
+                          className="mx-auto flex items-center gap-2 bg-two hover:bg-twoHover text-light"
+                          onClick={handleNextPage}
+                        >
+                          Siguiente
+                          <ArrowRightIcon
+                            strokeWidth={2}
+                            className="mx-auto h-4 w-4"
+                          />
+                        </Button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </>
             )}
           </div>
         </section>
