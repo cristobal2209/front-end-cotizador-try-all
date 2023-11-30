@@ -28,7 +28,7 @@ export const createQuote = async (quoteData) => {
   quoteData.responsibleUUID = user.uid;
   await addDoc(collection(db, "usersQuotes", user.uid, "quotes"), quoteData)
     .then()
-    .catch((error) => {});
+    .catch((error) => { });
 };
 
 export const subscribeToActiveQuote = (callback) => {
@@ -120,10 +120,18 @@ export const addProductToActiveQuote = async (product, supplier) => {
       throw new Error("Usuario no autenticado");
     }
     delete product.suppliers;
+
+    // Encontrar el objeto con quantity igual a "1+" y extraer el precio
+    const priceObject = supplier.prices.find(item => parseInt(item.quantity.replace(/\D/g, ''), 10) === 1);
+
+    // Limpiar el precio y convertirlo a número float
+    const newPrice = parseFloat(priceObject.price.replace(/[^\d.]/g, ''));
+
     let activeQuote = await getActiveQuote();
     activeQuote.products?.push({
       product,
       supplier,
+      price: newPrice,
       quantity: 1,
     });
     const activeQuoteRef = doc(
@@ -158,7 +166,7 @@ export const updateQuoteProducts = async (quoteID, newProducts, total) => {
         total: total,
       })
         .then()
-        .catch((e) => {});
+        .catch((e) => { });
     }
   } catch (e) {
     throw new Error(e);
