@@ -1,4 +1,3 @@
-const host = import.meta.env.REACT_APP_HOST;
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {

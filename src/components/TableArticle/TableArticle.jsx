@@ -29,7 +29,6 @@ import {
   Select,
   Option,
 } from "@material-tailwind/react";
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 //pagination
 import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";

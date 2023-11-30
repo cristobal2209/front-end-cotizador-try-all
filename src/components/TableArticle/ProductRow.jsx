@@ -69,7 +69,10 @@ export default function ProductRow({
         </Typography>
       </td>
       <td className={classes}>
-        <Button className="px-3 bg-transparent shadow-none hover:bg-twoHover">
+        <Button
+          className="px-3 bg-transparent shadow-none hover:bg-twoHover"
+          disabled={true}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
