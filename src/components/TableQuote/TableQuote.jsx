@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import {subscribeToCollection } from "../../services/TableQuoteService";
+import { subscribeToCollection } from "../../services/TableQuoteService";
 import UserQuoteRow from "./UserQuoteRow";
 import AlertFailed from "./AlertFailed";
 import AlertSuccess from "./AlertSuccess";
@@ -23,7 +23,6 @@ import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 import * as xlsx from "xlsx";
 
-
 const TABLE_HEAD = ["Nombre", "Estado", "Fecha Creación", "Ver", "Opciones"];
 
 export default function TableQuote() {
@@ -44,26 +43,26 @@ export default function TableQuote() {
   const endIndex = startIndex + itemsPerPage;
 
   const visibleItems = userQuotesCollection.slice(startIndex, endIndex);
- const [originalUserQuotesCollection, setOriginalUserQuotesCollection] = useState([]);
+  const [originalUserQuotesCollection, setOriginalUserQuotesCollection] =
+    useState([]);
 
- useEffect(() => {
-  document.title = "Mis cotizaciones";
-  const unsubscribe = subscribeToCollection("quotes", (data) => {
-    setUserQuotesCollection(data);
-    setOriginalUserQuotesCollection(data); // Almacenar el estado original
-  });
+  useEffect(() => {
+    document.title = "Mis cotizaciones";
+    const unsubscribe = subscribeToCollection("quotes", (data) => {
+      setUserQuotesCollection(data);
+      setOriginalUserQuotesCollection(data); // Almacenar el estado original
+    });
 
-  return () => {
-    if (unsubscribe) {
-      unsubscribe();
-    }
-  };
-}, []);
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     setContador(contador + 1);
   }, [userQuotesCollection]);
-
 
   const handleOpenQuoteView = () => setOpenQuoteView(!openQuoteView);
 
@@ -91,8 +90,8 @@ export default function TableQuote() {
     color: "gray",
     onClick: () => setActive(index),
   });
- 
-  const [searchTerm, setSearchTerm] = useState('');
+
+  const [searchTerm, setSearchTerm] = useState("");
   const handleSearch = async (searchTerm) => {
     try {
       if (searchTerm.trim() === "") {
@@ -104,7 +103,9 @@ export default function TableQuote() {
           // Puedes ajustar las condiciones de filtrado según tus necesidades
           return (
             quote.quoteName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            quote.responsibleName.toLowerCase().includes(searchTerm.toLowerCase())
+            quote.responsibleName
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase())
             // Agrega más condiciones según las propiedades que deseas incluir en la búsqueda
           );
         });
@@ -113,7 +114,7 @@ export default function TableQuote() {
         setUserQuotesCollection(filteredQuotes);
       }
     } catch (error) {
-      console.error('Error al realizar la búsqueda:', error);
+      console.error("Error al realizar la búsqueda:", error);
     }
   };
 
@@ -180,19 +181,15 @@ export default function TableQuote() {
             </div>
             <div className="flex w-full shrink-0 gap-2 md:w-max">
               <div className="w-full md:w-72">
-
-            <Input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => {
-                
-                setSearchTerm(e.target.value);
-                handleSearch(e.target.value);
-              }}
-              placeholder="Buscar cotización"
-             
-/>
-                
+                <Input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    handleSearch(e.target.value);
+                  }}
+                  placeholder="Buscar cotización"
+                />
               </div>
             </div>
             <AlertSuccess
@@ -314,10 +311,18 @@ export function QuoteView({ open, handler, quoteData }) {
     handler: PropTypes.func.isRequired,
     quoteData: PropTypes.object,
   };
+
+  useEffect(() => {
+    console.log(quoteData);
+  }, [quoteData]);
+
   return (
-    <Dialog open={open} size="xl" className="bg-dark">
+    <Dialog open={open} size="xl" className="bg-dark !w-screen">
       <DialogHeader className="justify-between text-light">
-        {quoteData?.quoteName}
+        <Typography variant="h5">
+          Nombre cotización: {quoteData?.quoteName}
+        </Typography>
+
         <IconButton
           color="white"
           size="sm"
@@ -340,108 +345,128 @@ export function QuoteView({ open, handler, quoteData }) {
           </svg>
         </IconButton>
       </DialogHeader>
-      <DialogBody className="h-[42rem] overflow-scroll">
-        <table className="w-full min-w-max table-auto text-left">
-          <thead>
-            <tr>
-              {TABLE_QUOTE_HEAD.map((head) => (
-                <th
-                  key={head}
-                  className="border-b border-light bg-dark p-4 border-opacity-50"
-                >
-                  <Typography
-                    variant="small"
-                    className="font-normal leading-none opacity-70 text-light"
-                  >
-                    {head}
-                  </Typography>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {quoteData?.products.map((productQuoteData, index) => {
-              const classes = "px-4 border-b border-blue-gray-100";
-
-              return (
-                <tr key={index} className="hover:bg-dark2">
-                  <td className={`${classes} w-10 flex-auto`}>
-                    <Typography variant="small" className="text-light">
-                      {productQuoteData?.product.description}
-                    </Typography>
-                  </td>
-                  <td className={`${classes}`}>
-                    <Typography variant="small" className="text-light">
-                      {productQuoteData?.product.manufacturer}
-                    </Typography>
-                  </td>
-                  <td className={`${classes} w-10 flex-auto`}>
-                    <Typography variant="small" className="text-light">
-                      {productQuoteData?.product.manufacturerPartNo}
-                    </Typography>
-                  </td>
-                  <td className={`${classes}`}>
-                    <Typography variant="small" className="text-light">
-                      {capitalizeFirstLetter(
-                        productQuoteData?.supplier.supplier
-                      )}
-                    </Typography>
-                  </td>
-                  <td className={`${classes} w-10 flex-auto`}>
-                    <Typography variant="small" className="text-light">
-                      {productQuoteData?.supplier.newarkPartNo}
-                    </Typography>
-                  </td>
-                  <td className={`${classes}`}>
-                    <Typography variant="small" className="text-light">
-                      {productQuoteData?.product.priceFor}
-                    </Typography>
-                  </td>
-                  <td className={`${classes}`}>
-                    <Typography variant="small" className="text-light">
-                      ${productQuoteData?.price}
-                    </Typography>
-                  </td>
-                  <td className={`${classes}`}>
-                    <Typography variant="small" className="text-light">
-                      {productQuoteData?.quantity}&nbsp;u.
-                    </Typography>
-                  </td>
-                  <td className={`${classes}`}>
-                    <Typography variant="small" className="text-light">
-                      $
-                      {(
-                        productQuoteData?.quantity * productQuoteData?.price
-                      ).toFixed(2)}
-                    </Typography>
-                  </td>
-                  <td className={`${classes} text-center w-10 flex-auto`}>
-                    <Typography variant="small" className="text-blue-800">
-                      {" "}
-                      <a
-                        href={productQuoteData?.supplier.productUrl}
-                        className="hover:text-blue-700 hover:underline"
+      <DialogBody
+        className={`h-full ${
+          quoteData?.products.length !== 0 && " overflow-scroll"
+        }`}
+      >
+        {quoteData?.products.length === 0 ? (
+          <>
+            <Typography variant="paragraph" className="text-light text-center">
+              Esta cotización no tiene productos.
+            </Typography>
+          </>
+        ) : (
+          <>
+            <table className="w-full min-w-max table-auto text-left">
+              <thead>
+                <tr>
+                  {TABLE_QUOTE_HEAD.map((head) => (
+                    <th
+                      key={head}
+                      className="border-b border-light bg-dark p-4 border-opacity-50"
+                    >
+                      <Typography
+                        variant="small"
+                        className="font-normal leading-none opacity-70 text-light"
                       >
-                        Link
-                      </a>
-                    </Typography>
-                  </td>
+                        {head}
+                      </Typography>
+                    </th>
+                  ))}
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
+              </thead>
+              <tbody>
+                {quoteData?.products.map((productQuoteData, index) => {
+                  const classes = "px-4 border-b border-blue-gray-100";
+
+                  return (
+                    <tr key={index} className="hover:bg-twoHover">
+                      <td className={`${classes} w-10 flex-auto`}>
+                        <Typography variant="small" className="text-light">
+                          {productQuoteData?.product.description}
+                        </Typography>
+                      </td>
+                      <td className={`${classes}`}>
+                        <Typography variant="small" className="text-light">
+                          {productQuoteData?.product.manufacturer}
+                        </Typography>
+                      </td>
+                      <td className={`${classes} w-10 flex-auto`}>
+                        <Typography variant="small" className="text-light">
+                          {productQuoteData?.product.manufacturerPartNo}
+                        </Typography>
+                      </td>
+                      <td className={`${classes}`}>
+                        <Typography variant="small" className="text-light">
+                          {capitalizeFirstLetter(
+                            productQuoteData?.supplier.supplier
+                          )}
+                        </Typography>
+                      </td>
+                      <td className={`${classes} w-10 flex-auto`}>
+                        <Typography variant="small" className="text-light">
+                          {productQuoteData?.supplier.supplierPartNo}
+                        </Typography>
+                      </td>
+                      <td className={`${classes}`}>
+                        <Typography variant="small" className="text-light">
+                          {productQuoteData?.product.priceFor}
+                        </Typography>
+                      </td>
+                      <td className={`${classes}`}>
+                        <Typography variant="small" className="text-light">
+                          ${productQuoteData?.price}
+                        </Typography>
+                      </td>
+                      <td className={`${classes}`}>
+                        <Typography variant="small" className="text-light">
+                          {productQuoteData?.quantity}&nbsp;u.
+                        </Typography>
+                      </td>
+                      <td className={`${classes}`}>
+                        <Typography variant="small" className="text-light">
+                          $
+                          {(
+                            productQuoteData?.quantity * productQuoteData?.price
+                          ).toFixed(2)}
+                        </Typography>
+                      </td>
+                      <td className={`${classes} text-center w-10 flex-auto`}>
+                        <Typography variant="small" className="text-blue-800">
+                          {" "}
+                          <a
+                            href={productQuoteData?.supplier.productUrl}
+                            className="hover:text-blue-700 hover:underline"
+                          >
+                            Link
+                          </a>
+                        </Typography>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </>
+        )}
       </DialogBody>
-      <DialogFooter className="space-x-2">
-        <div className="!justify-self-start w-full justify-between flex flex-row">
-          <Typography variant="h5" className="text-light">
-            Total:
-          </Typography>
-          <Typography variant="h5" className="text-light">
-            ${quoteData?.total}
-          </Typography>
-        </div>
-      </DialogFooter>
+      {quoteData?.products.length === 0 ? (
+        <></>
+      ) : (
+        <>
+          <DialogFooter className="space-x-2">
+            <div className="!justify-self-start w-full justify-between flex flex-row">
+              <Typography variant="h5" className="text-light">
+                Total:
+              </Typography>
+              <Typography variant="h5" className="text-light">
+                ${quoteData?.total}
+              </Typography>
+            </div>
+          </DialogFooter>
+        </>
+      )}
     </Dialog>
   );
 }
