@@ -32,11 +32,28 @@ export default function TableUser() {
   const [userDataCollection, setUserDataCollection] = useState([{}]);
   const [openCreateUserModal, setOpenCreateUserModal] = useState(false);
   const [alertData, setAlertData] = useState();
-
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredUserData, setFilteredUserData] = useState([]);
+  useEffect(() => {
+    setFilteredUserData(userDataCollection);
+  }, [userDataCollection]);
   useEffect(() => {
     document.title = "Tabla Usuarios";
     getUserData();
   }, []);
+  const handleSearch = () => {
+    const filteredData = userDataCollection.filter((user) =>
+      Object.values(user).some(
+        (value) =>
+          typeof value === "string" &&
+          value.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    );
+    setFilteredUserData(filteredData);
+  };
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
 
   const getUserData = async () => {
     setIsLoadingTable(true);
@@ -95,11 +112,16 @@ export default function TableUser() {
               </div>
               <div className="flex w-full shrink-0 gap-2 md:w-max">
                 <div className="w-full md:w-72">
-                  <Input
-                    label="Buscar usuario"
-                    disabled={true}
-                    icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-                  />
+                            <Input
+                            type="text"
+                            value={searchTerm}
+                            onChange={(e) => {
+                              setSearchTerm(e.target.value);
+                              handleSearch(e.target.value);
+                            }}
+                            placeholder="Buscar Producto"
+                            
+                          />
                 </div>
                 {isCreateUserLoading ? (
                   <div className="flex justify-center content-center w-[134px]">
@@ -160,7 +182,7 @@ export default function TableUser() {
                   </tr>
                 ) : (
                   <>
-                    {userDataCollection.map((user, index) => {
+                    {filteredUserData.map((user, index) => {
                       const isLast = index === userDataCollection.length - 1;
                       const classes = isLast
                         ? "p-4"
