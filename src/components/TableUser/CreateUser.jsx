@@ -80,7 +80,7 @@ export default function CreateUser({
       firstname: "",
       lastname: "",
       disabled: true,
-      admin: true,
+      admin: false,
     },
     validateOnMount: true,
     validateOnChange: true,

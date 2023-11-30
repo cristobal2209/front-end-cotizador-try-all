@@ -24,6 +24,7 @@ function GridSearchResults({ products }) {
           }`}
           target="_blank"
           rel="noreferrer"
+          className="h-full"
         >
           <Card className="h-full mx-2 pt-10 w-48 cursor-pointer text-center shadow-md bg-light">
             <CardHeader className="h-32">
@@ -34,8 +35,8 @@ function GridSearchResults({ products }) {
               />
             </CardHeader>
             <CardBody>
-              <Typography variant="paragraph" className="">
-                {productResult.description.slice(0, 40) + "..."}
+              <Typography variant="small" className="">
+                {productResult.description.slice(0, 30) + "..."}
               </Typography>
             </CardBody>
           </Card>
@@ -125,6 +126,10 @@ export default function SearchCategoryResults() {
   const [searchResults, setSearchResults] = useState([]);
   const { categorySearchParam } = useParams();
   const [totalPages, setTotalPages] = useState(0);
+
+  useEffect(() => {
+    document.title = `Buscando en categoría "${categorySearchParam}"`;
+  }, []);
 
   useEffect(() => {
     result();

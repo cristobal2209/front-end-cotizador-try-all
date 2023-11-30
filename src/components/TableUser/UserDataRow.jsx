@@ -57,9 +57,11 @@ export default function UserDataRow({
     updateUserData(user?.uid, userData)
       .then((data) => {
         setIsLoadingUpdate(false);
+        setIsEditing(false);
         handleSuccessAlert(data);
       })
       .catch((error) => {
+        setIsLoadingUpdate(false);
         handleFailedAlert(error);
       });
   };

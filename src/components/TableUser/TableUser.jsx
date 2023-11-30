@@ -34,13 +34,16 @@ export default function TableUser() {
   const [alertData, setAlertData] = useState();
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredUserData, setFilteredUserData] = useState([]);
+
   useEffect(() => {
     setFilteredUserData(userDataCollection);
   }, [userDataCollection]);
+
   useEffect(() => {
     document.title = "Tabla Usuarios";
     getUserData();
   }, []);
+
   const handleSearch = () => {
     const filteredData = userDataCollection.filter((user) =>
       Object.values(user).some(
@@ -81,7 +84,6 @@ export default function TableUser() {
   };
 
   const handleSuccessAlert = (message) => {
-    getUserData();
     setAlertData(message);
     handleOpenAlertSuccess(true);
   };
@@ -191,7 +193,7 @@ export default function TableUser() {
                         <UserDataRow
                           user={user}
                           classes={classes}
-                          key={index}
+                          key={user.uid}
                           handleSuccessAlert={handleSuccessAlert}
                           handleFailedAlert={handleFailedAlert}
                         />
