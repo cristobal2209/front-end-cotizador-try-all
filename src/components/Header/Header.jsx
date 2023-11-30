@@ -71,7 +71,6 @@ export default function Header() {
     };
   }, []);
 
-  const [suggestions, setSuggestions] = useState([]);
   useEffect(() => {
     console.log(userSearch);
   }, [userSearch]);
