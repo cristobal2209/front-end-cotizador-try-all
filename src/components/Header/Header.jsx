@@ -159,20 +159,36 @@ export default function Header() {
             {/* verifica si existe texto en el usuario para ocultar o mostrar la barra de autocompletado */}
             {userSearch && suggestions?.length !== 0 && (
               <>
-                <ul className="absolute mt-[270px] p-5 bg-gradient-to-b from-one to-three w-full rounded-md">
-                  {suggestions.map((suggestion) => (
-                    <li
-                      key={suggestion.id}
-                      className="hover:bg-threeHover hover:shadow-md px-2 py-1 rounded-md"
-                    >
-                      <Link to={`/articles/${suggestion.id}`}>
-                        <Typography variant="paragraph" className="text-white">
-                          {suggestion.description.slice(0, 50)}
-                        </Typography>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+                <div
+                  className={`absolute w-full top-full mt-4 bg-gradient-to-b from-one to-three -z-10 rounded-b-md`}
+                >
+                  <ul className=" p-5 w-full ">
+                    {suggestions.map((suggestion) => (
+                      <li
+                        key={suggestion.id}
+                        className="hover:bg-threeHover hover:shadow-md px-2 py-1 rounded-md"
+                      >
+                        <Link to={`/articles/${suggestion.id}`}>
+                          <div className="flex items-center">
+                            <div className="w-[100px]">
+                              <img
+                                className="h-[50px] mr-auto rounded-md"
+                                src={suggestion.imgSrc}
+                              />
+                            </div>
+
+                            <Typography
+                              variant="paragraph"
+                              className="text-white"
+                            >
+                              {suggestion.description.slice(0, 40)}
+                            </Typography>
+                          </div>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </>
             )}
 
@@ -256,7 +272,7 @@ export default function Header() {
       </div>
       {/* Categorias */}
       <div
-        className={`h-[300px] w-screen top-16 left-0 !fixed font-normal duration-300 transform ease-in-out backdrop-blur-md shadow-md ${
+        className={`h-[300px] w-screen top-16 left-0 !fixed font-normal duration-300 transform ease-in-out bg-gradient-to-b from-one to-three shadow-md ${
           openCategories ? "translate-y-0" : "-translate-y-full"
         }`}
         style={{ zIndex: -1 }}

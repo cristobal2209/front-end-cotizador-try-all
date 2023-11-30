@@ -112,16 +112,15 @@ export default function TableUser() {
               </div>
               <div className="flex w-full shrink-0 gap-2 md:w-max">
                 <div className="w-full md:w-72">
-                            <Input
-                            type="text"
-                            value={searchTerm}
-                            onChange={(e) => {
-                              setSearchTerm(e.target.value);
-                              handleSearch(e.target.value);
-                            }}
-                            placeholder="Buscar Producto"
-                            
-                          />
+                  <Input
+                    color="white"
+                    value={searchTerm}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value);
+                      handleSearch(e.target.value);
+                    }}
+                    placeholder="Buscar usuario"
+                  />
                 </div>
                 {isCreateUserLoading ? (
                   <div className="flex justify-center content-center w-[134px]">

@@ -6,7 +6,6 @@ export default function CategoryList() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const [searchResults, setSearchResults] = useState([]); // Mueve el estado aquí
 
   const handleCategoryClick = async (categoryName) => {
     navigate(`/search/category/${categoryName}`);
@@ -39,7 +38,7 @@ export default function CategoryList() {
             <button
               key={index}
               className="rounded-md text-light font-semibold hover:bg-transparent hover:shadow-lg"
-              onClick={() => handleCategoryClick(category.categoryName)} 
+              onClick={() => handleCategoryClick(category.categoryName)}
             >
               <div className="flex items-center gap-3 rounded-lg">
                 <div className="rounded-lg bg-white p-3 shadow-md">
