@@ -39,6 +39,21 @@ export default function UserDataRow({
   const [isEmailHovered, setIsEmailHovered] = useState(false);
   const [isLoadingDelete, setIsLoadingDelete] = useState(false);
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
+  const [counter, setCounter] = useState(0);
+
+  useEffect(() => {
+    setUserIsDisabled(user.disabled);
+    formik.setValues({
+      email: user?.email,
+      displayName: user?.displayName,
+      admin: user?.customClaims?.admin,
+    });
+  }, [user]);
+
+  useEffect(() => {
+    console.log(user.uid + " " + userIsDisabled);
+    setCounter(counter + 1);
+  }, [userIsDisabled]);
 
   const handleConfirmChangeUserStatus = () => {
     setUserIsDisabled(!userIsDisabled);

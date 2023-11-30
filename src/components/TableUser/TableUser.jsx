@@ -32,6 +32,12 @@ export default function TableUser() {
   const [alertData, setAlertData] = useState();
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredUserData, setFilteredUserData] = useState([]);
+  const [counter, setCounter] = useState(0);
+
+  useEffect(() => {
+    console.log(filteredUserData);
+    setCounter(counter + 1);
+  }, [filteredUserData]);
 
   useEffect(() => {
     setFilteredUserData(userDataCollection);
@@ -84,6 +90,7 @@ export default function TableUser() {
   const handleSuccessAlert = (message) => {
     setAlertData(message);
     handleOpenAlertSuccess(true);
+    getUserData();
   };
 
   const handleFailedAlert = (error) => {
