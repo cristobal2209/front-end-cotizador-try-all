@@ -321,7 +321,7 @@ function ProductQuoteRow({
       <td>
         <div className="flex p-4">
           <a
-            href={`http://localhost:4000/articles/${product.id}`}
+            href={`${import.meta.env.VITE_HOST}/articles/${product.id}`}
             className="hover:underline mr-1 max-w-xs"
           >
             <Typography variant="small" className=" text-light">

@@ -3,40 +3,41 @@ import { useParams } from "react-router-dom";
 import {
   Card,
   CardBody,
-  CardFooter,
   Button,
   Spinner,
+  CardHeader,
+  Typography,
 } from "@material-tailwind/react";
 import { getProductsFromInput } from "../../services/SearchService";
 import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 
 function GridSearchResults({ products }) {
-  const openNewWindow = (productDataId) => {
-    // URL o contenido que deseas mostrar en la nueva pestaña
-    const url = `http://localhost:4000/articles/${productDataId}`;
-
-    // Abre una nueva pestaña o ventana con el contenido
-    window.open(url, "_blank");
-  };
-
   return (
     <div className="mx-auto grid max-w-6xl place-items-center gap-5 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {products?.map((productResult, index) => (
-        <Card
-          className="h-full mx-2 w-48 cursor-pointer text-center shadow-md"
+        <a
           key={index}
-          onClick={(event) => openNewWindow(productResult.idProduct)}
+          href={`${import.meta.env.VITE_HOST}/articles/${
+            productResult.idProduct
+          }`}
+          target="_blank"
+          rel="noreferrer"
         >
-          <CardBody className="h-32">
-            <img
-              src={productResult.imgSrc}
-              className="h-28 w-64 object-contain"
-            />
-          </CardBody>
-          <CardFooter>
-            <p>{productResult.description}</p>
-          </CardFooter>
-        </Card>
+          <Card className="h-full mx-2 pt-10 w-48 cursor-pointer text-center shadow-md bg-light">
+            <CardHeader className="h-32">
+              <img
+                src={productResult.imgSrc}
+                alt={productResult.description}
+                className="h-28 w-64 object-contain"
+              />
+            </CardHeader>
+            <CardBody>
+              <Typography variant="paragraph" className="">
+                {productResult.description.slice(0, 40) + "..."}
+              </Typography>
+            </CardBody>
+          </Card>
+        </a>
       ))}
     </div>
   );
