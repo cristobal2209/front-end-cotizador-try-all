@@ -1,9 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import CategoryList from "./CategoryList";
 import Sidebar from "./Sidebar";
 import CreateQuote from "./CreateQuote";
 import { useNavigate, Link } from "react-router-dom";
-import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../firebaseConfig";
 import {
   Navbar,
@@ -17,6 +16,7 @@ import {
   XMarkIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
+import { getSearchSuggestions } from "../../services/SearchService";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -24,30 +24,14 @@ export default function Header() {
   const [userSearch, setUserSearch] = useState("");
   const [openCategories, setOpenCategories] = useState(false);
   const [user, setUser] = useState(null);
+  const [suggestions, setSuggestions] = useState([]);
   const menuRef = useRef(null);
   const categoriesRef = useRef(null);
-
-  useEffect(() => {
-    setUser(auth.currentUser);
-  }, []);
-
-  useEffect(() => {
-    document.addEventListener("mousedown", handleCategoriesClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleCategoriesClickOutside);
-    };
-  }, []);
-
-  useEffect(() => {
-    document.addEventListener("mousedown", handleMenuClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleMenuClickOutside);
-    };
-  }, []);
 
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
       navigate(`/search/${userSearch}`);
+      setUserSearch(null);
       window.location.reload();
     }
   };
@@ -67,14 +51,55 @@ export default function Header() {
     }
   };
 
-  const handleclickSearchButton = async () => {
+  useEffect(() => {
+    setUser(auth.currentUser);
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener(
+      "mousedown",
+      memoizedHandleCategoriesClickOutside
+    );
+    document.addEventListener("mousedown", memoizedHandleMenuClickOutside);
+
+    return () => {
+      document.removeEventListener(
+        "mousedown",
+        memoizedHandleCategoriesClickOutside
+      );
+      document.removeEventListener("mousedown", memoizedHandleMenuClickOutside);
+    };
+  }, []);
+
+  const handleInputChange = async (texto) => {
+    try {
+      const suggestions = await getSearchSuggestions(texto);
+      setSuggestions(suggestions);
+      console.log;
+    } catch (error) {
+      console.error("Error fetching search suggestions:", error);
+      setSuggestions([]);
+    }
+  };
+  const onChangeUserSearch = (event) => {
+    const newText = event.target.value;
+    setUserSearch(newText);
+    handleInputChange(newText);
+  };
+
+  const handleclickSearchButton = () => {
     navigate(`/search/${userSearch}`);
     window.location.reload();
   };
 
-  const onChangeUserSearch = (event) => {
-    setUserSearch(event.target.value);
-  };
+  const memoizedHandleCategoriesClickOutside = useMemo(
+    () => handleCategoriesClickOutside,
+    []
+  );
+  const memoizedHandleMenuClickOutside = useMemo(
+    () => handleMenuClickOutside,
+    []
+  );
 
   return (
     <>
@@ -122,6 +147,43 @@ export default function Header() {
                 className: "mx-auto min-w-0 bg-four rounded-md",
               }}
             />
+            {/* render del autocompletado */}
+            {/* verifica si existe texto en el usuario para ocultar o mostrar la barra de autocompletado */}
+            {userSearch && suggestions?.length !== 0 && (
+              <>
+                <div
+                  className={`absolute w-full top-full mt-4 bg-gradient-to-b from-one to-three -z-10 rounded-b-md`}
+                >
+                  <ul className=" p-5 w-full ">
+                    {suggestions.map((suggestion) => (
+                      <li
+                        key={suggestion.id}
+                        className="hover:bg-threeHover hover:shadow-md px-2 py-1 rounded-md"
+                      >
+                        <Link to={`/articles/${suggestion.id}`}>
+                          <div className="flex items-center">
+                            <div className="w-[100px]">
+                              <img
+                                className="h-[50px] mr-auto rounded-md"
+                                src={suggestion.imgSrc}
+                              />
+                            </div>
+
+                            <Typography
+                              variant="paragraph"
+                              className="text-white"
+                            >
+                              {suggestion.description.slice(0, 40)}
+                            </Typography>
+                          </div>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </>
+            )}
+
             <Button
               size="sm"
               className="py-1 right-32 rounded !absolute bg-transparent !shadow-none !hover:shadow-lg z-10 hover:bg-fourHover"
@@ -136,7 +198,7 @@ export default function Header() {
               onClick={() => {
                 setOpenCategories(!openCategories);
               }}
-              ref={categoriesRef}
+              // ref={categoriesRef}
             >
               <Typography variant="small" className="!font-mono text-light">
                 Categorías
@@ -202,7 +264,7 @@ export default function Header() {
       </div>
       {/* Categorias */}
       <div
-        className={`h-[300px] w-screen top-16 left-0 !fixed font-normal duration-300 transform ease-in-out backdrop-blur-md shadow-md ${
+        className={`h-[300px] w-screen top-16 left-0 !fixed font-normal duration-300 transform ease-in-out bg-gradient-to-b from-one to-four shadow-md ${
           openCategories ? "translate-y-0" : "-translate-y-full"
         }`}
         style={{ zIndex: -1 }}

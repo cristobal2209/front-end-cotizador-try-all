@@ -9,6 +9,7 @@ import SearchResults from "../SearchResults/SearchResults";
 import MainLayout from "../MainLayout/MainLayout";
 import QuoteDetails from "../QuoteDetails/QuoteDetails";
 import RedirectToLogin from "./RedirectToLogin";
+import SearchCategoryResults from "../SearchResults/SearchCategoryResults";
 import { auth } from "../../firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
@@ -27,18 +28,16 @@ export default function Router() {
           .then((idTokenResult) => {
             setToken(idTokenResult);
           })
-          .catch((error) => {
-            console.log(error);
-          });
+          .catch((error) => {});
       }
 
-      setIsLoading(false); // Set loading to false once the auth state is determined.
+      setIsLoading(false);
     });
 
     return () => {
-      unsubscribe(); // Unsubscribe from the listener when the component unmounts.
+      unsubscribe();
     };
-  }, []); // Empty dependency array ensures this effect runs only once.
+  }, []);
 
   onAuthStateChanged(auth, (authUser) => {
     setUser(authUser);
@@ -65,6 +64,7 @@ export default function Router() {
         <Route path="articles/:productId" element={<Article />} />
         <Route path="quoteDetails/:quoteId" element={<QuoteDetails />} />
         <Route path="search/:productSearchParam" element={<SearchResults />} />
+        <Route path="search/category/:categorySearchParam" element={<SearchCategoryResults />} />
         <Route path="redirectLogin" element={<RedirectToLogin />} />
         {user ? (
           <Route element={!token.claims.admin ? <Navigate to="/" /> : ""}>

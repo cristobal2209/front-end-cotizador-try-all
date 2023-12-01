@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { subscribeToCollection } from "../../services/TableQuoteService";
 import UserQuoteRow from "./UserQuoteRow";
+import AlertFailed from "./AlertFailed";
+import AlertSuccess from "./AlertSuccess";
 import {
   Button,
   Spinner,
@@ -10,108 +13,45 @@ import {
   CardBody,
   CardFooter,
   Input,
-  Alert,
   Dialog,
   DialogHeader,
   DialogBody,
   DialogFooter,
+  IconButton,
 } from "@material-tailwind/react";
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-
-//pagination
-import { IconButton } from "@material-tailwind/react";
 import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
+import * as xlsx from "xlsx";
 
 const TABLE_HEAD = ["Nombre", "Estado", "Fecha Creación", "Ver", "Opciones"];
 
-import * as xlsx from "xlsx";
-function capitalizeFirstLetter(inputString) {
-  if (typeof inputString !== "string") {
-    return inputString;
-  }
-
-  return inputString.charAt(0).toUpperCase() + inputString.slice(1);
-}
-
-function generateExcel(quoteData) {
-  //Encabezados de cotizacion
-  let excelQuoteElements = [
-    ["ID", quoteData.id],
-    ["Nombre Cotización", quoteData.quoteName],
-    ["Responsable", quoteData.responsibleName],
-    ["Fecha de creación", quoteData.createDate],
-    ["Fecha de actualización", quoteData.lastUpdateDate],
-    ["Productos"],
-  ];
-  //Encabezados de productos
-  excelQuoteElements.push([
-    "",
-    "Producto",
-    "Fabricante",
-    "N° parte fabricante",
-    "Proveedor",
-    "N° parte proveedor",
-    "Precio por",
-    "Precio",
-    "Cantidad",
-    "Subtotal",
-    "Enlace",
-  ]);
-
-  //Datos de productos
-  for (const productQuoteData of quoteData.products) {
-    excelQuoteElements.push([
-      "",
-      productQuoteData.product.description,
-      productQuoteData.product.manufacturer,
-      productQuoteData.product.manufacturerPartNo,
-      capitalizeFirstLetter(productQuoteData.supplier.supplier),
-      productQuoteData.supplier.newarkPartNo,
-      productQuoteData.product.priceFor,
-      productQuoteData.price,
-      productQuoteData.quantity,
-      (productQuoteData.quantity * productQuoteData.price).toFixed(2),
-      productQuoteData.supplier.productUrl,
-    ]);
-  }
-  //Total
-  excelQuoteElements.push([
-    "Total",
-    " ",
-    " ",
-    " ",
-    " ",
-    " ",
-    " ",
-    " ",
-    " ",
-    quoteData.total,
-  ]);
-
-  const workbook = xlsx.utils.book_new();
-  const worksheet = xlsx.utils.aoa_to_sheet(excelQuoteElements);
-
-  xlsx.utils.book_append_sheet(workbook, worksheet, "Cotización");
-
-  const nombrecotizacion = quoteData.quoteName + ".xlsx";
-  xlsx.writeFile(workbook, nombrecotizacion);
-}
-
 export default function TableQuote() {
   const [isLoadingTable, setIsLoadingTable] = useState(false);
+  const [userQuotesCollection, setUserQuotesCollection] = useState([]);
+  const [quoteData, setQuoteData] = useState(null);
+  const [alertData, setAlertData] = useState("");
   const [openAlertSuccess, setOpenAlertSuccess] = useState(false);
   const [openAlertFailed, setOpenAlertFailed] = useState(false);
-  const [userQuotesCollection, setUserQuotesCollection] = useState([]);
-  const [alertData, setAlertData] = useState();
-  const [contador, setContador] = useState(0);
   const [openQuoteView, setOpenQuoteView] = useState(false);
-  const [quoteData, setQuoteData] = useState(null);
+  const [contador, setContador] = useState(0);
+  const [active, setActive] = useState(1);
+
+  const itemsPerPage = 10;
+  const totalItems = userQuotesCollection.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (active - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+
+  const visibleItems = userQuotesCollection.slice(startIndex, endIndex);
+  const [originalUserQuotesCollection, setOriginalUserQuotesCollection] =
+    useState([]);
 
   useEffect(() => {
     document.title = "Mis cotizaciones";
     const unsubscribe = subscribeToCollection("quotes", (data) => {
       setUserQuotesCollection(data);
+      setOriginalUserQuotesCollection(data); // Almacenar el estado original
     });
+
     return () => {
       if (unsubscribe) {
         unsubscribe();
@@ -132,42 +72,6 @@ export default function TableQuote() {
 
   const handleGenerateExcel = (quote) => generateExcel(quote);
 
-  const handleOpenAlertSuccess = () => setOpenAlertSuccess(!openAlertSuccess);
-
-  const handleOpenAlertFailed = () => setOpenAlertFailed(!openAlertFailed);
-
-  //message se ocupa para mostrar alertas personalizadas
-  const handleSuccessAlert = (message) => {
-    //getUserQuotes();
-    setAlertData(message);
-    handleOpenAlertSuccess();
-    setTimeout(() => {
-      setOpenAlertSuccess(false);
-    }, 3000);
-  };
-
-  //error se ocupa para mostrar el error al usuario
-  const handleFailedAlert = (error) => {
-    setAlertData(error);
-    handleOpenAlertFailed();
-    setTimeout(() => {
-      setOpenAlertFailed(false);
-    }, 3000);
-  };
-
-  //pagination
-  const itemsPerPage = 10;
-  const [active, setActive] = useState(1);
-
-  const totalItems = userQuotesCollection.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-  const getVisibleItems = () => {
-    const startIndex = (active - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    return userQuotesCollection.slice(startIndex, endIndex);
-  };
-
   const next = () => {
     if (active < totalPages) {
       setActive(active + 1);
@@ -185,6 +89,77 @@ export default function TableQuote() {
     color: "gray",
     onClick: () => setActive(index),
   });
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const handleSearch = async (searchTerm) => {
+    try {
+      if (searchTerm.trim() === "") {
+        // Si el término de búsqueda está vacío, restaurar el estado original
+        setUserQuotesCollection(originalUserQuotesCollection);
+      } else {
+        // Filtrar userQuotesCollection por searchTerm
+        const filteredQuotes = originalUserQuotesCollection.filter((quote) => {
+          // Puedes ajustar las condiciones de filtrado según tus necesidades
+          return (
+            quote.quoteName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            quote.responsibleName
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase())
+            // Agrega más condiciones según las propiedades que deseas incluir en la búsqueda
+          );
+        });
+
+        // Establecer el nuevo estado filtrado
+        setUserQuotesCollection(filteredQuotes);
+      }
+    } catch (error) {
+      console.error("Error al realizar la búsqueda:", error);
+    }
+  };
+
+  const handleOpenAlertSuccess = (boolean) => {
+    setOpenAlertSuccess(boolean);
+    setTimeout(() => {
+      setOpenAlertSuccess(false);
+    }, 5000);
+  };
+
+  const handleOpenAlertFailed = (boolean) => {
+    setOpenAlertFailed(boolean);
+    setTimeout(() => {
+      setOpenAlertFailed(false);
+    }, 5000);
+  };
+
+  const handleSuccessAlert = (message) => {
+    setAlertData(message);
+    handleOpenAlertSuccess(true);
+  };
+
+  const handleFailedAlert = (error) => {
+    setAlertData(error);
+    handleOpenAlertFailed(true);
+  };
+
+  const TableHeader = (
+    <thead>
+      <tr>
+        {TABLE_HEAD.map((head) => (
+          <th
+            key={head}
+            className="border-y border-light bg-dark p-4 border-opacity-50"
+          >
+            <Typography
+              variant="small"
+              className="font-normal leading-none opacity-70 text-light"
+            >
+              {head}
+            </Typography>
+          </th>
+        ))}
+      </tr>
+    </thead>
+  );
 
   return (
     <div className="mx-[10px] pb-[10px]">
@@ -206,11 +181,13 @@ export default function TableQuote() {
             <div className="flex w-full shrink-0 gap-2 md:w-max">
               <div className="w-full md:w-72">
                 <Input
-                  label="Buscar cotización"
-                  icon={<MagnifyingGlassIcon className="h-5 w-5 text-dark" />}
-                  disabled={true}
-                  //labelProps={{ className: "bg-four rounded-md" }}
-                  //containerProps={{ className: "bg-four rounded-md" }}
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    handleSearch(e.target.value);
+                  }}
+                  placeholder="Buscar cotización"
                 />
               </div>
             </div>
@@ -242,54 +219,28 @@ export default function TableQuote() {
           ) : (
             <>
               {userQuotesCollection.length === 0 ? (
-                <>
-                  <Typography className="w-full text-center font-bold text-light">
-                    Usted no tiene tiene cotizaciones guardadas. Para crear una
-                    cotización, presione el botón "Nueva cotización" en la barra
-                    de navegación.
-                  </Typography>
-                </>
+                <Typography className="w-full text-center font-bold text-light">
+                  Usted no tiene tiene cotizaciones guardadas. Para crear una
+                  cotización, presione el botón &quot;Nueva cotización&quot; en
+                  la barra de navegación.
+                </Typography>
               ) : (
-                <>
-                  <table className="w-full min-w-max table-auto text-left">
-                    <thead>
-                      <tr>
-                        {TABLE_HEAD.map((head) => (
-                          <th
-                            key={head}
-                            className="border-y border-light bg-dark p-4 border-opacity-50"
-                          >
-                            <Typography
-                              variant="small"
-                              className="font-normal leading-none opacity-70 text-light"
-                            >
-                              {head}
-                            </Typography>
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {/*Dejo el argumento index por si se necesita a futuro*/}
-                      {getVisibleItems().map((quote, index) => {
-                        //const isLast = index === userQuotesCollection.length - 1;
-                        const classes = "p-4 border-y border-blue-gray-100";
-
-                        return (
-                          <UserQuoteRow
-                            quote={quote}
-                            classes={classes}
-                            key={quote.id}
-                            handleSuccessAlert={handleSuccessAlert}
-                            handleFailedAlert={handleFailedAlert}
-                            handleGenerateExcel={handleGenerateExcel}
-                            handleQuoteView={handleQuoteView}
-                          />
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </>
+                <table className="w-full min-w-max table-auto text-left">
+                  {TableHeader}
+                  <tbody>
+                    {visibleItems.map((quote, index) => (
+                      <UserQuoteRow
+                        quote={quote}
+                        classes="p-4 border-y border-blue-gray-100"
+                        key={index}
+                        handleSuccessAlert={handleSuccessAlert}
+                        handleFailedAlert={handleFailedAlert}
+                        handleGenerateExcel={handleGenerateExcel}
+                        handleQuoteView={handleQuoteView}
+                      />
+                    ))}
+                  </tbody>
+                </table>
               )}
             </>
           )}
@@ -327,7 +278,6 @@ export default function TableQuote() {
               disabled={active === totalPages}
             >
               <span className="hidden sm:block">Siguiente</span>
-
               <ArrowRightIcon strokeWidth={2} className="h-4 w-4" />
             </Button>
           </div>
@@ -339,80 +289,6 @@ export default function TableQuote() {
         quoteData={quoteData}
       />
     </div>
-  );
-}
-function AlertFailed({ open, handler, error }) {
-  function Icon() {
-    return (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-        className="w-6 h-6"
-      >
-        <path
-          fillRule="evenodd"
-          d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z"
-          clipRule="evenodd"
-        />
-      </svg>
-    );
-  }
-
-  return (
-    <>
-      <div className="fixed w-auto right-[0px]">
-        <Alert
-          open={open}
-          onClose={() => handler()}
-          color="red"
-          icon={<Icon />}
-          animate={{
-            mount: { y: 0 },
-            unmount: { y: 100 },
-          }}
-        >
-          <Typography variant="small">{error ? error : " "}</Typography>
-        </Alert>
-      </div>
-    </>
-  );
-}
-function AlertSuccess({ open, handler, data }) {
-  function Icon() {
-    return (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-        className="h-6 w-6"
-      >
-        <path
-          fillRule="evenodd"
-          d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z"
-          clipRule="evenodd"
-        />
-      </svg>
-    );
-  }
-
-  return (
-    <>
-      <div className="!absolute w-auto right-[0px]">
-        <Alert
-          open={open}
-          onClose={() => handler()}
-          color="green"
-          icon={<Icon />}
-          animate={{
-            mount: { y: 0 },
-            unmount: { y: 100 },
-          }}
-        >
-          <Typography variant="small">{data ? data : " "}</Typography>
-        </Alert>
-      </div>
-    </>
   );
 }
 
@@ -429,11 +305,23 @@ export function QuoteView({ open, handler, quoteData }) {
     "Subtotal",
     "Página proveedor",
   ];
+  QuoteView.propTypes = {
+    open: PropTypes.bool.isRequired,
+    handler: PropTypes.func.isRequired,
+    quoteData: PropTypes.object,
+  };
+
+  useEffect(() => {
+    console.log(quoteData);
+  }, [quoteData]);
 
   return (
-    <Dialog open={open} size="xl" className="bg-dark">
+    <Dialog open={open} size="xl" className="bg-dark !w-screen">
       <DialogHeader className="justify-between text-light">
-        {quoteData?.quoteName}
+        <Typography variant="h5">
+          Nombre cotización: {quoteData?.quoteName}
+        </Typography>
+
         <IconButton
           color="white"
           size="sm"
@@ -456,118 +344,194 @@ export function QuoteView({ open, handler, quoteData }) {
           </svg>
         </IconButton>
       </DialogHeader>
-      <DialogBody className="h-[42rem] overflow-scroll">
-        <table className="w-full min-w-max table-auto text-left">
-          <thead>
-            <tr>
-              {TABLE_QUOTE_HEAD.map((head) => (
-                <th
-                  key={head}
-                  className="border-b border-light bg-dark p-4 border-opacity-50"
-                >
-                  <Typography
-                    variant="small"
-                    className="font-normal leading-none opacity-70 text-light"
-                  >
-                    {head}
-                  </Typography>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {quoteData?.products.map((productQuoteData, index) => {
-              //const isLast = index === userQuotesCollection.length - 1;
-              const classes = "px-4 border-b border-blue-gray-100";
-
-              return (
-                <tr key={index} className="hover:bg-dark2">
-                  <td className={`${classes} w-10 flex-auto`}>
-                    <Typography variant="small" className="text-light">
-                      {productQuoteData?.product.description}
-                    </Typography>
-                  </td>
-                  <td className={`${classes}`}>
-                    <Typography variant="small" className="text-light">
-                      {productQuoteData?.product.manufacturer}
-                    </Typography>
-                  </td>
-                  <td className={`${classes} w-10 flex-auto`}>
-                    <Typography variant="small" className="text-light">
-                      {productQuoteData?.product.manufacturerPartNo}
-                    </Typography>
-                  </td>
-                  <td className={`${classes}`}>
-                    <Typography variant="small" className="text-light">
-                      {capitalizeFirstLetter(
-                        productQuoteData?.supplier.supplier
-                      )}
-                    </Typography>
-                  </td>
-                  <td className={`${classes} w-10 flex-auto`}>
-                    <Typography variant="small" className="text-light">
-                      {productQuoteData?.supplier.newarkPartNo}
-                    </Typography>
-                  </td>
-                  <td className={`${classes}`}>
-                    <Typography variant="small" className="text-light">
-                      {productQuoteData?.product.priceFor}
-                    </Typography>
-                  </td>
-                  <td className={`${classes}`}>
-                    <Typography variant="small" className="text-light">
-                      ${productQuoteData?.price}
-                    </Typography>
-                  </td>
-                  <td className={`${classes}`}>
-                    <Typography variant="small" className="text-light">
-                      {productQuoteData?.quantity}&nbsp;u.
-                    </Typography>
-                  </td>
-                  <td className={`${classes}`}>
-                    <Typography variant="small" className="text-light">
-                      $
-                      {(
-                        productQuoteData?.quantity * productQuoteData?.price
-                      ).toFixed(2)}
-                    </Typography>
-                  </td>
-                  <td className={`${classes} text-center w-10 flex-auto`}>
-                    <Typography variant="small" className="text-blue-800">
-                      {" "}
-                      <a
-                        href={productQuoteData?.supplier.productUrl}
-                        className="hover:text-blue-700 hover:underline"
+      <DialogBody
+        className={`h-full ${
+          quoteData?.products.length !== 0 && " overflow-scroll"
+        }`}
+      >
+        {quoteData?.products.length === 0 ? (
+          <>
+            <Typography variant="paragraph" className="text-light text-center">
+              Esta cotización no tiene productos.
+            </Typography>
+          </>
+        ) : (
+          <>
+            <table className="w-full min-w-max table-auto text-left">
+              <thead>
+                <tr>
+                  {TABLE_QUOTE_HEAD.map((head) => (
+                    <th
+                      key={head}
+                      className="border-b border-light bg-dark p-4 border-opacity-50"
+                    >
+                      <Typography
+                        variant="small"
+                        className="font-normal leading-none opacity-70 text-light"
                       >
-                        Link
-                      </a>
-                    </Typography>
-                  </td>
+                        {head}
+                      </Typography>
+                    </th>
+                  ))}
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
+              </thead>
+              <tbody>
+                {quoteData?.products.map((productQuoteData, index) => {
+                  const classes = "px-4 border-b border-blue-gray-100";
+
+                  return (
+                    <tr key={index} className="hover:bg-twoHover">
+                      <td className={`${classes} w-10 flex-auto`}>
+                        <Typography variant="small" className="text-light">
+                          {productQuoteData?.product.description}
+                        </Typography>
+                      </td>
+                      <td className={`${classes}`}>
+                        <Typography variant="small" className="text-light">
+                          {productQuoteData?.product.manufacturer}
+                        </Typography>
+                      </td>
+                      <td className={`${classes} w-10 flex-auto`}>
+                        <Typography variant="small" className="text-light">
+                          {productQuoteData?.product.manufacturerPartNo}
+                        </Typography>
+                      </td>
+                      <td className={`${classes}`}>
+                        <Typography variant="small" className="text-light">
+                          {capitalizeFirstLetter(
+                            productQuoteData?.supplier.supplier
+                          )}
+                        </Typography>
+                      </td>
+                      <td className={`${classes} w-10 flex-auto`}>
+                        <Typography variant="small" className="text-light">
+                          {productQuoteData?.supplier.supplierPartNo}
+                        </Typography>
+                      </td>
+                      <td className={`${classes}`}>
+                        <Typography variant="small" className="text-light">
+                          {productQuoteData?.product.priceFor}
+                        </Typography>
+                      </td>
+                      <td className={`${classes}`}>
+                        <Typography variant="small" className="text-light">
+                          ${productQuoteData?.price}
+                        </Typography>
+                      </td>
+                      <td className={`${classes}`}>
+                        <Typography variant="small" className="text-light">
+                          {productQuoteData?.quantity}&nbsp;u.
+                        </Typography>
+                      </td>
+                      <td className={`${classes}`}>
+                        <Typography variant="small" className="text-light">
+                          $
+                          {(
+                            productQuoteData?.quantity * productQuoteData?.price
+                          ).toFixed(2)}
+                        </Typography>
+                      </td>
+                      <td className={`${classes} text-center w-10 flex-auto`}>
+                        <Typography variant="small" className="text-blue-800">
+                          {" "}
+                          <a
+                            href={productQuoteData?.supplier.productUrl}
+                            className="hover:text-blue-700 hover:underline"
+                          >
+                            Link
+                          </a>
+                        </Typography>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </>
+        )}
       </DialogBody>
-      <DialogFooter className="space-x-2">
-        <div className="!justify-self-start w-full justify-between flex flex-row">
-          <Typography variant="h5" className="text-light">
-            Total:
-          </Typography>
-          <Typography variant="h5" className="text-light">
-            ${quoteData?.total}
-          </Typography>
-        </div>
-        {/* <Button
-          variant="text"
-          color="white"
-          onClick={() => {
-            handler();
-          }}
-        >
-          Cerrar
-        </Button> */}
-      </DialogFooter>
+      {quoteData?.products.length === 0 ? (
+        <></>
+      ) : (
+        <>
+          <DialogFooter className="space-x-2">
+            <div className="!justify-self-start w-full justify-between flex flex-row">
+              <Typography variant="h5" className="text-light">
+                Total:
+              </Typography>
+              <Typography variant="h5" className="text-light">
+                ${quoteData?.total}
+              </Typography>
+            </div>
+          </DialogFooter>
+        </>
+      )}
     </Dialog>
   );
+}
+function capitalizeFirstLetter(inputString) {
+  if (typeof inputString !== "string") {
+    return inputString;
+  }
+
+  return inputString.charAt(0).toUpperCase() + inputString.slice(1);
+}
+function generateExcel(quoteData) {
+  let excelQuoteElements = [
+    ["ID", quoteData.id],
+    ["Nombre Cotización", quoteData.quoteName],
+    ["Responsable", quoteData.responsibleName],
+    ["Fecha de creación", quoteData.createDate],
+    ["Fecha de actualización", quoteData.lastUpdateDate],
+    ["Productos"],
+  ];
+  excelQuoteElements.push([
+    "",
+    "Producto",
+    "Fabricante",
+    "N° parte fabricante",
+    "Proveedor",
+    "N° parte proveedor",
+    "Precio por",
+    "Precio",
+    "Cantidad",
+    "Subtotal",
+    "Enlace",
+  ]);
+
+  for (const productQuoteData of quoteData.products) {
+    excelQuoteElements.push([
+      "",
+      productQuoteData.product.description,
+      productQuoteData.product.manufacturer,
+      productQuoteData.product.manufacturerPartNo,
+      capitalizeFirstLetter(productQuoteData.supplier.supplier),
+      productQuoteData.supplier.newarkPartNo,
+      productQuoteData.product.priceFor,
+      productQuoteData.price,
+      productQuoteData.quantity,
+      (productQuoteData.quantity * productQuoteData.price).toFixed(2),
+      productQuoteData.supplier.productUrl,
+    ]);
+  }
+  excelQuoteElements.push([
+    "Total",
+    " ",
+    " ",
+    " ",
+    " ",
+    " ",
+    " ",
+    " ",
+    " ",
+    quoteData.total,
+  ]);
+
+  const workbook = xlsx.utils.book_new();
+  const worksheet = xlsx.utils.aoa_to_sheet(excelQuoteElements);
+
+  xlsx.utils.book_append_sheet(workbook, worksheet, "Cotización");
+
+  const nombrecotizacion = quoteData.quoteName + ".xlsx";
+  xlsx.writeFile(workbook, nombrecotizacion);
 }

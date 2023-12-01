@@ -10,6 +10,21 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 
+export const updateQuoteName = async (quoteId, newQuoteName) => {
+  const user = auth.currentUser;
+  if (!user) {
+    throw new Error("Usuario no autenticado");
+  }
+
+  const docRef = doc(db, "usersQuotes", user.uid, "quotes", quoteId);
+  return await updateDoc(docRef, { quoteName: newQuoteName }).then(() => {
+    return "Nombre cotización actualizado.";
+  })
+    .catch((e) => {
+      throw new Error("Error al actualizar el nombre de cotización.");
+    });
+}
+
 export const changeQuoteStatus = async (quoteId, newStatus) => {
   try {
     const user = auth.currentUser;
@@ -17,7 +32,6 @@ export const changeQuoteStatus = async (quoteId, newStatus) => {
       throw new Error("Usuario no autenticado");
     }
 
-    //si el nuevo estado es 1 (activo), se buscara todas las cotizaciones que tengan ese estado y se cambiaran a 2 (en curso)
     if (newStatus == 1) {
       const quotesRef = collection(db, "usersQuotes", user.uid, "quotes");
       const q = query(quotesRef, where("status", "==", 1));
@@ -28,13 +42,11 @@ export const changeQuoteStatus = async (quoteId, newStatus) => {
         await updateDoc(docRef, { status: 2 });
       }
     }
-    //se actualiza el estado de la cotizacion
     const quoteRef = doc(db, "usersQuotes", user.uid, "quotes", quoteId);
     await updateDoc(quoteRef, { status: newStatus });
 
-    return newStatus;
+    return "Estado de cotización cambiado.";
   } catch (error) {
-    console.error("Error al actualizar el estado:", error);
     throw new Error(error);
   }
 };

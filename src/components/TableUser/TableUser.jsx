@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { fetchUserData } from "../../services/TableUserService";
+import { fetchUserData } from "../../services/TableUserService.js";
 import CreateUser from "./CreateUser";
 import UserDataRow from "./UserDataRow";
 import AlertFailed from "./AlertFailed";
@@ -11,13 +11,16 @@ import {
   CardHeader,
   Typography,
   CardBody,
-  CardFooter,
   Input,
-  Alert,
 } from "@material-tailwind/react";
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
-const TABLE_HEAD = ["Nombre", "Correo", "Privilegios", "Habilitado", "Editar"];
+const TABLE_HEAD = [
+  "Nombre",
+  "Correo",
+  "Privilegios",
+  "Habilitado",
+  "Opciones",
+];
 
 export default function TableUser() {
   const [isLoadingTable, setIsLoadingTable] = useState(false);
@@ -27,16 +30,41 @@ export default function TableUser() {
   const [userDataCollection, setUserDataCollection] = useState([{}]);
   const [openCreateUserModal, setOpenCreateUserModal] = useState(false);
   const [alertData, setAlertData] = useState();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredUserData, setFilteredUserData] = useState([]);
+  const [counter, setCounter] = useState(0);
+
+  useEffect(() => {
+    console.log(filteredUserData);
+    setCounter(counter + 1);
+  }, [filteredUserData]);
+
+  useEffect(() => {
+    setFilteredUserData(userDataCollection);
+  }, [userDataCollection]);
 
   useEffect(() => {
     document.title = "Tabla Usuarios";
     getUserData();
   }, []);
 
+  const handleSearch = () => {
+    const filteredData = userDataCollection.filter((user) =>
+      Object.values(user).some(
+        (value) =>
+          typeof value === "string" &&
+          value.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    );
+    setFilteredUserData(filteredData);
+  };
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
+
   const getUserData = async () => {
     setIsLoadingTable(true);
     const userData = await fetchUserData();
-    //const newUserData = await addNewUserData(userData);
     setUserDataCollection(userData);
     setIsLoadingTable(false);
   };
@@ -59,14 +87,12 @@ export default function TableUser() {
     }, 5000);
   };
 
-  //message se ocupa para mostrar alertas personalizadas
   const handleSuccessAlert = (message) => {
-    getUserData();
     setAlertData(message);
     handleOpenAlertSuccess(true);
+    getUserData();
   };
 
-  //error se ocupa para mostrar el error al usuario
   const handleFailedAlert = (error) => {
     setAlertData(error);
     handleOpenAlertFailed(true);
@@ -94,10 +120,13 @@ export default function TableUser() {
               <div className="flex w-full shrink-0 gap-2 md:w-max">
                 <div className="w-full md:w-72">
                   <Input
-                    label="Buscar usuario"
-                    // color="white"
-                    disabled={true}
-                    icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+                    color="white"
+                    value={searchTerm}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value);
+                      handleSearch(e.target.value);
+                    }}
+                    placeholder="Buscar usuario"
                   />
                 </div>
                 {isCreateUserLoading ? (
@@ -159,7 +188,7 @@ export default function TableUser() {
                   </tr>
                 ) : (
                   <>
-                    {userDataCollection.map((user, index) => {
+                    {filteredUserData.map((user, index) => {
                       const isLast = index === userDataCollection.length - 1;
                       const classes = isLast
                         ? "p-4"
@@ -169,7 +198,7 @@ export default function TableUser() {
                         <UserDataRow
                           user={user}
                           classes={classes}
-                          key={index}
+                          key={user.uid}
                           handleSuccessAlert={handleSuccessAlert}
                           handleFailedAlert={handleFailedAlert}
                         />
@@ -180,9 +209,6 @@ export default function TableUser() {
               </tbody>
             </table>
           </CardBody>
-          <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
-            <>{/* paginador */}</>
-          </CardFooter>
         </Card>
         {openCreateUserModal && (
           <CreateUser

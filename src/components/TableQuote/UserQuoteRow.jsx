@@ -12,11 +12,16 @@ import {
   DialogHeader,
   DialogBody,
   DialogFooter,
+  Alert,
+  Spinner,
 } from "@material-tailwind/react";
 import {
   changeQuoteStatus,
   deleteQuote,
+  updateQuoteName,
 } from "../../services/TableQuoteService";
+import * as Yup from "yup";
+import { useFormik } from "formik";
 
 export default function UserQuoteRow({
   quote,
@@ -26,108 +31,131 @@ export default function UserQuoteRow({
   handleGenerateExcel,
   handleQuoteView,
 }) {
-  const [openThreeDotsOptions, setOpenThreeDotsOptions] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [quoteStatus, setQuoteStatus] = useState(String(quote.status));
   const [newQuoteStatus, setNewQuoteStatus] = useState(quoteStatus);
   const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] =
     useState(false);
-  const [contador, setContador] = useState(0);
-
-  useEffect(() => {
-    setQuoteStatus(String(quote.status));
-    //setContador(contador + 1);
-  }, [quote]);
-
-  useEffect(() => {
-    setNewQuoteStatus(quoteStatus);
-    setContador(contador + 1);
-  }, [quoteStatus]);
+  const [isEditingQuoteName, setIsEditingQuoteName] = useState(false);
+  const [isQuoteNameHovered, setIsQuoteNameHovered] = useState(false);
+  const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
 
   const handleChangeQuoteStatus = (newQuoteStatus) => {
     setIsConfirmationDialogOpen(true);
     setNewQuoteStatus(newQuoteStatus);
   };
 
-  const handleOpenThreeDotsOptions = () => {
-    setOpenThreeDotsOptions(!openThreeDotsOptions);
-  };
-
-  //Manejo borrado cotizacion
-
-  const handleDeleteQuote = async () => {
-    await deleteQuote(quote.id)
-      .then(() => {
-        return;
-      })
-      .catch((e) => {
-        throw e;
-      });
-  };
-
-  const handleConfirmDelete = async () => {
-    await handleDeleteQuote()
-      .then(() => {
-        handleSuccessAlert("Cotización eliminada correctamente");
-      })
-      .catch((e) => {
-        handleFailedAlert("Error al eliminar la cotización");
-      });
-    handleOpenDeleteDialog();
-  };
-
   const handleOpenDeleteDialog = () => {
     setOpenDeleteDialog(!openDeleteDialog);
   };
 
-  //Manejo de estados cotizacion
-
   const handleConfirmChangeStatus = async () => {
     await changeQuoteStatus(quote.id, parseInt(newQuoteStatus, 10))
-      .then(() => {
-        handleSuccessAlert("Estado cotización cambiado");
+      .then((data) => {
+        handleSuccessAlert(data);
       })
-      .catch(() => {
-        handleFailedAlert("Error al cambiar el estado");
+      .catch((error) => {
+        handleFailedAlert(error);
       });
     setIsConfirmationDialogOpen(false);
   };
 
+  const handleConfirmDelete = async () => {
+    await deleteQuote(quote.id)
+      .then((data) => {
+        handleSuccessAlert(data);
+      })
+      .catch((error) => {
+        handleFailedAlert(error);
+      });
+
+    handleOpenDeleteDialog();
+  };
+
+  const handleConfirmUpdateQuoteName = async (formikValues) => {
+    setIsLoadingUpdate(true);
+    updateQuoteName(quote.id, formikValues.quoteName)
+      .then((data) => {
+        handleSuccessAlert(data);
+        setIsLoadingUpdate(false);
+        setIsEditingQuoteName(false);
+      })
+      .catch((error) => {
+        handleFailedAlert(error);
+      });
+  };
+
   const handleCancelChangeStatus = () => {
-    setNewQuoteStatus(quoteStatus);
+    setNewQuoteStatus(String(quote.status));
     setIsConfirmationDialogOpen(false);
   };
 
+  const handleChangeQuoteName = () => {
+    setIsEditingQuoteName(true);
+  };
+
+  useEffect(() => {
+    setQuoteStatus(String(quote.status));
+  }, [quote]);
+
+  const validationSchema = Yup.object().shape({
+    quoteName: Yup.string()
+      .min(3, "El nombre debe contener al menos 3 caracteres")
+      .max(20, "El nombre debe contener a lo más 20 caracteres")
+      .required("El nombre es obligatorio")
+      .matches(
+        /^[a-zA-Z0-9 ]*$/,
+        "No se permiten caracteres especiales en el nombre"
+      ),
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      quoteName: quote.quoteName,
+    },
+    validateOnMount: true,
+    validationSchema: validationSchema,
+    onSubmit: () => {
+      handleConfirmUpdateQuoteName(formik.values);
+    },
+  });
+
   return (
     <tr className="hover:bg-two">
-      <td className={`${classes}`}>
-        <div className="flex items-center">
-          <Typography variant="small" className="font-normal text-light mr-1">
-            {quote.quoteName}
-          </Typography>
-          <Button className="hover:bg-twoHover  bg-transparent shadow-none !px-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-4 h-4"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"
-              />
-            </svg>
-          </Button>
-        </div>
+      <td className={classes}>
+        {isEditingQuoteName ? (
+          <>
+            <input
+              type="text"
+              name="quoteName"
+              placeholder="Nombre cotización"
+              label="Nombre cotización"
+              value={formik.values.quoteName}
+              onChange={(e) => {
+                formik.handleChange(e);
+              }}
+              onMouseEnter={() => setIsQuoteNameHovered(true)}
+              onMouseLeave={() => setIsQuoteNameHovered(false)}
+              className={`mr-1 rounded-md px-2 py-1 w-1/2 text-light bg-dark2 font-sans text-[14px] shadow-md border-2 ${
+                formik.errors.quoteName
+                  ? " border-red-500 animate-pulse"
+                  : "border-gray-700"
+              }`}
+            />
+            {formik.errors.quoteName && isQuoteNameHovered ? (
+              <Alert className="absolute mt-1 bg-red-500 !w-auto animate-pulse">
+                {formik.errors.quoteName}
+              </Alert>
+            ) : null}
+          </>
+        ) : (
+          <>
+            <Typography variant="small" className="font-normal text-light mr-1">
+              {quote.quoteName}
+            </Typography>
+          </>
+        )}
       </td>
-      {/* <td className={classes}>
-          <Typography variant="small" color="blue-gray" className="font-normal">
-            {quote.version}
-          </Typography>
-        </td> */}
       <td className={classes}>
         <div className="max-w-[10rem]">
           <Select
@@ -137,22 +165,13 @@ export default function UserQuoteRow({
             className="text-light opacity-70"
             menuProps={{ className: "bg-dark text-light border-dark2" }}
           >
-            <Option
-              className={` ${quoteStatus === "1" ? "hidden" : ""}`}
-              value={"1"}
-            >
+            <Option className={quoteStatus !== "1" ? "" : "hidden"} value="1">
               Activa
             </Option>
-            <Option
-              className={`${quoteStatus === "2" ? "hidden" : ""}`}
-              value={"2"}
-            >
+            <Option className={quoteStatus !== "2" ? "" : "hidden"} value="2">
               En curso
             </Option>
-            <Option
-              className={` ${quoteStatus === "3" ? "hidden" : ""}`}
-              value={"3"}
-            >
+            <Option className={quoteStatus !== "3" ? "" : "hidden"} value="3">
               Finalizada
             </Option>
           </Select>
@@ -193,45 +212,109 @@ export default function UserQuoteRow({
         </Button>
       </td>
       <td className={classes}>
-        <Menu>
-          <MenuHandler>
-            <Button
-              variant="text"
-              className="px-3 bg-transparent shadow-none hover:shadow-md hover:bg-twoHover"
-              onClick={() => handleOpenThreeDotsOptions()}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-6 h-6 text-light"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z"
-                />
-              </svg>
-            </Button>
-          </MenuHandler>
-          <MenuList className="bg-dark text-light border-dark2">
-            <MenuItem disabled={true}>Cambiar nombre</MenuItem>
-            <MenuItem disabled={true}>Ver Versiones</MenuItem>
-            <MenuItem onClick={() => handleGenerateExcel(quote)}>
-              Descargar Excel
-            </MenuItem>
-            <MenuItem onClick={handleOpenDeleteDialog}>Eliminar</MenuItem>
-          </MenuList>
-        </Menu>
+        {isEditingQuoteName ? (
+          <>
+            {isLoadingUpdate ? (
+              <>
+                <Spinner />
+              </>
+            ) : (
+              <>
+                <Button
+                  size="sm"
+                  color="green"
+                  className="rounded w-[32px] h-[32px] px-2 mx-1"
+                  disabled={formik.errors.quoteName}
+                  onClick={(e) => {
+                    formik.handleSubmit(e);
+                  }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-4 h-4"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M4.5 12.75l6 6 9-13.5"
+                    />
+                  </svg>
+                </Button>
+                <Button
+                  size="sm"
+                  color="red"
+                  className="rounded w-[32px] h-[32px] px-2 mx-1"
+                  onClick={() => {
+                    setIsEditingQuoteName(false);
+                    formik.setFieldValue("quoteName", quote.quoteName);
+                  }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-4 h-4"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </Button>
+              </>
+            )}
+          </>
+        ) : (
+          <>
+            <Menu>
+              <MenuHandler>
+                <Button
+                  variant="text"
+                  className="px-3 bg-transparent shadow-none hover:shadow-md hover:bg-twoHover"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-6 h-6 text-light"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z"
+                    />
+                  </svg>
+                </Button>
+              </MenuHandler>
+              <MenuList className="bg-dark text-light border-dark2">
+                <MenuItem onClick={handleChangeQuoteName}>
+                  Cambiar nombre
+                </MenuItem>
+                <MenuItem disabled>Ver Versiones</MenuItem>
+                <MenuItem onClick={() => handleGenerateExcel(quote)}>
+                  Descargar Excel
+                </MenuItem>
+                <MenuItem onClick={handleOpenDeleteDialog}>Eliminar</MenuItem>
+              </MenuList>
+            </Menu>
+          </>
+        )}
       </td>
       <Dialog open={isConfirmationDialogOpen} className="bg-dark">
         <DialogHeader className="text-light">
-          Confirmar Cambio de Estado
+          Confirmar cambio de estado cotización.
         </DialogHeader>
-        <DialogBody className="text-light opacity-70">
-          ¿Estás seguro en cambiar el estado?
+        <DialogBody className="text-light opacity-70 text-center">
+          ¿Está seguro en cambiar el estado de la cotización?
         </DialogBody>
         <DialogFooter>
           <Button

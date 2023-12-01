@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Button,
   Typography,
@@ -22,10 +22,6 @@ export default function ProductRow({
   const [openThreeDotsOptions, setOpenThreeDotsOptions] = useState(false);
   const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] =
     useState(false);
-
-  // useEffect(() => {
-  //   console.log(product);
-  // }, [product]);
 
   const navigate = useNavigate();
 
@@ -51,7 +47,7 @@ export default function ProductRow({
           >
             {product.description}
           </Typography>
-          <div className="ml-auto">
+          <div className="ml-auto w-[100px]">
             <img src={product.imgSrc} className="ml-1 rounded-md"></img>
           </div>
         </div>
@@ -73,7 +69,10 @@ export default function ProductRow({
         </Typography>
       </td>
       <td className={classes}>
-        <Button className="px-3 bg-transparent shadow-none hover:bg-twoHover">
+        <Button
+          className="px-3 bg-transparent shadow-none hover:bg-twoHover"
+          disabled={true}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"

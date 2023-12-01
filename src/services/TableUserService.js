@@ -1,24 +1,4 @@
 import axios from "axios";
-// const getUserDataToMerge = async (UUID) => {
-//   const data = await getDoc(doc(db, "userData", UUID));
-//   return data;
-// };
-
-// export const addNewUserData = async (userData) => {
-//   const newUserData = userData.map(async (data) => {
-//     const dataToMerge = await getUserDataToMerge(data.uid);
-//     const parsedDataToMerge = dataToMerge.data();
-//     return {
-//       uid: data.uid,
-//       disabled: data.disabled,
-//       displayName: data.displayName,
-//       email: data.email,
-//       ...parsedDataToMerge,
-//     };
-//   });
-//   const dataToReturn = await Promise.all(newUserData); //espera a que todas las promes se terminen
-//   return dataToReturn;
-// };
 
 export const createUser = async (formValues) => {
   formValues.displayName = formValues.firstname + " " + formValues.lastname;
@@ -50,6 +30,28 @@ export const changeUserStatus = async (isDisabled, UID) => {
   }
 };
 
+export const updateUserData = async (UID, newUserData) => {
+  const dataToSend = { uid: UID, ...newUserData };
+
+  try {
+    const response = await axios.patch("/api/updateUserData", dataToSend);
+    return response.data;
+  } catch (error) {
+    throw new Error("Error al actualizar los datos de usuario.");
+
+  }
+}
+
+export const deleteUser = async (UID) => {
+
+  try {
+    const response = await axios.post("/api/deleteUser", { uid: UID });
+    return response.data;
+  } catch (error) {
+    throw new Error("Error al eliminar el usuario.");
+  }
+}
+
 export const fetchUserData = async () => {
   try {
     const response = await axios.get("/api/getUsers");
@@ -58,3 +60,5 @@ export const fetchUserData = async () => {
     throw new Error("No se pudo recuperar los datos de usuarios.");
   }
 };
+
+

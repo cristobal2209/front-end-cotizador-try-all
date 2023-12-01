@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-
+import { uuidv4 } from "@firebase/util";
 import {
   Card,
   CardBody,
@@ -15,6 +15,8 @@ import { useParams } from "react-router-dom";
 import {
   updateQuoteProducts,
   subscribeToActiveQuote,
+  getActiveQuote,
+  getQuote,
 } from "../../services/QuoteService";
 
 const TABLE_HEAD = [
@@ -36,55 +38,76 @@ export default function QuoteDetails() {
   const [counter, setCounter] = useState(0);
 
   useEffect(() => {
-    setIsLoading(true);
-    const unsubscribe = subscribeToActiveQuote((data) => {
-      setQuote(data);
-    });
-    setIsLoading(false);
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const quoteData = await getQuote(quoteId);
+        setQuote(quoteData);
+      } catch (error) {
+        // Manejar errores, por ejemplo, mostrando un mensaje de error.
+        console.error("Error al obtener la cotización:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
-  }, []);
+
+    fetchData();
+  }, [quoteId]);
 
   useEffect(() => {
-    if (quote?.products.length != 0) setQuoteProducts(quote?.products);
-    //console.log(quote);
+    document.title = `Cotización "${quote?.quoteName}"`;
+    console.log(quote);
+    if (quote?.products.length !== 0) {
+      // Aplicar map a quote.products y guardar el resultado en una nueva variable
+      const mappedProducts = quote?.products.map((product) => {
+        product.id = uuidv4();
+        return product;
+      });
+
+      // Establecer el estado con los productos mapeados
+      setQuoteProducts(mappedProducts);
+    }
   }, [quote]);
 
   useEffect(() => {
     if (quoteProducts?.length != 0) {
       getTotal();
-      updateProducts();
-      setCounter(counter + 1);
     }
+    if (quoteProducts?.length === 0) setTotal(0);
+    setCounter(counter + 1);
   }, [quoteProducts]);
 
-  const deleteProduct = async (index) => {
-    setQuoteProducts((prevProducts) => {
-      const newProducts = [...prevProducts];
-      newProducts.splice(index, 1);
-      return newProducts;
-    });
-    updateProducts();
-    setCounter(counter + 1);
+  useEffect(() => {
+    if (counter > 0) updateProducts();
+  }, [counter]);
+
+  const deleteProduct = async (quoteProductID) => {
+    const updatedQuoteProducts = quoteProducts.filter(
+      (quoteProduct) => quoteProduct.id !== quoteProductID
+    );
+    setQuoteProducts(updatedQuoteProducts);
   };
 
   const updateProducts = async () => {
     const response = await updateQuoteProducts(quoteId, quoteProducts, total);
   };
 
-  const updateSubtotal = (index, newQuantity, price) => {
+  const updateSubtotal = (quoteProductID, newQuantity, newPrice) => {
     setQuoteProducts((prevQuoteProducts) => {
-      // Clona el arreglo previo para mantener la inmutabilidad
-      const updatedQuoteProducts = [...prevQuoteProducts];
-      // Actualiza el elemento específico en el nuevo arreglo clonado
-      updatedQuoteProducts[index] = {
-        ...updatedQuoteProducts[index],
-        quantity: newQuantity,
-        price: price,
-      };
+      const updatedQuoteProducts = prevQuoteProducts.map((product) => {
+        // Compara el quoteProductID para encontrar el producto correcto
+        if (product.id === quoteProductID) {
+          // Actualiza la cantidad y el precio del producto
+          return {
+            ...product,
+            quantity: newQuantity,
+            price: newPrice,
+          };
+        }
+        // Mantén los productos que no necesitan actualizarse sin cambios
+        return product;
+      });
+
       return updatedQuoteProducts;
     });
   };
@@ -111,7 +134,7 @@ export default function QuoteDetails() {
           {quote ? (
             <>
               <Typography variant="h5" className="text-light">
-                {quote?.quoteName}
+                Nombre cotización: {quote?.quoteName}
               </Typography>
             </>
           ) : (
@@ -119,64 +142,88 @@ export default function QuoteDetails() {
           )}
         </CardHeader>
         <CardBody className="p-4">
-          <table className="w-full min-w-max table-auto text-left">
-            <thead>
-              <tr>
-                {TABLE_HEAD.map((head) => (
-                  <th key={head} className=" bg-dark3 border-opacity-50 p-4">
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="font-normal leading-none  text-light"
-                    >
-                      {head}
-                    </Typography>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="mx-auto">
-              {isLoadingTable ? (
-                <tr>
-                  <td>
-                    <div>
-                      <Spinner className="h-12 w-12" />
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                <>
-                  {quoteProducts?.map((productData, index) => {
-                    const isLast = index === quote.products.length - 1;
-                    const classes = isLast
-                      ? "p-4"
-                      : "p-4 border-b border-blue-gray-50";
-                    return (
-                      <ProductQuoteRow
-                        productData={productData}
-                        key={index}
-                        index={index}
-                        classes={classes}
-                        updateSubtotal={updateSubtotal}
-                        deleteProduct={deleteProduct}
-                      />
-                    );
-                  })}
-                </>
-              )}
-            </tbody>
-          </table>
+          {quoteProducts?.length === 0 || !quoteProducts ? (
+            <>
+              <Typography variant="paragraph" className="text-light">
+                Esta cotización no tiene productos.
+              </Typography>
+            </>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-max table-auto text-left ">
+                <thead>
+                  <tr>
+                    {TABLE_HEAD.map((head) => (
+                      <th
+                        key={head}
+                        className=" bg-dark3 border-opacity-50 p-4"
+                      >
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal leading-none  text-light"
+                        >
+                          {head}
+                        </Typography>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="mx-auto ">
+                  {isLoadingTable ? (
+                    <tr>
+                      <td>
+                        <div>
+                          <Spinner className="h-12 w-12" />
+                        </div>
+                      </td>
+                    </tr>
+                  ) : (
+                    <>
+                      {quoteProducts?.map((productData, index) => {
+                        const isLast = index === quote.products.length - 1;
+                        const classes = isLast
+                          ? "p-4"
+                          : "p-4 border-b border-blue-gray-50";
+                        return (
+                          <ProductQuoteRow
+                            productData={productData}
+                            key={productData.id}
+                            classes={classes}
+                            updateSubtotal={(newQuantity, newPrice) => {
+                              updateSubtotal(
+                                productData.id,
+                                newQuantity,
+                                newPrice
+                              );
+                            }}
+                            deleteProduct={() => {
+                              deleteProduct(productData.id);
+                            }}
+                          />
+                        );
+                      })}
+                    </>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
         </CardBody>
-        <CardFooter className="flex items-center justify-between p-4">
-          <div className="!justify-self-start w-full justify-between flex flex-row">
-            <Typography variant="h5" className="text-light">
-              Total:
-            </Typography>
-            <Typography variant="h5" className="text-light">
-              ${total}
-            </Typography>
-          </div>
-        </CardFooter>
+        {quoteProducts?.length === 0 || !quoteProducts ? (
+          <></>
+        ) : (
+          <CardFooter className="flex items-center justify-between p-4">
+            <div className="!justify-self-start w-full justify-between flex flex-row">
+              <Typography variant="h5" className="text-light">
+                Total:
+              </Typography>
+              <Typography variant="h5" className="text-light">
+                ${total}
+              </Typography>
+            </div>
+          </CardFooter>
+        )}
       </Card>
     </div>
   );
@@ -186,7 +233,6 @@ function ProductQuoteRow({
   productData,
   classes,
   updateSubtotal,
-  index,
   deleteProduct,
 }) {
   const [priceNumber, setPriceNumber] = useState(0);
@@ -195,12 +241,18 @@ function ProductQuoteRow({
   const [totalStock, setTotalStock] = useState(0);
   const { product, supplier } = productData;
 
-  const priceMap = {}; // Objeto para mapear cantidades a precios
+  const priceMap = {};
 
-  // Crear el mapeo de cantidades a precios
   supplier.prices.forEach((priceEntry) => {
-    const minQuantity = parseInt(priceEntry.quantity.replace("+", ""));
-    const price = parseFloat(priceEntry.price.replace(/\$/g, ""));
+    const minQuantity = parseInt(priceEntry.quantity.replace("+", ""), 10);
+
+    // Limpiar la cadena de precio antes de convertirla a un número
+    const cleanedPriceString = priceEntry.price
+      .replace(/[^\d.,]/g, "") // Elimina caracteres que no son dígitos, comas ni puntos
+      .replace(",", ""); // Elimina comas que no son el separador de decimales
+
+    const price = parseFloat(cleanedPriceString);
+
     priceMap[minQuantity] = price;
   });
 
@@ -214,7 +266,6 @@ function ProductQuoteRow({
   }, [quantity]);
 
   const updatePriceAndSubtotal = async (newQuantity) => {
-    // Buscar el precio más cercano en el mapeo
     let nearestQuantity = newQuantity;
     while (priceMap[nearestQuantity] === undefined && nearestQuantity >= 0) {
       nearestQuantity--;
@@ -224,8 +275,7 @@ function ProductQuoteRow({
     setQuantity(newQuantity);
     setPriceNumber(newPrice);
 
-    // Llama a la función de actualización del subtotal en el componente padre
-    updateSubtotal(index, newQuantity, newPrice);
+    updateSubtotal(newQuantity, newPrice);
   };
 
   const sumTotalStock = () => {
@@ -260,6 +310,13 @@ function ProductQuoteRow({
     return inputString.charAt(0).toUpperCase() + inputString.slice(1);
   }
 
+  const handleQuantityChange = (event) => {
+    const newQuantity = parseInt(event.target.value, 10) || 1;
+    if (newQuantity <= totalStock) {
+      updatePriceAndSubtotal(newQuantity);
+    }
+  };
+
   return (
     <tr
       className={`bg-two hover:bg-twoHover text-light items-center ${classes}`}
@@ -267,7 +324,7 @@ function ProductQuoteRow({
       <td>
         <div className="flex p-4">
           <a
-            href={`http://localhost:4000/articles/${product.id}`}
+            href={`${import.meta.env.VITE_HOST}/articles/${product.id}`}
             className="hover:underline mr-1 max-w-xs"
           >
             <Typography variant="small" className=" text-light">
@@ -319,8 +376,12 @@ function ProductQuoteRow({
           </Button>
           <div className="self-center mx-5">
             <Typography variant="small" className=" text-light">
-              {" "}
-              {quantity}
+              <input
+                type="text"
+                value={quantity}
+                onChange={handleQuantityChange}
+                className="self-center rounded-md bg-dark px-3 text-center border-2 border-dark2 max-w-[100px]"
+              />
             </Typography>
           </div>
           <Button
@@ -404,7 +465,7 @@ function ProductQuoteRow({
             color="red"
             className="ml-auto px-3"
             onClick={async () => {
-              await deleteProduct(index);
+              await deleteProduct();
             }}
           >
             <svg
@@ -427,31 +488,3 @@ function ProductQuoteRow({
     </tr>
   );
 }
-
-ProductQuoteRow.propTypes = {
-  productData: PropTypes.shape({
-    product: PropTypes.shape({
-      description: PropTypes.string.isRequired,
-      imgSrc: PropTypes.string.isRequired,
-    }).isRequired,
-    supplier: PropTypes.shape({
-      supplier: PropTypes.string.isRequired,
-      prices: PropTypes.arrayOf(
-        PropTypes.shape({
-          quantity: PropTypes.string.isRequired,
-          price: PropTypes.string.isRequired,
-        })
-      ).isRequired,
-      stock: PropTypes.arrayOf(
-        PropTypes.shape({
-          stock: PropTypes.string.isRequired,
-        })
-      ).isRequired,
-    }).isRequired,
-    quantity: PropTypes.number.isRequired,
-  }).isRequired,
-  classes: PropTypes.string.isRequired,
-  updateSubtotal: PropTypes.func.isRequired,
-  index: PropTypes.number.isRequired,
-  deleteProduct: PropTypes.func.isRequired,
-};

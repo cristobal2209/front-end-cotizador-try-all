@@ -1,43 +1,44 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   Card,
   CardBody,
-  CardFooter,
   Button,
-  IconButton,
   Spinner,
+  CardHeader,
+  Typography,
 } from "@material-tailwind/react";
 import { getProductsFromInput } from "../../services/SearchService";
 import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 
 function GridSearchResults({ products }) {
-  const openNewWindow = (productDataId) => {
-    // URL o contenido que deseas mostrar en la nueva pestaña
-    const url = `http://localhost:4000/articles/${productDataId}`;
-
-    // Abre una nueva pestaña o ventana con el contenido
-    window.open(url, "_blank");
-  };
-
   return (
     <div className="mx-auto grid max-w-6xl place-items-center gap-5 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {products?.map((productResult, index) => (
-        <Card
-          className="h-full mx-2 w-48 cursor-pointer text-center shadow-md"
+        <a
           key={index}
-          onClick={(event) => openNewWindow(productResult.id)}
+          href={`${import.meta.env.VITE_HOST}/articles/${
+            productResult.idProduct
+          }`}
+          target="_blank"
+          rel="noreferrer"
+          className="h-full"
         >
-          <CardBody className="h-32">
-            <img
-              src={productResult.imgSrc}
-              className="h-28 w-64 object-contain"
-            />
-          </CardBody>
-          <CardFooter>
-            <p>{productResult.description}</p>
-          </CardFooter>
-        </Card>
+          <Card className="h-full mx-2 pt-10 w-48 cursor-pointer text-center shadow-md bg-dark">
+            <CardHeader className="h-32">
+              <img
+                src={productResult.imgSrc}
+                alt={productResult.description}
+                className="h-28 w-64 object-contain"
+              />
+            </CardHeader>
+            <CardBody>
+              <Typography variant="small" className="text-light">
+                {productResult.description.slice(0, 30) + "..."}
+              </Typography>
+            </CardBody>
+          </Card>
+        </a>
       ))}
     </div>
   );
@@ -54,6 +55,7 @@ function RenderFilters() {
               className="w-full rounded border border-gray-300 px-4 py-2"
               type="text"
               placeholder="Min"
+              disabled={true}
             />
           </div>
           -
@@ -62,6 +64,7 @@ function RenderFilters() {
               className="w-full rounded border border-gray-300 px-4 py-2"
               type="text"
               placeholder="Max"
+              disabled={true}
             />
           </div>
         </div>
@@ -72,6 +75,7 @@ function RenderFilters() {
               className="w-full rounded border border-gray-300 px-4 py-2"
               type="text"
               placeholder="Min"
+              disabled={true}
             />
           </div>
           -
@@ -80,6 +84,7 @@ function RenderFilters() {
               className="w-full rounded border border-gray-300 px-4 py-2"
               type="text"
               placeholder="Max"
+              disabled={true}
             />
           </div>
         </div>
@@ -92,6 +97,7 @@ function RenderFilters() {
             <select
               id="selectOption"
               className="w-full rounded border border-gray-300 bg-one px-4 py-2 text-gray-400"
+              disabled={true}
             >
               <option value="">Marcas</option>
               <option value="option1">Bauker</option>
@@ -106,42 +112,49 @@ function RenderFilters() {
 }
 
 export default function SearchResults() {
-  const [contador, setContador] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const { productSearchParam } = useParams();
-  const [nextDocRef, setNextDocRef] = useState(null);
-  const [prevDocRef, setPrevDocRef] = useState(null);
+  const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
-    document.title = `Resultado búsqueda "${productSearchParam}"`;
-    getNextProducts();
+    document.title = `Resultados de búsqueda "${productSearchParam}"`;
   }, []);
 
   useEffect(() => {
-    setContador(contador + 1);
-  }, [searchResults]);
+    result();
+  }, [currentPage]);
 
-  const getNextProducts = async () => {
+  async function result() {
     setIsLoading(true);
-    const { data, firstVisible, lastVisible } = await getProductsFromInput(
-      productSearchParam,
-      nextDocRef
-    );
-    setSearchResults(data);
-    setNextDocRef(lastVisible);
-    setPrevDocRef(firstVisible);
-    setIsLoading(false);
+    try {
+      const {
+        data,
+        totalPages: total,
+        currentPage: current,
+      } = await getProductsFromInput(productSearchParam, currentPage);
+
+      setSearchResults(data);
+      setTotalPages(total);
+      setCurrentPage(current);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
   };
 
-  const getPrevProducts = async () => {
-    const { data, firstVisible, lastVisible } = await getProductsFromInput(
-      productSearchParam,
-      prevDocRef
-    );
-    setSearchResults(data);
-    setNextDocRef(lastVisible);
-    setPrevDocRef(firstVisible);
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
   };
 
   return (
@@ -155,11 +168,12 @@ export default function SearchResults() {
             ) : (
               <div className="pb-10">
                 <GridSearchResults products={searchResults} />
+                {/* <GridSearchResults products={searchResults} /> */}
                 <div className="mx-auto flex pt-20">
                   <Button
                     variant="text"
                     className="mx-auto flex items-center gap-2 bg-two hover:bg-twoHover text-light"
-                    onClick={getPrevProducts}
+                    onClick={handlePrevPage}
                   >
                     <ArrowLeftIcon
                       strokeWidth={2}
@@ -170,7 +184,7 @@ export default function SearchResults() {
                   <Button
                     variant="text"
                     className="mx-auto flex items-center gap-2 bg-two hover:bg-twoHover text-light"
-                    onClick={getNextProducts}
+                    onClick={handleNextPage}
                   >
                     Siguiente
                     <ArrowRightIcon

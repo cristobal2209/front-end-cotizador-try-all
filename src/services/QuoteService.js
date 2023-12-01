@@ -28,9 +28,7 @@ export const createQuote = async (quoteData) => {
   quoteData.responsibleUUID = user.uid;
   await addDoc(collection(db, "usersQuotes", user.uid, "quotes"), quoteData)
     .then()
-    .catch((error) => {
-      console.log(error);
-    });
+    .catch((error) => { });
 };
 
 export const subscribeToActiveQuote = (callback) => {
@@ -68,10 +66,8 @@ export const checkActiveQuotesExists = async () => {
     const q = query(quotesRef, where("status", "==", 1), limit(1));
     const querySnapshot = await getDocs(q);
 
-    //Si querySnapshot.empty == true, es porque no existen cotizaciones activas
     return !querySnapshot.empty;
   } catch (error) {
-    console.error("Error al recuperar cotizacion activa:", error);
     throw new Error(error);
   }
 };
@@ -91,7 +87,6 @@ export const getQuote = async (quoteUID) => {
       throw new Error("No existe la cotizacion");
     }
   } catch (error) {
-    console.error("Error al obtener la cotizacion:", error);
     throw new Error(error);
   }
 };
@@ -111,11 +106,9 @@ export const getActiveQuote = async () => {
       throw new Error("No existe cotizacion activa");
     }
     for (const doc of querySnapshot.docs) {
-      // console.log(doc.data());
       return { id: doc.id, ...doc.data() };
     }
   } catch (error) {
-    console.error("Error al recuperar cotizacion activa:", error);
     throw new Error(error);
   }
 };
@@ -127,10 +120,18 @@ export const addProductToActiveQuote = async (product, supplier) => {
       throw new Error("Usuario no autenticado");
     }
     delete product.suppliers;
+
+    // Encontrar el objeto con quantity igual a "1+" y extraer el precio
+    const priceObject = supplier.prices.find(item => parseInt(item.quantity.replace(/\D/g, ''), 10) === 1);
+
+    // Limpiar el precio y convertirlo a número float
+    const newPrice = parseFloat(priceObject.price.replace(/[^\d.]/g, ''));
+
     let activeQuote = await getActiveQuote();
     activeQuote.products?.push({
       product,
       supplier,
+      price: newPrice,
       quantity: 1,
     });
     const activeQuoteRef = doc(
@@ -165,9 +166,7 @@ export const updateQuoteProducts = async (quoteID, newProducts, total) => {
         total: total,
       })
         .then()
-        .catch((e) => {
-          console.log(e);
-        });
+        .catch((e) => { });
     }
   } catch (e) {
     throw new Error(e);
