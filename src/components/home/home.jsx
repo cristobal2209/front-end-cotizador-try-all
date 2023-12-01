@@ -104,7 +104,10 @@ export default function Home() {
           </p>
         </div>
         <div className="py-10 text-center">
-          <button className="rounded-md bg-two px-10 py-2 font-bold shadow-md hover:bg-twoHover">
+          <button
+            className="rounded-md bg-two px-10 py-2 font-bold shadow-md "
+            disabled={true}
+          >
             ¡Comencemos a aprender!
           </button>
         </div>
@@ -113,7 +116,10 @@ export default function Home() {
         <h1 className="mb-20 text-center text-2xl">Nuestros proveedores</h1>
         <GridEnterprises />
         <div className="pt-10 text-center">
-          <button className="rounded-md bg-two px-10 py-2 font-bold shadow-md hover:bg-twoHover">
+          <button
+            className="rounded-md bg-two px-10 py-2 font-bold shadow-md "
+            disabled={true}
+          >
             Ver catálogo completo
           </button>
         </div>
