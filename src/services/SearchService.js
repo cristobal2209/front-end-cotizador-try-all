@@ -92,7 +92,6 @@ export const getProductsFromCategoryAndName = async (categorySearchParam, page =
       .search(searchParams);
 
     const productos = result.hits.map((document) => document.document);
-    console.log(productos);
     return {
       data: productos,
       totalPages: result.found / pageSize,

@@ -60,8 +60,6 @@ export const createProduct = async (productData) => {
     writeExtraDataToSupplier(supplier);
   });
 
-  console.log(productData);
-
   return await uploadImage(productData.imgSrc)
     .then(async (imgUrl) => {
       productData.imgSrc = imgUrl;

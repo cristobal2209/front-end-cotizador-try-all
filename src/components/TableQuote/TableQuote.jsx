@@ -311,10 +311,6 @@ export function QuoteView({ open, handler, quoteData }) {
     quoteData: PropTypes.object,
   };
 
-  useEffect(() => {
-    console.log(quoteData);
-  }, [quoteData]);
-
   return (
     <Dialog open={open} size="xl" className="bg-dark !w-screen">
       <DialogHeader className="justify-between text-light">

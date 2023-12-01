@@ -75,7 +75,6 @@ export default function Header() {
     try {
       const suggestions = await getSearchSuggestions(texto);
       setSuggestions(suggestions);
-      console.log;
     } catch (error) {
       console.error("Error fetching search suggestions:", error);
       setSuggestions([]);

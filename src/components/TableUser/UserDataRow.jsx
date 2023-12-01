@@ -51,7 +51,6 @@ export default function UserDataRow({
   }, [user]);
 
   useEffect(() => {
-    console.log(user.uid + " " + userIsDisabled);
     setCounter(counter + 1);
   }, [userIsDisabled]);
 

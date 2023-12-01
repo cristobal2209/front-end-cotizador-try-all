@@ -56,7 +56,6 @@ export default function QuoteDetails() {
 
   useEffect(() => {
     document.title = `Cotización "${quote?.quoteName}"`;
-    console.log(quote);
     if (quote?.products.length !== 0) {
       // Aplicar map a quote.products y guardar el resultado en una nueva variable
       const mappedProducts = quote?.products.map((product) => {

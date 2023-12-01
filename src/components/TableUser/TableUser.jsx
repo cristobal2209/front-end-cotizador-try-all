@@ -35,7 +35,6 @@ export default function TableUser() {
   const [counter, setCounter] = useState(0);
 
   useEffect(() => {
-    console.log(filteredUserData);
     setCounter(counter + 1);
   }, [filteredUserData]);
 
