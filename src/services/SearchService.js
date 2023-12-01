@@ -27,8 +27,7 @@ export const getProductsFromInput = async (
       currentPage: page,
     };
   } catch (error) {
-    console.error("Error al realizar la búsqueda:", error);
-    throw error;
+    throw new error;
   }
 };
 export async function getSearchSuggestions(query) {
@@ -45,8 +44,7 @@ export async function getSearchSuggestions(query) {
     const suggestions = result.hits.map((document) => document.document);
     return suggestions;
   } catch (error) {
-    console.error("Error fetching search suggestions:", error);
-    return [];
+    return new error
   }
 }
 
@@ -72,8 +70,7 @@ export const getProductsFromCategory = async (categorySearchParam, page = 1, pag
       currentPage: page,
     };
   } catch (error) {
-    console.error("Error al realizar la búsqueda:", error);
-    throw error;
+    throw new error;
   }
 };
 
@@ -98,8 +95,7 @@ export const getProductsFromCategoryAndName = async (categorySearchParam, page =
       currentPage: page,
     };
   } catch (error) {
-    console.error("Error al realizar la búsqueda:", error);
-    throw error;
+    throw new error;
   }
 };
 

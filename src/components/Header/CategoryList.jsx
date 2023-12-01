@@ -20,7 +20,6 @@ export default function CategoryList() {
         setCategories(categoriesData);
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching categories:", error);
         setLoading(false);
       }
     }

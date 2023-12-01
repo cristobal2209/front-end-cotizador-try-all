@@ -112,9 +112,7 @@ export default function TableQuote() {
         // Establecer el nuevo estado filtrado
         setUserQuotesCollection(filteredQuotes);
       }
-    } catch (error) {
-      console.error("Error al realizar la búsqueda:", error);
-    }
+    } catch (error) {}
   };
 
   const handleOpenAlertSuccess = (boolean) => {

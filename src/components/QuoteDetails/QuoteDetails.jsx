@@ -44,8 +44,6 @@ export default function QuoteDetails() {
         const quoteData = await getQuote(quoteId);
         setQuote(quoteData);
       } catch (error) {
-        // Manejar errores, por ejemplo, mostrando un mensaje de error.
-        console.error("Error al obtener la cotización:", error);
       } finally {
         setIsLoading(false);
       }

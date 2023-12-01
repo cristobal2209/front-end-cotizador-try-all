@@ -148,7 +148,6 @@ export default function SearchCategoryResults() {
       setTotalPages(total);
       setCurrentPage(current);
     } catch (error) {
-      console.error("Error fetching products:", error);
     } finally {
       setIsLoading(false);
     }

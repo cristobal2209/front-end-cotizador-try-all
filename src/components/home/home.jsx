@@ -96,9 +96,7 @@ export default function Home() {
     <div className="mx-auto flex h-full max-w-7xl flex-col justify-between pt-20">
       <section className="w-full">
         <div className="p-3 text-center">
-          <h1 className="text-3xl">
-            ¡BIENVENIDO AL NUEVO COTIZADOR DE TRY ALL!
-          </h1>
+          <h1 className="text-3xl my-5">¡Bienvenido a QuoteMaster!</h1>
           <p className="p-3">
             En el siguiente enlace puedes aprender a ocupar esta herramienta
           </p>
