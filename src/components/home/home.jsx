@@ -103,7 +103,7 @@ export default function Home() {
         </div>
         <div className="py-10 text-center">
           <button
-            className="rounded-md bg-two px-10 py-2 font-bold shadow-md "
+            className="rounded-md bg-two px-10 py-2 font-bold shadow-md opacity-20"
             disabled={true}
           >
             ¡Comencemos a aprender!
@@ -115,7 +115,7 @@ export default function Home() {
         <GridEnterprises />
         <div className="pt-10 text-center">
           <button
-            className="rounded-md bg-two px-10 py-2 font-bold shadow-md "
+            className="rounded-md bg-two px-10 py-2 font-bold shadow-md opacity-20"
             disabled={true}
           >
             Ver catálogo completo

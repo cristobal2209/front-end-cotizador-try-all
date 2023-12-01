@@ -47,7 +47,7 @@ function GridSearchResults({ products }) {
 function RenderFilters() {
   return (
     <aside className="flex-start col-span-1 flex flex-col pr-10 pt-20">
-      <div className=" max-w-[300px] rounded-lg bg-two p-4 shadow-lg">
+      <div className=" max-w-[300px] rounded-lg bg-two p-4 shadow-lg opacity-20">
         Precio (CLP)
         <div className="mb-5 flex">
           <div className="w-1/2 pr-2">

@@ -47,8 +47,8 @@ export default function Article() {
         setAlertData("Producto agregado a cotización");
         handleOpenAlert(true);
       })
-      .catch(() => {
-        setAlertData("Error al agregar el producto");
+      .catch((error) => {
+        setAlertData(error.message);
         handleOpenAlert(false);
       });
   };
@@ -74,7 +74,11 @@ export default function Article() {
             <AlertSuccess open={openAlertSuccess} data={alertData} />
           )}
           {openAlertFailed && (
-            <AlertFailed open={openAlertFailed} error={alertData} />
+            <AlertFailed
+              open={openAlertFailed}
+              error={alertData}
+              className="z-50"
+            />
           )}
           <div className="flex flex-row justify-start ">
             <div className="w-1/2  flex justify-start">
@@ -372,6 +376,7 @@ function AlertFailed({ open, error }) {
             mount: { y: 0 },
             unmount: { y: 100 },
           }}
+          className="z-50"
         >
           <Typography variant="small">{error}</Typography>
         </Alert>

@@ -126,6 +126,13 @@ export const addProductToActiveQuote = async (product, supplier) => {
     const newPrice = parseFloat(priceObject.price.replace(/[^\d.]/g, ''));
 
     let activeQuote = await getActiveQuote();
+
+    const isProductAlreadyAdded = activeQuote.products?.some((addedProduct) => addedProduct.product.id === product.id);
+
+    if (isProductAlreadyAdded) {
+      throw new Error(`El producto ya está agregado a la cotización activa.`);
+    }
+
     activeQuote.products?.push({
       product,
       supplier,

@@ -10,6 +10,8 @@ import {
   limit,
   startAfter,
   addDoc,
+  doc,
+  updateDoc,
 } from "firebase/firestore";
 
 const uploadImage = async (imageUpload) => {
@@ -60,20 +62,23 @@ export const createProduct = async (productData) => {
     writeExtraDataToSupplier(supplier);
   });
 
-  return await uploadImage(productData.imgSrc)
-    .then(async (imgUrl) => {
-      productData.imgSrc = imgUrl;
-      return await addDoc(collection(db, "products"), productData)
-        .then(() => {
-          return `Producto ${productData.description} creado correctamente.`;
-        })
-        .catch((error) => {
-          return error;
-        });
-    })
-    .catch((e) => {
-      return e;
-    });
+  try {
+    const imgUrl = await uploadImage(productData.imgSrc);
+    productData.imgSrc = imgUrl;
+
+    // Agregar el documento a la colección
+    const docRef = await addDoc(collection(db, "products"), productData);
+
+    // Obtener el ID asignado al nuevo documento
+    const newProductId = docRef.id;
+
+    // Actualizar el documento recién creado con el ID asignado
+    await updateDoc(doc(db, "products", newProductId), { idProduct: newProductId });
+
+    return `Producto ${productData.description} creado correctamente con ID ${newProductId}.`;
+  } catch (error) {
+    return error;
+  }
 };
 
 export const countProducts = async (category) => {

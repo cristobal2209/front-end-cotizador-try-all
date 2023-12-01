@@ -334,7 +334,7 @@ export function QuoteView({ open, handler, quoteData }) {
         </IconButton>
       </DialogHeader>
       <DialogBody
-        className={`h-full ${
+        className={`!h-[80vh] ${
           quoteData?.products.length !== 0 && " overflow-scroll"
         }`}
       >

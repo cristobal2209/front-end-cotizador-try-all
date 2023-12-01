@@ -175,7 +175,7 @@ export default function Login() {
           muted
           className="absolute inset-0 w-full h-full object-cover"
         >
-          <source src="src\assets\loginbackground.mp4" type="video/mp4" />
+          <source src="/assets/loginbackground.mp4" type="video/mp4" />
           Tu navegador no soporta el elemento de video.
         </video>
       </div>

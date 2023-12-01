@@ -9,5 +9,5 @@ export const client = new Typesense.Client({
     },
   ],
   apiKey: "brandon",
-  connectionTimeoutSeconds: 2,
+  connectionTimeoutSeconds: 5,
 });

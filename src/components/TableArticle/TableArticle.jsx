@@ -466,7 +466,7 @@ export function CreateProductDialog({
           </Typography>
           <div className="py-2 col-span-2">
             <Textarea
-              label="Descripción"
+              label="Nombre y descripción producto"
               name="description"
               value={productDataFormik.values.description}
               onChange={(e) => {
