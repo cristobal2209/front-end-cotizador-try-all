@@ -47,9 +47,10 @@ export default function TableProduct() {
   const [totalItems, setTotalItems] = useState(0);
   const [openCreateProductDialog, setOpenCreateProductDialog] = useState(false);
   const itemsPerPage = 10;
-  const [searchTerm, setSearchTerm] = useState('');
-  const [originalProductsCollection, setOriginalProductsCollection] = useState([]);
-  
+  const [searchTerm, setSearchTerm] = useState("");
+  const [originalProductsCollection, setOriginalProductsCollection] = useState(
+    []
+  );
 
   const TABLE_HEAD = [
     "Producto",
@@ -82,17 +83,18 @@ export default function TableProduct() {
   };
 
   const getNextProducts = async () => {
-  const { data, firstVisible, lastVisible } = await getNextProductsCollection(nextDocRef);
-  // Si es la primera carga, guarda la data original
-  if (ProductsCollection.length === 0) {
-    setOriginalProductsCollection(data);
-  }
+    const { data, firstVisible, lastVisible } =
+      await getNextProductsCollection(nextDocRef);
+    // Si es la primera carga, guarda la data original
+    if (ProductsCollection.length === 0) {
+      setOriginalProductsCollection(data);
+    }
 
-  setProductsCollection(data);
-  setNextDocRef(lastVisible);
-  setPrevDocRef(firstVisible);
-  setShowedProductsQuantity(showedProductsQuantity + itemsPerPage);
-};
+    setProductsCollection(data);
+    setNextDocRef(lastVisible);
+    setPrevDocRef(firstVisible);
+    setShowedProductsQuantity(showedProductsQuantity + itemsPerPage);
+  };
 
   const getPrevProducts = async () => {
     const { data, firstVisible, lastVisible } =
@@ -117,33 +119,25 @@ export default function TableProduct() {
     }, 5000);
   };
 
-  //message se ocupa para mostrar alertas personalizadas
   const handleSuccessAlert = (message) => {
-    //getUserQuotes();
     setAlertData(message);
     handleOpenAlertSuccess(true);
   };
 
-  //error se ocupa para mostrar el error al usuario
   const handleFailedAlert = (error) => {
     setAlertData(error);
     handleOpenAlertFailed(true);
   };
-  
-const handleSearch = (searchTerm) => {
-  // Convierte el término de búsqueda a minúsculas para hacer la búsqueda sin distinción entre mayúsculas y minúsculas
-  const searchTermLower = searchTerm.toLowerCase();
 
-  // Filtra los productos basándose en el término de búsqueda en la propiedad 'description'
-  const filteredProducts = originalProductsCollection.filter(product => {
-    return product.description.toLowerCase().includes(searchTermLower);
-  });
+  const handleSearch = (searchTerm) => {
+    const searchTermLower = searchTerm.toLowerCase();
 
-  // Actualiza el estado ProductsCollection con los productos filtrados
-  setProductsCollection(filteredProducts);
+    const filteredProducts = originalProductsCollection.filter((product) => {
+      return product.description.toLowerCase().includes(searchTermLower);
+    });
 
-  // También podrías querer actualizar otros estados relacionados con la búsqueda si es necesario
-};
+    setProductsCollection(filteredProducts);
+  };
 
   return (
     <>
@@ -169,16 +163,15 @@ const handleSearch = (searchTerm) => {
               <div className="flex w-full shrink-0 gap-2 md:w-max">
                 <div className="w-full">
                   <div className="flex flex-row">
-                              <Input
-                            type="text"
-                            value={searchTerm}
-                            onChange={(e) => {
-                              setSearchTerm(e.target.value);
-                              handleSearch(e.target.value);
-                            }}
-                            placeholder="Buscar Producto"
-                            
-                          />
+                    <Input
+                      type="text"
+                      value={searchTerm}
+                      onChange={(e) => {
+                        setSearchTerm(e.target.value);
+                        handleSearch(e.target.value);
+                      }}
+                      placeholder="Buscar Producto"
+                    />
                     <Button
                       className=" bg-three hover:bg-threeHover ml-2 !w-max"
                       size="sm"
@@ -432,10 +425,8 @@ export function CreateProductDialog({
   });
 
   const handleInputChange = (e) => {
-    // Solo permitir números y un punto decimal
     const validatedValue = e.target.value.replace(/[^0-9.]/g, "");
 
-    // Actualizar el estado del input solo si la entrada es válida
     productDataFormik.setFieldValue("priceForQuantity", validatedValue);
   };
 
@@ -902,7 +893,6 @@ function NewSupplierRow({
     let id = uuidv4();
     newPrices.push({ id: id, quantity: "", price: "" });
     setPrices([...newPrices]);
-    //se crea en arreglo de verificacion de errores
     let newRowsHaveErrors = rowsHaveErrors;
     newRowsHaveErrors.push({ id: id, errors: true });
     setRowsHaveErrors([...newRowsHaveErrors]);
@@ -956,7 +946,6 @@ function NewSupplierRow({
     let id = uuidv4();
     newExtraData.push({ id: id });
     setExtraData([...newExtraData]);
-    //se crea en arreglo de verificacion de errores
     let newRowsHaveErrors = rowsHaveErrors;
     newRowsHaveErrors.push({ id: id, errors: true });
     setRowsHaveErrors([...newRowsHaveErrors]);
@@ -1419,12 +1408,10 @@ function PricesRow({
     },
   });
 
-  //si estado rowHasErrors cambia, ejecuta la funcion del componente padre para transmitir la informacion
   useEffect(() => {
     onValidationChange(rowHasErrors);
   }, [rowHasErrors]);
 
-  //si el estado counter cambia, comprueba si hay errores en los campos
   useEffect(() => {
     setRowHasErrors(
       priceRowFormik.errors.price || priceRowFormik.errors.quantity

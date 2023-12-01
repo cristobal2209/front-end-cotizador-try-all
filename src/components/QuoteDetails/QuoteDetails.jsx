@@ -55,13 +55,11 @@ export default function QuoteDetails() {
   useEffect(() => {
     document.title = `Cotización "${quote?.quoteName}"`;
     if (quote?.products.length !== 0) {
-      // Aplicar map a quote.products y guardar el resultado en una nueva variable
       const mappedProducts = quote?.products.map((product) => {
         product.id = uuidv4();
         return product;
       });
 
-      // Establecer el estado con los productos mapeados
       setQuoteProducts(mappedProducts);
     }
   }, [quote]);
@@ -92,16 +90,13 @@ export default function QuoteDetails() {
   const updateSubtotal = (quoteProductID, newQuantity, newPrice) => {
     setQuoteProducts((prevQuoteProducts) => {
       const updatedQuoteProducts = prevQuoteProducts.map((product) => {
-        // Compara el quoteProductID para encontrar el producto correcto
         if (product.id === quoteProductID) {
-          // Actualiza la cantidad y el precio del producto
           return {
             ...product,
             quantity: newQuantity,
             price: newPrice,
           };
         }
-        // Mantén los productos que no necesitan actualizarse sin cambios
         return product;
       });
 
@@ -243,10 +238,9 @@ function ProductQuoteRow({
   supplier.prices.forEach((priceEntry) => {
     const minQuantity = parseInt(priceEntry.quantity.replace("+", ""), 10);
 
-    // Limpiar la cadena de precio antes de convertirla a un número
     const cleanedPriceString = priceEntry.price
-      .replace(/[^\d.,]/g, "") // Elimina caracteres que no son dígitos, comas ni puntos
-      .replace(",", ""); // Elimina comas que no son el separador de decimales
+      .replace(/[^\d.,]/g, "")
+      .replace(",", "");
 
     const price = parseFloat(cleanedPriceString);
 

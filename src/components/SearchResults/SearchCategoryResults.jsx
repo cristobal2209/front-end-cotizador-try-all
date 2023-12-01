@@ -137,7 +137,6 @@ export default function SearchCategoryResults() {
   async function result() {
     setIsLoading(true);
     try {
-      //if donde selecciona segun la data el tipo de search
       const {
         data,
         totalPages: total,
@@ -185,7 +184,6 @@ export default function SearchCategoryResults() {
                   <>
                     <div className="pb-10">
                       <GridSearchResults products={searchResults} />
-                      {/* <GridSearchResults products={searchResults} /> */}
                       <div className="mx-auto flex pt-20">
                         <Button
                           variant="text"

@@ -121,10 +121,8 @@ export const addProductToActiveQuote = async (product, supplier) => {
     }
     delete product.suppliers;
 
-    // Encontrar el objeto con quantity igual a "1+" y extraer el precio
     const priceObject = supplier.prices.find(item => parseInt(item.quantity.replace(/\D/g, ''), 10) === 1);
 
-    // Limpiar el precio y convertirlo a número float
     const newPrice = parseFloat(priceObject.price.replace(/[^\d.]/g, ''));
 
     let activeQuote = await getActiveQuote();

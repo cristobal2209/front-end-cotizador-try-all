@@ -167,7 +167,6 @@ export default function SearchResults() {
             ) : (
               <div className="pb-10">
                 <GridSearchResults products={searchResults} />
-                {/* <GridSearchResults products={searchResults} /> */}
                 <div className="mx-auto flex pt-20">
                   <Button
                     variant="text"

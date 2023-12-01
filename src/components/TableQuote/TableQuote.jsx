@@ -49,7 +49,7 @@ export default function TableQuote() {
     document.title = "Mis cotizaciones";
     const unsubscribe = subscribeToCollection("quotes", (data) => {
       setUserQuotesCollection(data);
-      setOriginalUserQuotesCollection(data); // Almacenar el estado original
+      setOriginalUserQuotesCollection(data);
     });
 
     return () => {
@@ -94,22 +94,17 @@ export default function TableQuote() {
   const handleSearch = async (searchTerm) => {
     try {
       if (searchTerm.trim() === "") {
-        // Si el término de búsqueda está vacío, restaurar el estado original
         setUserQuotesCollection(originalUserQuotesCollection);
       } else {
-        // Filtrar userQuotesCollection por searchTerm
         const filteredQuotes = originalUserQuotesCollection.filter((quote) => {
-          // Puedes ajustar las condiciones de filtrado según tus necesidades
           return (
             quote.quoteName.toLowerCase().includes(searchTerm.toLowerCase()) ||
             quote.responsibleName
               .toLowerCase()
               .includes(searchTerm.toLowerCase())
-            // Agrega más condiciones según las propiedades que deseas incluir en la búsqueda
           );
         });
 
-        // Establecer el nuevo estado filtrado
         setUserQuotesCollection(filteredQuotes);
       }
     } catch (error) {}

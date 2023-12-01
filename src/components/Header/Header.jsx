@@ -107,7 +107,6 @@ export default function Header() {
         blurred={false}
       >
         <div className="mx-auto flex max-w-7xl flex-row items-center text-light lg:justify-between">
-          {/* Boton abrir sidebar */}
           <div className="flex-shrink-0 px-2 justify-start">
             <IconButton
               variant="text"
@@ -122,7 +121,6 @@ export default function Header() {
               )}
             </IconButton>
           </div>
-          {/* logo */}
           <div className="flex-shrink-0 justify-center mx-10">
             <Link to={"/"}>
               <img
@@ -131,7 +129,6 @@ export default function Header() {
               />
             </Link>
           </div>
-          {/* barra de busqueda */}
           <div className="relative hidden w-full lg:flex lg:flex-row lg:items-center lg:justify-center">
             <Input
               type="search"
@@ -145,8 +142,6 @@ export default function Header() {
                 className: "mx-auto min-w-0 bg-four rounded-md",
               }}
             />
-            {/* render del autocompletado */}
-            {/* verifica si existe texto en el usuario para ocultar o mostrar la barra de autocompletado */}
             {userSearch && suggestions?.length !== 0 && (
               <>
                 <div
@@ -196,7 +191,6 @@ export default function Header() {
               onClick={() => {
                 setOpenCategories(!openCategories);
               }}
-              // ref={categoriesRef}
             >
               <Typography variant="small" className="!font-mono text-light">
                 Categorías
@@ -219,7 +213,6 @@ export default function Header() {
               </svg>
             </button>
           </div>
-          {/* usuario actual */}
           <div className="hidden lg:flex mx-1 min-w-[200px] justify-center align-middle">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -245,7 +238,6 @@ export default function Header() {
               ""
             )}
           </div>
-          {/* opcion de cotizacion actual */}
           <div className="hidden lg:flex mx-1 w-1/2">
             <CreateQuote />
           </div>

@@ -44,7 +44,6 @@ export default function Router() {
   });
 
   return isLoading ? (
-    // Display a loading spinner or some loading message here
     <></>
   ) : (
     <Routes>
@@ -64,7 +63,10 @@ export default function Router() {
         <Route path="articles/:productId" element={<Article />} />
         <Route path="quoteDetails/:quoteId" element={<QuoteDetails />} />
         <Route path="search/:productSearchParam" element={<SearchResults />} />
-        <Route path="search/category/:categorySearchParam" element={<SearchCategoryResults />} />
+        <Route
+          path="search/category/:categorySearchParam"
+          element={<SearchCategoryResults />}
+        />
         <Route path="redirectLogin" element={<RedirectToLogin />} />
         {user ? (
           <Route element={!token.claims.admin ? <Navigate to="/" /> : ""}>

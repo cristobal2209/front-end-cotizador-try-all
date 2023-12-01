@@ -35,7 +35,7 @@ export async function getSearchSuggestions(query) {
     const searchParams = {
       q: query,
       query_by: "description",
-      per_page: 5, // Número de sugerencias que deseas obtener
+      per_page: 5,
     };
     const result = await client
       .collections("typesenseProducts")

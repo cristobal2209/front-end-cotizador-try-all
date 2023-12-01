@@ -43,7 +43,6 @@ export default function Sidebar({ setIsSidebarOpen }) {
   return (
     <div className="absolute  pt-[96px] w-full h-full border-2 border-dark2 text-light">
       <div className="flex flex-col justify-between overflow-y-auto">
-        {/* Sección 1 */}
         <div className="p-4">
           <ul className="space-y-2">
             <li>
