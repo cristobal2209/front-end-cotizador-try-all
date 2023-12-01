@@ -45,6 +45,20 @@ function GridEnterprises() {
         "https://firebasestorage.googleapis.com/v0/b/fb-cotizaciones-try-all.appspot.com/o/SuppliersImages%2Fplcchile.png?alt=media&token=41aa1222-9e42-4c23-97cb-37b88e318f41",
       link: "https://www.plcchile.com/",
     },
+    {
+      id: 7,
+      name: "Ripley",
+      imgUrl:
+        "https://firebasestorage.googleapis.com/v0/b/fb-cotizaciones-try-all.appspot.com/o/SuppliersImages%2FRipley_logo_R_pagina_web_con_fondo_2016-present.webp?alt=media&token=7122a15f-d534-4c7c-8d54-f48cf46379e4",
+      link: "https://simple.ripley.cl/",
+    },
+    {
+      id: 8,
+      name: "PLC Chile",
+      imgUrl:
+        "https://firebasestorage.googleapis.com/v0/b/fb-cotizaciones-try-all.appspot.com/o/SuppliersImages%2F97740859-8d6b-4562-ad02-d6fd37c14e32___bab6e437e21af76315174bd3b460d74a.svg?alt=media&token=5b2a958d-b3d1-4d76-9e5d-f08f2b8cc94a",
+      link: "https://www.easy.cl/",
+    },
   ]);
 
   return (
