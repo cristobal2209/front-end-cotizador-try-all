@@ -198,9 +198,8 @@ export default function TableProduct() {
             </div>
           </CardHeader>
           <CardBody
-            className={`overflow-x-auto p-0 ${
-              ProductsCollection?.length === 0 ? "h-20" : "h-[600px]"
-            }`}
+            className={`overflow-x-auto p-0 ${ProductsCollection?.length === 0 ? "h-20" : "h-[600px]"
+              }`}
           >
             {isLoadingTable ? (
               <tr>
@@ -259,9 +258,8 @@ export default function TableProduct() {
             )}
           </CardBody>
           <CardFooter
-            className={` flex items-center justify-between border-t border-light-50 p-4 ${
-              ProductsCollection?.length === 0 ? "hidden" : "block"
-            }`}
+            className={` flex items-center justify-between border-t border-light-50 p-4 ${ProductsCollection?.length === 0 ? "hidden" : "block"
+              }`}
           >
             <div className="flex items-center gap-4">
               <Button
@@ -309,6 +307,7 @@ export function CreateProductDialog({
   const [inputChangedCounter, setInputChangedCounter] = useState(0);
   const [suppliersDataHasErrors, setSuppliersDataHasErrors] = useState(false);
   const [counter, setCounter] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   const validationSchema = Yup.object().shape({
     //validacion de campos del formulario productDataFormik
@@ -414,6 +413,7 @@ export function CreateProductDialog({
       productDataFormik.values.suppliers = suppliers;
       await createProduct(productDataFormik.values)
         .then((msg) => {
+          setIsLoading(false);
           handler();
           handleSuccessAlert(msg);
         })
@@ -677,7 +677,7 @@ export function CreateProductDialog({
               )}
             </div>
             {productDataFormik.errors.priceFor ||
-            productDataFormik.errors.priceForQuantity ? (
+              productDataFormik.errors.priceForQuantity ? (
               <Alert className="block mt-[10px] bg-red-500 !w-auto animate-pulse">
                 <div className="flex flex-row items-center">
                   {productDataFormik.errors.priceFor ||
@@ -779,17 +779,25 @@ export function CreateProductDialog({
         </div>
       </DialogBody>
       <DialogFooter className="space-x-2 border-dark2 border-t-2 bg-dark3">
-        <Button variant="text" color="red" onClick={handler} className="mr-1">
-          <span>Cancelar</span>
-        </Button>
-        <Button
-          variant="gradient"
-          color="green"
-          onClick={(e) => productDataFormik.handleSubmit(e)}
-          disabled={hasErrors || suppliersDataHasErrors}
-        >
-          <span>Crear</span>
-        </Button>
+        {isLoading ? (<>
+          <Spinner />
+        </>)
+          : (<>
+            <Button variant="text" color="red" onClick={handler} className="mr-1">
+              <span>Cancelar</span>
+            </Button>
+            <Button
+              variant="gradient"
+              color="green"
+              onClick={(e) => {
+                setIsLoading(true);
+                productDataFormik.handleSubmit(e);
+              }}
+              disabled={hasErrors || suppliersDataHasErrors}
+            >
+              <span>Crear</span>
+            </Button>
+          </>)}
       </DialogFooter>
     </Dialog>
   );
@@ -1451,11 +1459,10 @@ function PricesRow({
         }}
         onMouseEnter={() => setIsQuantityHovered(true)}
         onMouseLeave={() => setIsQuantityHovered(false)}
-        className={`mr-1 rounded-md px-1 w-1/2 text-light bg-dark2 font-sans text-[14px] shadow-md border-2 ${
-          priceRowFormik.errors.quantity
-            ? " border-red-500 animate-pulse"
-            : "border-gray-700"
-        }`}
+        className={`mr-1 rounded-md px-1 w-1/2 text-light bg-dark2 font-sans text-[14px] shadow-md border-2 ${priceRowFormik.errors.quantity
+          ? " border-red-500 animate-pulse"
+          : "border-gray-700"
+          }`}
       />
       {priceRowFormik.errors.quantity && isQuantityHovered && (
         <Alert className="absolute mt-[40px] bg-red-500 max-w-xs z-50">
@@ -1474,11 +1481,10 @@ function PricesRow({
         }}
         onMouseEnter={() => setIsPriceHovered(true)}
         onMouseLeave={() => setIsPriceHovered(false)}
-        className={`rounded-md px-1 w-1/2 text-light bg-dark2 font-sans text-[14px] shadow-md border-2 ${
-          priceRowFormik.errors.price
-            ? " border-red-500 animate-pulse"
-            : "border-gray-700"
-        }`}
+        className={`rounded-md px-1 w-1/2 text-light bg-dark2 font-sans text-[14px] shadow-md border-2 ${priceRowFormik.errors.price
+          ? " border-red-500 animate-pulse"
+          : "border-gray-700"
+          }`}
       />
       {priceRowFormik.errors.price && isPriceHovered && (
         <Alert className="absolute mt-[40px] bg-red-500 max-w-xs z-50">
@@ -1579,11 +1585,10 @@ function StockRow({
         value={stockRowFormik.values.country}
         onMouseEnter={() => setIsCountrySelectHovered(true)}
         onMouseLeave={() => setIsCountrySelectHovered(false)}
-        className={`mr-1 rounded-md px-2 w-1/2 text-light bg-dark2 font-sans text-[14px] shadow-md border-2 ${
-          stockRowFormik.errors.country
-            ? " border-red-500 animate-pulse"
-            : "border-gray-700"
-        }`}
+        className={`mr-1 rounded-md px-2 w-1/2 text-light bg-dark2 font-sans text-[14px] shadow-md border-2 ${stockRowFormik.errors.country
+          ? " border-red-500 animate-pulse"
+          : "border-gray-700"
+          }`}
         onChange={(e) => {
           stockRowFormik.handleChange(e);
           setSelectedOption(e.target.value);
@@ -1619,11 +1624,10 @@ function StockRow({
         }}
         onMouseEnter={() => setIsStockNumberHovered(true)}
         onMouseLeave={() => setIsStockNumberHovered(false)}
-        className={`rounded-md px-2 w-1/2 text-light bg-dark2 font-sans text-[14px] shadow-md border-2 ${
-          stockRowFormik.errors.stockNumber
-            ? " border-red-500 animate-pulse"
-            : "border-gray-700"
-        }`}
+        className={`rounded-md px-2 w-1/2 text-light bg-dark2 font-sans text-[14px] shadow-md border-2 ${stockRowFormik.errors.stockNumber
+          ? " border-red-500 animate-pulse"
+          : "border-gray-700"
+          }`}
       ></input>
       {stockRowFormik.errors.stockNumber && isStockNumberHovered && (
         <Alert className="absolute mt-[40px] bg-red-500 max-w-xs z-50">
@@ -1720,11 +1724,10 @@ function ExtraDataRow({
         }}
         onMouseEnter={() => setIsExtraDataNameHovered(true)}
         onMouseLeave={() => setIsExtraDataNameHovered(false)}
-        className={`mr-1 rounded-md px-2 w-1/2 text-light bg-dark2 font-sans text-[14px] shadow-md border-2 ${
-          extraDataRowFormik.errors.extraDataName
-            ? " border-red-500 animate-pulse"
-            : "border-gray-700"
-        }`}
+        className={`mr-1 rounded-md px-2 w-1/2 text-light bg-dark2 font-sans text-[14px] shadow-md border-2 ${extraDataRowFormik.errors.extraDataName
+          ? " border-red-500 animate-pulse"
+          : "border-gray-700"
+          }`}
       />
       {extraDataRowFormik.errors.extraDataName && isExtraDataNameHovered && (
         <Alert className="absolute mt-[40px] bg-red-500 max-w-xs z-50">
@@ -1743,11 +1746,10 @@ function ExtraDataRow({
         }}
         onMouseEnter={() => setIsExtraDataValueHovered(true)}
         onMouseLeave={() => setIsExtraDataValueHovered(false)}
-        className={`rounded-md px-2 w-1/2 text-light bg-dark2 font-sans text-[14px] shadow-md border-2 ${
-          extraDataRowFormik.errors.extraDataValue
-            ? " border-red-500 animate-pulse"
-            : "border-gray-700"
-        }`}
+        className={`rounded-md px-2 w-1/2 text-light bg-dark2 font-sans text-[14px] shadow-md border-2 ${extraDataRowFormik.errors.extraDataValue
+          ? " border-red-500 animate-pulse"
+          : "border-gray-700"
+          }`}
       />
       {extraDataRowFormik.errors.extraDataValue && isExtraDataValueHovered && (
         <Alert className="absolute mt-[40px] bg-red-500 max-w-xs z-50">
